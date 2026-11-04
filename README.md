@@ -128,6 +128,20 @@ NOP is meant for personal use. You are responsible for what you download and for
 
 Distributed under the **GNU GPL v3**. See [LICENSE](LICENSE).
 
+## Support the project
+
+NOP is free and open source. If it is useful to you, you can support its development:
+
+<table>
+<tr>
+<td align="center"><img src="assets/donate_crypto_qr.jpg" width="200" alt="Ethereum QR code"><br><b>Ethereum</b></td>
+<td align="center"><img src="assets/donate_ozon_qr.jpg" width="200" alt="Ozon Bank SBP QR code"><br><b>Ozon Bank (SBP, Russia)</b></td>
+</tr>
+</table>
+
+- **Ethereum** (ETH and ERC-20 tokens on the Ethereum network): `0x5EDfAbe50567aD88b7bA3138E369a780Eb513A2C`
+- **Ozon Bank** (SBP, for bank accounts in Russia): https://finance.ozon.ru/apps/sbp/ozonbankpay/01a162fe-be3f-7ff3-8cc6-7659ed88b12c
+
 ## Author
 
 Made by **Nik**. If NOP is useful to you, star the repository and share it with a friend. ⭐

@@ -128,6 +128,20 @@ NOP предназначен для личного использования. �
 
 Распространяется под лицензией **GNU GPL v3**. См. [LICENSE](LICENSE).
 
+## Поддержать проект
+
+NOP бесплатный и с открытым исходным кодом. Если он вам полезен, вы можете поддержать его развитие:
+
+<table>
+<tr>
+<td align="center"><img src="assets/donate_crypto_qr.jpg" width="200" alt="QR-код Ethereum"><br><b>Ethereum</b></td>
+<td align="center"><img src="assets/donate_ozon_qr.jpg" width="200" alt="QR-код Ozon Банк (СБП)"><br><b>Ozon Банк (СБП)</b></td>
+</tr>
+</table>
+
+- **Ethereum** (ETH и токены ERC-20 в сети Ethereum): `0x5EDfAbe50567aD88b7bA3138E369a780Eb513A2C`
+- **Ozon Банк** (СБП, для счетов в российских банках): https://finance.ozon.ru/apps/sbp/ozonbankpay/01a162fe-be3f-7ff3-8cc6-7659ed88b12c
+
 ## Автор
 
 Сделал **Nik**. Если NOP вам пригодился, поставьте звезду репозиторию и расскажите друзьям. ⭐
