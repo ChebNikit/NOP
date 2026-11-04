@@ -8351,7 +8351,7 @@ class MpvPlayer(QObject):
     def set_playback_rate(self, rate: float) -> bool:
         if not self.available:
             return False
-        code = self._command("set", "speed", str(max(0.5, min(2.0, float(rate)))))
+        code = self._command("set", "speed", str(max(0.25, min(8.0, float(rate)))))
         return code >= 0
 
     def setPosition(self, ms: int, *, automatic=False):
@@ -8839,7 +8839,7 @@ class PlayerFacade(QObject):
 
     def set_playback_rate(self, rate: float) -> bool:
         """Изменяет скорость Qt/mpv; FFmpeg fallback пока не поддерживает изменение скорости."""
-        rate = max(0.5, min(2.0, float(rate)))
+        rate = max(0.25, min(8.0, float(rate)))
         if self.active == "mpv":
             return self.mpv.set_playback_rate(rate)
         if self.active == "qt":
@@ -14782,7 +14782,7 @@ class Window(QWidget):
         raw_resume = self.cfg.get("resume_positions", {})
         self._resume_positions = dict(raw_resume) if isinstance(raw_resume, dict) else {}
         try:
-            self.playback_rate = max(0.5, min(2.0, float(self.cfg.get("playback_rate", 1.0))))
+            self.playback_rate = max(0.25, min(8.0, float(self.cfg.get("playback_rate", 1.0))))
         except (TypeError, ValueError):
             self.playback_rate = 1.0
         self.panel_profile = str(self.cfg.get("panel_profile", "custom"))
@@ -19688,7 +19688,7 @@ class Window(QWidget):
         self.track_count_label.setObjectName("muted")
 
         self.playback_rate_combo = WheelSafeComboBox()
-        for rate in (0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0):
+        for rate in (0.25, 0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0, 4.0, 8.0):
             self.playback_rate_combo.addItem(f"{rate:g}×", rate)
         self.playback_rate_combo.setCurrentIndex(max(0, self.playback_rate_combo.findData(self.playback_rate)))
         self.playback_rate_combo.setToolTip("Скорость аудио и видео через mpv; Qt зависит от формата/системы, FFmpeg fallback не поддерживает")
@@ -19851,7 +19851,7 @@ class Window(QWidget):
         menu = QMenu(self)
         for i in range(combo.count()):
             value = float(combo.itemData(i))
-            if not 0.5 <= value <= 2.0:
+            if not 0.25 <= value <= 8.0:
                 continue
             action = menu.addAction(combo.itemText(i))
             action.setCheckable(True)
