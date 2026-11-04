@@ -1,0 +1,6 @@
+PyQt6
+yt-dlp[default]
+numpy
+Pillow
+mutagen
+PyMuPDF
