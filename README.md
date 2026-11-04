@@ -82,7 +82,7 @@ set "NOP_BUILD_WORKSPACE=D:\NOPBK\R12"
 build_windows.bat
 ```
 
-Large third-party files (FFmpeg, libmpv, deno, Python wheels) are **not** stored in this repository. A complete offline copy of the kit is attached to the release as `NOP_BuildKit_R12.zip`. Publish the finished installer in **Releases**, not in the repository.
+The repository contains everything pinned in `kit-manifest.json` (Python wheels, 7-Zip). The large runtime archives (FFmpeg, libmpv, deno, Inno Setup, LibreOffice, Blender, calibre, Inkscape, Equalizer APO, the Visual C++ runtime) are downloaded during the build and checked against pinned SHA-256 hashes. If you change a pinned file on purpose (for example `NOP_1.0.py`), update its hash with `repin_kit_manifest.ps1`. A full offline copy of the kit is attached to the release as `NOP_BuildKit_R12.zip`. Publish the finished installer in **Releases**, not in the repository.
 
 ## Hotkeys
 

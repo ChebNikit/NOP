@@ -1,0 +1,30 @@
+Updated BUILDKIT_VERSION.txt
+Updated NOP_installer.iss
+Updated README_RU.md
+Updated docs/PATCH_R12_1_RU.md
+Updated docs/R12_1_UNIT_TESTS_LINUX.log
+Updated docs/REPORT_RU.md
+Updated docs/VALIDATION_SUMMARY.json
+Updated prepare_inno.ps1
+Updated start_build.ps1
+Updated tests/test_inno_preflight.py
+Updated kit-manifest.json
+R12.1 applied. Python, installed packages, compiler and download caches were preserved.
+Original files saved: /dev/shm/nop_r12/tmp/r12-1-tests-944ywlz9/source я (1) & ' [x] $/logs/R12_1_backup/20261030-013440-9e459944
+
+R12.1 applied. Python, installed packages, compiler and download caches were preserved.
+R12.1 was already applied; continuing the same build.
+
+Updated BUILDKIT_VERSION.txt
+Updated NOP_installer.iss
+Updated README_RU.md
+Updated docs/PATCH_R12_1_RU.md
+Updated docs/R12_1_UNIT_TESTS_LINUX.log
+Updated docs/REPORT_RU.md
+Updated docs/VALIDATION_SUMMARY.json
+Updated prepare_inno.ps1
+Updated start_build.ps1
+PATCH FAILED: Exception calling "CreateDirectory" with "1" argument(s): "The file '/dev/shm/nop_r12/tmp/r12-1-tests-944ywlz9/rollback/tests' already exists."
+No build was started. Python and download caches were retained.
+
+Patch scenarios: 4 passed

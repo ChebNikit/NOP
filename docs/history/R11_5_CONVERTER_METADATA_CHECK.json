@@ -1,0 +1,20 @@
+{
+  "libreoffice": {
+    "ok": false,
+    "error": "HTTP Error 429: Too Many Requests"
+  },
+  "inkscape": {
+    "ok": false,
+    "error": "HTTP Error 429: Too Many Requests"
+  },
+  "blender": {
+    "ok": true,
+    "resolved": {
+      "url": "https://download.blender.org/release/Blender4.2/blender-4.2.23-windows-x64.zip",
+      "sha256": "82e791475779a7342424a480bdde9a20b43710da9264c60346125aa16cd910cb",
+      "version": "4.2.23",
+      "kind": "zip",
+      "metadata_source": "https://download.blender.org/release/Blender4.2/blender-4.2.23.sha256"
+    }
+  }
+}

@@ -1,9 +1,10 @@
-# Large third-party binaries: too big for GitHub (100 MB per-file limit),
-# restored by the build kit from pinned hashes or taken from the offline kit in Releases
-.build-tools/
-wheelhouse/
+# Downloaded by the build kit from pinned hashes (too large for GitHub;
+# they are NOT in the "files" list of kit-manifest.json)
+.build-tools/media-downloads/
+.build-tools/converter-downloads/
+.build-tools/python.*.nupkg
+.build-tools/innosetup-*.exe
 runtime_deps/
-bootstrap/pip-*.whl
 NOP_R12_CACHE_*
 
 # Build output
@@ -15,13 +16,6 @@ logs/
 Output/
 *.spec
 
-# Internal build history and logs (not needed by users)
-docs/history/
-docs/retired/
-*.log
-README_RU.md
-README_RU.txt
-
 # Python
 __pycache__/
 *.pyc
@@ -30,9 +24,15 @@ venv/
 
 # Secrets and personal data - NEVER commit these
 cookies.txt
-*.dat
 spotify_credentials.dat
 
 # Editors
 .idea/
 .vscode/
+
+# Big archives sitting directly in .build-tools (downloaded by the kit)
+/.build-tools/*.msi
+/.build-tools/*.zip
+/.build-tools/*.7z
+/.build-tools/*.exe
+/.build-tools/*.nupkg

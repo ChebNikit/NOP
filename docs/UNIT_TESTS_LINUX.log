@@ -1,0 +1,103 @@
+test_changed_native_tool_is_not_started (test_archive_bcj2.BCJ2RegressionTests.test_changed_native_tool_is_not_started) ... ok
+test_fixture_really_uses_bcj2 (test_archive_bcj2.BCJ2RegressionTests.test_fixture_really_uses_bcj2) ... ok
+test_missing_native_tool_has_specific_diagnostic (test_archive_bcj2.BCJ2RegressionTests.test_missing_native_tool_has_specific_diagnostic) ... ok
+test_native_bcj2_roundtrip_in_unicode_path (test_archive_bcj2.BCJ2RegressionTests.test_native_bcj2_roundtrip_in_unicode_path) ... skipped 'Windows 7za.exe must be run on Windows'
+test_native_failure_includes_exit_and_diagnostic (test_archive_bcj2.BCJ2RegressionTests.test_native_failure_includes_exit_and_diagnostic) ... Extracting with private 7-Zip 26.05 (BCJ2 enabled)...
+ok
+test_native_timeout_is_not_reported_as_success (test_archive_bcj2.BCJ2RegressionTests.test_native_timeout_is_not_reported_as_success) ... Extracting with private 7-Zip 26.05 (BCJ2 enabled)...
+ok
+test_corrupt_jpeg_blocks_validation (test_author_assets.AuthorAssetsTests.test_corrupt_jpeg_blocks_validation) ... ok
+test_images_survive_relocation_and_are_found_from_another_working_directory (test_author_assets.AuthorAssetsTests.test_images_survive_relocation_and_are_found_from_another_working_directory) ... ok
+test_missing_avatar_blocks_validation (test_author_assets.AuthorAssetsTests.test_missing_avatar_blocks_validation) ... ok
+test_missing_either_donation_qr_blocks_validation (test_author_assets.AuthorAssetsTests.test_missing_either_donation_qr_blocks_validation) ... ok
+test_all_four_sources_validate_with_metadata_network_blocked (test_converter_sources.BundledSourceTests.test_all_four_sources_validate_with_metadata_network_blocked) ... ok
+test_changed_upstream_evidence_is_rejected (test_converter_sources.BundledSourceTests.test_changed_upstream_evidence_is_rejected) ... ok
+test_missing_component_is_rejected_before_any_download (test_converter_sources.BundledSourceTests.test_missing_component_is_rejected_before_any_download) ... ok
+test_partial_legacy_cache_cannot_override_complete_snapshot (test_converter_sources.BundledSourceTests.test_partial_legacy_cache_cannot_override_complete_snapshot) ... ok
+test_pinned_binary_hash_must_match_upstream_evidence (test_converter_sources.BundledSourceTests.test_pinned_binary_hash_must_match_upstream_evidence) ... ok
+test_preparation_uses_snapshot_without_rewriting_it (test_converter_sources.BundledSourceTests.test_preparation_uses_snapshot_without_rewriting_it) ... Validated bundled converter sources: 4; no live metadata requests.
+Preparing private converter: libreoffice
+Preparing private converter: blender
+Preparing private converter: inkscape
+Preparing private converter: calibre
+ok
+test_x64_msi_is_selected_alongside_x64_exe_and_arm64_msi (test_converter_sources.BundledSourceTests.test_x64_msi_is_selected_alongside_x64_exe_and_arm64_msi) ... ok
+test_download_retries_429_then_verifies_sha256 (test_converter_sources.RateLimitTests.test_download_retries_429_then_verifies_sha256) ... All four private conversion engines prepared; no global applications installed.
+Downloading payload.msi (attempt 1/3)
+Download HTTP 429; retrying in 3s (1/3).
+Downloading payload.msi (attempt 2/3)
+ok
+test_http_date_retry_after_is_understood (test_converter_sources.RateLimitTests.test_http_date_retry_after_is_understood) ... ok
+test_json_request_retries_429 (test_converter_sources.RateLimitTests.test_json_request_retries_429) ... Metadata HTTP 429; retrying in 2s (1/3).
+ok
+test_long_retry_after_does_not_retry_before_the_requested_time (test_converter_sources.RateLimitTests.test_long_retry_after_does_not_retry_before_the_requested_time) ... ok
+test_persistent_429_stops_after_three_attempts_and_preserves_cache (test_converter_sources.RateLimitTests.test_persistent_429_stops_after_three_attempts_and_preserves_cache) ... Downloading payload.msi (attempt 1/3)
+Download HTTP 429; retrying in 2s (1/3).
+Downloading payload.msi (attempt 2/3)
+Download HTTP 429; retrying in 4s (2/3).
+Downloading payload.msi (attempt 3/3)
+ok
+test_valid_cached_download_needs_no_network (test_converter_sources.RateLimitTests.test_valid_cached_download_needs_no_network) ... Cached: cached.msi
+ok
+test_all_actual_vendor_maps_are_valid (test_msi_payload.MsiPayloadTests.test_all_actual_vendor_maps_are_valid) ... ok
+test_changed_private_dll_blocks_native_execution (test_msi_payload.MsiPayloadTests.test_changed_private_dll_blocks_native_execution) ... ok
+test_incorrect_cabinet_file_size_is_rejected (test_msi_payload.MsiPayloadTests.test_incorrect_cabinet_file_size_is_rejected) ... ok
+test_inkscape_trailing_dot_keys_are_mapped_explicitly (test_msi_payload.MsiPayloadTests.test_inkscape_trailing_dot_keys_are_mapped_explicitly) ... ok
+test_native_exit_code_and_diagnostic_are_retained (test_msi_payload.MsiPayloadTests.test_native_exit_code_and_diagnostic_are_retained) ... ok
+test_real_private_tool_extracts_msi_without_msiexec (test_msi_payload.MsiPayloadTests.test_real_private_tool_extracts_msi_without_msiexec) ... skipped 'Real private Windows 7-Zip requires Windows'
+test_unsafe_installed_names_are_rejected (test_msi_payload.MsiPayloadTests.test_unsafe_installed_names_are_rejected) ... ok
+test_wrong_archive_cannot_use_a_map (test_msi_payload.MsiPayloadTests.test_wrong_archive_cannot_use_a_map) ... ok
+test_bad_cache_is_repaired_from_the_supplied_archive_without_network (test_payload_restore.PayloadRestoreTests.test_bad_cache_is_repaired_from_the_supplied_archive_without_network) ... Restored bundled payload: tool.msi
+ok
+test_document_fixtures_have_valid_xml_and_zip (test_r11.ArchiveAndFixtureTests.test_document_fixtures_have_valid_xml_and_zip) ... ok
+test_safe_cyrillic_vendor_path (test_r11.ArchiveAndFixtureTests.test_safe_cyrillic_vendor_path) ... ok
+test_shipped_windows_wheels_have_not_changed (test_r11.ArchiveAndFixtureTests.test_shipped_windows_wheels_have_not_changed) ... Windows dependency wheel hashes verified: 34
+ok
+test_vendor_archive_rejects_windows_escape_paths (test_r11.ArchiveAndFixtureTests.test_vendor_archive_rejects_windows_escape_paths) ... ok
+test_bundled_ffmpeg_wins_over_system_ffmpeg (test_r11.BundlePathTests.test_bundled_ffmpeg_wins_over_system_ffmpeg) ... ok
+test_missing_private_engine_can_still_find_a_source_installation (test_r11.BundlePathTests.test_missing_private_engine_can_still_find_a_source_installation) ... ok
+test_private_alias_wins_over_another_alias_in_path (test_r11.BundlePathTests.test_private_alias_wins_over_another_alias_in_path) ... ok
+test_different_same_named_media_dlls_are_rejected (test_r11.NativeConflictTests.test_different_same_named_media_dlls_are_rejected) ... ok
+test_identical_media_dlls_do_not_conflict (test_r11.NativeConflictTests.test_identical_media_dlls_do_not_conflict) ... ok
+test_later_component_hashes_survive_the_first_completed_stage (test_r11.PreparationResumeTests.test_later_component_hashes_survive_the_first_completed_stage) ... Preparing/checking ffmpeg...
+ffmpeg passed exit-code, architecture and runtime checks.
+Preparing/checking deno...
+deno passed exit-code, architecture and runtime checks.
+Preparing/checking mpv...
+mpv passed exit-code, architecture and runtime checks.
+All media runtimes are ready. Cached downloads and binaries were retained.
+ok
+test_os_roots_and_certifi_keep_certificate_and_hostname_validation (test_r11.TLSContextTests.test_os_roots_and_certifi_keep_certificate_and_hostname_validation) ... ok
+test_ambiguous_extracted_engine_is_rejected (test_r11.VendorMetadataTests.test_ambiguous_extracted_engine_is_rejected) ... ok
+test_arm64_cannot_be_mistaken_for_x64 (test_r11.VendorMetadataTests.test_arm64_cannot_be_mistaken_for_x64) ... ok
+test_html_substituted_for_manifest_is_rejected (test_r11.VendorMetadataTests.test_html_substituted_for_manifest_is_rejected) ... ok
+test_later_os_requirement_is_not_hidden (test_r11.VendorMetadataTests.test_later_os_requirement_is_not_hidden) ... ok
+test_missing_or_truncated_sha_is_rejected (test_r11.VendorMetadataTests.test_missing_or_truncated_sha_is_rejected) ... ok
+test_multiple_x64_installers_are_not_silently_chosen (test_r11.VendorMetadataTests.test_multiple_x64_installers_are_not_silently_chosen) ... ok
+test_non_msi_payload_is_not_executed_as_msi (test_r11.VendorMetadataTests.test_non_msi_payload_is_not_executed_as_msi) ... ok
+test_pinned_x64_manifest (test_r11.VendorMetadataTests.test_pinned_x64_manifest) ... ok
+test_version_drift_blocks_conversion_download (test_r11.VendorMetadataTests.test_version_drift_blocks_conversion_download) ... ok
+test_cached_binary_must_match_previous_sha256_manifest (test_runtime.NativeRuntimeRegressionTests.test_cached_binary_must_match_previous_sha256_manifest) ... ok
+test_cached_binary_without_hash_manifest_is_not_trusted (test_runtime.NativeRuntimeRegressionTests.test_cached_binary_without_hash_manifest_is_not_trusted) ... ok
+test_cached_deno_repairs_source_notice (test_runtime.NativeRuntimeRegressionTests.test_cached_deno_repairs_source_notice) ... ok
+test_html_is_not_a_checksum (test_runtime.NativeRuntimeRegressionTests.test_html_is_not_a_checksum) ... ok
+test_interrupted_r1_cache_repairs_notices_without_downloading (test_runtime.NativeRuntimeRegressionTests.test_interrupted_r1_cache_repairs_notices_without_downloading) ... ok
+test_large_stdout_and_stderr_do_not_deadlock (test_runtime.NativeRuntimeRegressionTests.test_large_stdout_and_stderr_do_not_deadlock) ... ok
+test_libmpv_selects_only_x64_lgpl (test_runtime.NativeRuntimeRegressionTests.test_libmpv_selects_only_x64_lgpl) ... ok
+test_native_command_timeout_is_reported (test_runtime.NativeRuntimeRegressionTests.test_native_command_timeout_is_reported) ... ok
+test_real_nonzero_exit_is_not_hidden_by_version_text (test_runtime.NativeRuntimeRegressionTests.test_real_nonzero_exit_is_not_hidden_by_version_text) ... ok
+test_release_asset_sha256_digest_is_required_and_normalized (test_runtime.NativeRuntimeRegressionTests.test_release_asset_sha256_digest_is_required_and_normalized) ... ok
+test_release_asset_without_upstream_digest_is_rejected (test_runtime.NativeRuntimeRegressionTests.test_release_asset_without_upstream_digest_is_rejected) ... ok
+test_spaces_quotes_and_unicode_arguments_are_preserved (test_runtime.NativeRuntimeRegressionTests.test_spaces_quotes_and_unicode_arguments_are_preserved) ... ok
+test_stderr_banner_with_exit_zero_is_success (test_runtime.NativeRuntimeRegressionTests.test_stderr_banner_with_exit_zero_is_success) ... ok
+test_truncated_cached_executable_is_marked_for_repair (test_runtime.NativeRuntimeRegressionTests.test_truncated_cached_executable_is_marked_for_repair) ... ok
+test_zip_parent_path_is_rejected_before_extraction (test_runtime.NativeRuntimeRegressionTests.test_zip_parent_path_is_rejected_before_extraction) ... ok
+test_bundled_pip_is_verified_and_requires_no_network (test_secure_pip_bootstrap.SecurePipBootstrapTests.test_bundled_pip_is_verified_and_requires_no_network) ... Cached pip wheel SHA-256 verified.
+ok
+test_pinned_hash_has_expected_digest_length (test_secure_pip_bootstrap.SecurePipBootstrapTests.test_pinned_hash_has_expected_digest_length) ... ok
+test_wrong_or_truncated_wheel_is_rejected (test_secure_pip_bootstrap.SecurePipBootstrapTests.test_wrong_or_truncated_wheel_is_rejected) ... ok
+
+----------------------------------------------------------------------
+Ran 70 tests in 6.105s
+
+OK (skipped=2)
