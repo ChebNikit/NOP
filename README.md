@@ -1,17 +1,17 @@
-﻿<div align="center">
+<div align="center">
 
-# NOP вЂ” NikOmniPlayer
+# NOP — NikOmniPlayer
 
 **A local audio/video player with built-in downloads, a system-wide equalizer, color correction and file conversion.**
 
-[English](README.md) В· [Р СѓСЃСЃРєРёР№](README.ru.md)
+[English](README.md) · [Русский](README.ru.md)
 
 ![Platform](https://img.shields.io/badge/platform-Windows%2010%2F11%20x64-0078D6)
 ![Python](https://img.shields.io/badge/python-3.13-3776AB)
 ![GUI](https://img.shields.io/badge/GUI-PyQt6-41CD52)
 ![License](https://img.shields.io/badge/license-GPL--3.0-blue)
 
-[**в¬‡ Download the installer**](https://github.com/ChebNikit/NOP/releases/latest)
+[**⬇ Download the installer**](https://github.com/ChebNikit/NOP/releases/latest)
 
 <img src="assets/screenshots/player.png" alt="NOP main window" width="760">
 
@@ -21,18 +21,18 @@
 
 ## Why NOP
 
-One app instead of five: play your media, download new media, tune the sound, fix the picture and convert files вЂ” all in one small window.
+One app instead of five: play your media, download new media, tune the sound, fix the picture and convert files — all in one small window.
 
 ## Features
 
-- **Player** вЂ” audio and video, track list with search and filters, repeat one / shuffle / sequential, playback speed 0.5Г—вЂ“2Г—, remembers your position.
-- **Downloads** вЂ” YouTube, TikTok, Instagram, Spotify and direct HTTP(S) links. Separate video resolution/profile and audio quality, `cookies.txt` support, a dedicated progress panel with speed, size and stage.
-- **Equalizer** вЂ” two modes: *NOP only* (audio and video inside the player) or *Whole device* through [Equalizer APO](https://sourceforge.net/projects/equalizerapo/), so your browser and other apps get the same sound. Presets, custom bands, save/delete your own.
-- **Video** вЂ” color correction, fullscreen with auto-hiding controls, and a compact **video-only mode** (256Г—144, always on top) toggled with a middle click on the video.
-- **Video transcoding panel** (`Ctrl+Shift+T`) вЂ” re-encode videos to H.264, H.265/HEVC or VP9 in MP4, MOV, MKV, WebM or AVI at 720p, 1080p, 2K or 4K, with a choice of audio codec (AAC, Opus, MP3, FLAC, PCM or copy), hardware encoders (NVIDIA NVENC, Intel Quick Sync, AMD AMF), a preview, and pause/resume.
-- **Converter** вЂ” convert audio and video with a live preview, plus documents, vector graphics, e-books and 3D models through bundled engines (FFmpeg, LibreOffice, Inkscape, calibre, Blender) in the installer build.
-- **Customization** вЂ” Russian / English interface, five color themes (*Classic*, *Cosmic + Vanilla*, *Lavender + Violet*, *Jet Black / Orchid*, *Wine Ash / Turquoise*), independent panels you can show or hide.
-- **Layout profiles** вЂ” "Listen", "Download" and "All" switch the set of panels in one click.
+- **Player** — audio and video, track list with search and filters, repeat one / shuffle / sequential, playback speed 0.5×–2×, remembers your position.
+- **Downloads** — YouTube, TikTok, Instagram, Spotify and direct HTTP(S) links. Separate video resolution/profile and audio quality, `cookies.txt` support, a dedicated progress panel with speed, size and stage.
+- **Equalizer** — two modes: *NOP only* (audio and video inside the player) or *Whole device* through [Equalizer APO](https://sourceforge.net/projects/equalizerapo/), so your browser and other apps get the same sound. Presets, custom bands, save/delete your own.
+- **Video** — color correction, fullscreen with auto-hiding controls, and a compact **video-only mode** (256×144, always on top) toggled with a middle click on the video.
+- **Video transcoding panel** (`Ctrl+Shift+T`) — re-encode videos to H.264, H.265/HEVC or VP9 in MP4, MOV, MKV, WebM or AVI at 720p, 1080p, 2K or 4K, with a choice of audio codec (AAC, Opus, MP3, FLAC, PCM or copy), hardware encoders (NVIDIA NVENC, Intel Quick Sync, AMD AMF), a preview, and pause/resume.
+- **Converter** — convert audio and video with a live preview, plus documents, vector graphics, e-books and 3D models through bundled engines (FFmpeg, LibreOffice, Inkscape, calibre, Blender) in the installer build.
+- **Customization** — Russian / English interface, five color themes (*Classic*, *Cosmic + Vanilla*, *Lavender + Violet*, *Jet Black / Orchid*, *Wine Ash / Turquoise*), independent panels you can show or hide.
+- **Layout profiles** — "Listen", "Download" and "All" switch the set of panels in one click.
 
 ## Install (Windows 10 1809+ / Windows 11, x64)
 
@@ -89,7 +89,7 @@ Large third-party files (FFmpeg, libmpv, deno, Python wheels) are **not** stored
 | Key | Action |
 |---|---|
 | `Space` | Pause / resume |
-| `в†ђ / в†’` | Seek 5 seconds |
+| `← / →` | Seek 5 seconds |
 | `F11` | Fullscreen on / off |
 | `Esc` | Exit video mode, or close the app |
 | `Ctrl+T` | Track list |
@@ -122,7 +122,7 @@ NOP is meant for personal use. You are responsible for what you download and for
 
 ## Built with
 
-[PyQt6](https://www.riverbankcomputing.com/software/pyqt/) В· [yt-dlp](https://github.com/yt-dlp/yt-dlp) В· [FFmpeg](https://ffmpeg.org/) В· [libmpv](https://mpv.io/) В· [Equalizer APO](https://sourceforge.net/projects/equalizerapo/)
+[PyQt6](https://www.riverbankcomputing.com/software/pyqt/) · [yt-dlp](https://github.com/yt-dlp/yt-dlp) · [FFmpeg](https://ffmpeg.org/) · [libmpv](https://mpv.io/) · [Equalizer APO](https://sourceforge.net/projects/equalizerapo/)
 
 ## License
 
@@ -130,5 +130,4 @@ Distributed under the **GNU GPL v3**. See [LICENSE](LICENSE).
 
 ## Author
 
-Made by **Nik**. If NOP is useful to you, star the repository and share it with a friend. в­ђ
-
+Made by **Nik**. If NOP is useful to you, star the repository and share it with a friend. ⭐
