@@ -1,0 +1,184 @@
+{
+  "scope": "Real source converter logic with a QThread/signal adapter on Linux; not Qt GUI or Windows EXE tests",
+  "ffmpeg": "ffmpeg version 6.1.1-3ubuntu5 Copyright (c) 2000-2023 the FFmpeg developers",
+  "cases": [
+    {
+      "name": "Видео -> webm / видео.mp4",
+      "host": "Linux",
+      "windows_status": "не проверено",
+      "local_passed": true,
+      "row": {
+        "state": "done",
+        "name": "видео.webm",
+        "path": "/dev/shm/nop_r11/linux-media/результаты с пробелами/видео.webm",
+        "notices": []
+      },
+      "events": [
+        [
+          0,
+          ""
+        ],
+        [
+          0,
+          "/dev/shm/nop_r11/linux-media/результаты с пробелами/видео.webm"
+        ]
+      ]
+    },
+    {
+      "name": "Видео -> mkv / видео.mp4",
+      "host": "Linux",
+      "windows_status": "не проверено",
+      "local_passed": true,
+      "row": {
+        "state": "done",
+        "name": "видео.mkv",
+        "path": "/dev/shm/nop_r11/linux-media/результаты с пробелами/видео.mkv",
+        "notices": []
+      },
+      "events": [
+        [
+          0,
+          ""
+        ],
+        [
+          0,
+          "/dev/shm/nop_r11/linux-media/результаты с пробелами/видео.mkv"
+        ]
+      ]
+    },
+    {
+      "name": "Аудио -> mp3 / звук.wav",
+      "host": "Linux",
+      "windows_status": "не проверено",
+      "local_passed": true,
+      "row": {
+        "state": "done",
+        "name": "звук.mp3",
+        "path": "/dev/shm/nop_r11/linux-media/результаты с пробелами/звук.mp3",
+        "notices": []
+      },
+      "events": [
+        [
+          0,
+          ""
+        ],
+        [
+          0,
+          "/dev/shm/nop_r11/linux-media/результаты с пробелами/звук.mp3"
+        ]
+      ]
+    },
+    {
+      "name": "Аудио -> flac / звук.wav",
+      "host": "Linux",
+      "windows_status": "не проверено",
+      "local_passed": true,
+      "row": {
+        "state": "done",
+        "name": "звук.flac",
+        "path": "/dev/shm/nop_r11/linux-media/результаты с пробелами/звук.flac",
+        "notices": []
+      },
+      "events": [
+        [
+          0,
+          ""
+        ],
+        [
+          0,
+          "/dev/shm/nop_r11/linux-media/результаты с пробелами/звук.flac"
+        ]
+      ]
+    },
+    {
+      "name": "Аудио -> opus / звук.wav",
+      "host": "Linux",
+      "windows_status": "не проверено",
+      "local_passed": true,
+      "row": {
+        "state": "done",
+        "name": "звук.opus",
+        "path": "/dev/shm/nop_r11/linux-media/результаты с пробелами/звук.opus",
+        "notices": []
+      },
+      "events": [
+        [
+          0,
+          ""
+        ],
+        [
+          0,
+          "/dev/shm/nop_r11/linux-media/результаты с пробелами/звук.opus"
+        ]
+      ]
+    },
+    {
+      "name": "Субтитры -> ass / субтитры.srt",
+      "host": "Linux",
+      "windows_status": "не проверено",
+      "local_passed": true,
+      "row": {
+        "state": "done",
+        "name": "субтитры.ass",
+        "path": "/dev/shm/nop_r11/linux-media/результаты с пробелами/субтитры.ass",
+        "notices": []
+      },
+      "events": [
+        [
+          0,
+          ""
+        ],
+        [
+          0,
+          "/dev/shm/nop_r11/linux-media/результаты с пробелами/субтитры.ass"
+        ]
+      ]
+    },
+    {
+      "name": "Архивы -> tar.gz / исходник.txt",
+      "host": "Linux",
+      "windows_status": "не проверено",
+      "local_passed": true,
+      "row": {
+        "state": "done",
+        "name": "исходник (3).tar.gz",
+        "path": "/dev/shm/nop_r11/linux-media/результаты с пробелами/исходник (3).tar.gz",
+        "notices": []
+      },
+      "events": [
+        [
+          0,
+          ""
+        ],
+        [
+          0,
+          "/dev/shm/nop_r11/linux-media/результаты с пробелами/исходник (3).tar.gz"
+        ]
+      ]
+    },
+    {
+      "name": "Видео -> mkv / повреждённый.mp4",
+      "host": "Linux",
+      "windows_status": "не проверено",
+      "local_passed": true,
+      "row": {
+        "state": "error",
+        "messages": [
+          "Не удалось прочитать исходник: [mov,mp4,m4a,3gp,3g2,mj2 @ 0x562ae3f8ee00] moov atom not found\n/dev/shm/nop_r11/linux-media/исходники с пробелами/повреждённый.mp4: Invalid data found when processing input\n",
+          "Не удалось прочитать исходник: [mov,mp4,m4a,3gp,3g2,mj2 @ 0x562ae3f8ee00] moov atom not found\n/dev/shm/nop_r11/linux-media/исходники с пробелами/повреждённый.mp4: Invalid data found when processing input\n"
+        ],
+        "notices": []
+      },
+      "events": [
+        [
+          0,
+          ""
+        ],
+        [
+          0,
+          "Не удалось прочитать исходник: [mov,mp4,m4a,3gp,3g2,mj2 @ 0x562ae3f8ee00] moov atom not found\n/dev/shm/nop_r11/linux-media/исходники с пробелами/повреждённый.mp4: Invalid data found when processing input\n"
+        ]
+      ]
+    }
+  ]
+}

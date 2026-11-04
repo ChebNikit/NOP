@@ -1,0 +1,38 @@
+# Large third-party binaries: too big for GitHub (100 MB per-file limit),
+# restored by the build kit from pinned hashes or taken from the offline kit in Releases
+.build-tools/
+wheelhouse/
+runtime_deps/
+bootstrap/pip-*.whl
+NOP_R12_CACHE_*
+
+# Build output
+.build-python/
+build/
+dist/
+release/
+logs/
+Output/
+*.spec
+
+# Internal build history and logs (not needed by users)
+docs/history/
+docs/retired/
+*.log
+README_RU.md
+README_RU.txt
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Secrets and personal data - NEVER commit these
+cookies.txt
+*.dat
+spotify_credentials.dat
+
+# Editors
+.idea/
+.vscode/

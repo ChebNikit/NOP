@@ -1,0 +1,327 @@
+﻿Строка,Класс/метод,Сигнал,Обработчик,Проверка связи,Фактическая работа в Windows
+3238,WrapCheck.__init__,self.box.toggled,self.toggled,проверено статически,не проверено
+3951,TotalBitrateControl.__init__,self.units.currentIndexChanged,self._change_unit,проверено статически,не проверено
+3952,TotalBitrateControl.__init__,self.amount.valueChanged,lambda _value: self.changed.emit(),проверено статически,не проверено
+7135,ParamSlider.__init__,self.slider.valueChanged,self._changed,проверено статически,не проверено
+7183,CollapsibleSection.__init__,self.header.toggled,self._on_toggled,проверено статически,не проверено
+7549,FFmpegPlayer.__init__,self._timer.timeout,self._tick,проверено статически,не проверено
+7553,FFmpegPlayer.__init__,self._seek_timer.timeout,self._do_seek,проверено статически,не проверено
+7557,FFmpegPlayer.__init__,self._grade_timer.timeout,self._apply_grade,проверено статически,не проверено
+7561,FFmpegPlayer.__init__,self._resize_timer.timeout,self._on_resized,проверено статически,не проверено
+7562,FFmpegPlayer.__init__,self._lutReady,self._on_lut_ready,проверено статически,не проверено
+7734,FFmpegPlayer._start_audio,thread.failed,self._on_audio_failed,проверено статически,не проверено
+7735,FFmpegPlayer._start_audio,thread.finished,"lambda: _retire_audio(self, '_audio', thread)",проверено статически,не проверено
+8022,MpvPlayer.__init__,self._timer.timeout,self._poll,проверено статически,не проверено
+8023,MpvPlayer.__init__,self._lutReady,self._on_lut_ready,проверено статически,не проверено
+8732,PlayerFacade.__init__,qt.positionChanged,"lambda v: self._from('qt', self.positionChanged, v)",проверено статически,не проверено
+8733,PlayerFacade.__init__,qt.durationChanged,"lambda v: self._from('qt', self.durationChanged, v)",проверено статически,не проверено
+8734,PlayerFacade.__init__,qt.playbackStateChanged,"lambda v: self._from('qt', self.playbackStateChanged, v)",проверено статически,не проверено
+8735,PlayerFacade.__init__,qt.mediaStatusChanged,self._on_qt_status,проверено статически,не проверено
+8736,PlayerFacade.__init__,qt.errorOccurred,self._on_qt_error,проверено статически,не проверено
+8738,PlayerFacade.__init__,ff.positionChanged,"lambda v: self._from('ff', self.positionChanged, v)",проверено статически,не проверено
+8739,PlayerFacade.__init__,ff.durationChanged,"lambda v: self._from('ff', self.durationChanged, v)",проверено статически,не проверено
+8740,PlayerFacade.__init__,ff.stateChanged,"lambda v: self._from('ff', self.playbackStateChanged, v)",проверено статически,не проверено
+8741,PlayerFacade.__init__,ff.statusChanged,"lambda v: self._from('ff', self.mediaStatusChanged, v)",проверено статически,не проверено
+8742,PlayerFacade.__init__,ff.frameReady,"lambda img: self._from('ff', self.frameReady, img)",проверено статически,не проверено
+8743,PlayerFacade.__init__,ff.videoSizeChanged,"lambda w, h: self._from('ff', self.videoSizeChanged, w, h)",проверено статически,не проверено
+8744,PlayerFacade.__init__,ff.failed,"lambda msg: self.errorOccurred.emit(QMediaPlayer.Error.ResourceError, msg)",проверено статически,не проверено
+8746,PlayerFacade.__init__,mpv.seekWarning,self.seekWarning,проверено статически,не проверено
+8747,PlayerFacade.__init__,mpv.positionChanged,"lambda v: self._from('mpv', self.positionChanged, v)",проверено статически,не проверено
+8748,PlayerFacade.__init__,mpv.durationChanged,"lambda v: self._from('mpv', self.durationChanged, v)",проверено статически,не проверено
+8749,PlayerFacade.__init__,mpv.stateChanged,"lambda v: self._from('mpv', self.playbackStateChanged, v)",проверено статически,не проверено
+8750,PlayerFacade.__init__,mpv.statusChanged,"lambda v: self._from('mpv', self.mediaStatusChanged, v)",проверено статически,не проверено
+8751,PlayerFacade.__init__,mpv.videoSizeChanged,"lambda w, h: self._from('mpv', self.videoSizeChanged, w, h)",проверено статически,не проверено
+8752,PlayerFacade.__init__,mpv.failed,"lambda msg: self.errorOccurred.emit(QMediaPlayer.Error.ResourceError, msg)",проверено статически,не проверено
+8755,PlayerFacade.__init__,self._watch.timeout,self._watchdog,проверено статически,не проверено
+8768,PlayerFacade.setVideoSink,sink.videoFrameChanged,self._on_qt_frame,проверено статически,не проверено
+8971,VideoFrameWidget.__init__,self._sink.videoFrameChanged,self._on_frame,проверено статически,не проверено
+9240,VideoFullscreenWindow.__init__,self.seek.sliderMoved,self.owner.on_seek_moved,проверено статически,не проверено
+9262,VideoFullscreenWindow.__init__,self._hide_timer.timeout,self.hide_controls,проверено статически,не проверено
+9279,VideoFullscreenWindow._button,button.clicked,slot,проверено статически,не проверено
+11667,TranscodePreview.__init__,self.sink.videoFrameChanged,self._frame,проверено статически,не проверено
+11668,TranscodePreview.__init__,self.player.mediaStatusChanged,self._media_status,проверено статически,не проверено
+11669,TranscodePreview.__init__,self.player.positionChanged,self._position,проверено статически,не проверено
+11670,TranscodePreview.__init__,self.player.durationChanged,self._duration,проверено статически,не проверено
+11671,TranscodePreview.__init__,self.player.playbackStateChanged,lambda _state: self.update_language(),проверено статически,не проверено
+11672,TranscodePreview.__init__,self.player.seekableChanged,lambda seekable: self.seek.setEnabled(seekable),проверено статически,не проверено
+11673,TranscodePreview.__init__,self.player.errorOccurred,self._error,проверено статически,не проверено
+11678,TranscodePreview.__init__,self.play_button.clicked,self.toggle_play,проверено статически,не проверено
+11679,TranscodePreview.__init__,self.fullscreen_button.clicked,self.toggle_fullscreen,проверено статически,не проверено
+11683,TranscodePreview.__init__,self.seek.valueChanged,self._seek_changed,проверено статически,не проверено
+11684,TranscodePreview.__init__,self.seek.sliderReleased,lambda: self.player.setPosition(self.seek.value()),проверено статически,не проверено
+12627,AuxiliaryChrome.__init__,window.windowTitleChanged,title.setText,проверено статически,не проверено
+12773,NopInputDialog.__init__,self.buttons.accepted,self.accept,проверено статически,не проверено
+12773,NopInputDialog.__init__,self.buttons.rejected,self.reject,проверено статически,не проверено
+12871,CnpFileProxy.__init__,self._search_refresh.timeout,self._refresh_search_filter,проверено статически,не проверено
+12875,CnpFileProxy.__init__,self.result,self._receive; Qt.ConnectionType.QueuedConnection,проверено статически,не проверено
+12877,CnpFileProxy.__init__,self.destroyed,lambda: stop.set(),проверено статически,не проверено
+13307,CnpFileDialog.__init__,self.close_button.clicked,self.reject,проверено статически,не проверено
+13309,CnpFileDialog.__init__,self.windowTitleChanged,self.title.setText,проверено статически,не проверено
+13329,CnpFileDialog.__init__,self._search_timer.timeout,self._apply_search,проверено статически,не проверено
+13330,CnpFileDialog.__init__,self.search_edit.textChanged,self._queue_search,проверено статически,не проверено
+13333,CnpFileDialog.__init__,self.search_shortcut.activated,self.focus_search,проверено статически,не проверено
+13351,CnpFileDialog.__init__,self._size_timer.timeout,self._scan_visible_folders,проверено статически,не проверено
+13352,CnpFileDialog.__init__,self._files.folderStateChanged,self._schedule_folder_sizes,проверено статически,не проверено
+13353,CnpFileDialog.__init__,self._files.rowsInserted,self._schedule_folder_sizes,проверено статически,не проверено
+13354,CnpFileDialog.__init__,self._files.layoutChanged,self._schedule_folder_sizes,проверено статически,не проверено
+13355,CnpFileDialog.__init__,self.directoryEntered,self._folder_directory_changed,проверено статически,не проверено
+13360,CnpFileDialog.__init__,self.finished,self._size_timer.stop,проверено статически,не проверено
+13361,CnpFileDialog.__init__,self.finished,self._search_timer.stop,проверено статически,не проверено
+13362,CnpFileDialog.__init__,self.finished,self._files.close,проверено статически,не проверено
+13363,CnpFileDialog.__init__,self._files.sourceModel().rootPathChanged,self._folder_directory_changed,проверено статически,не проверено
+13623,CnpFileDialog.choose,dialog.finished,finished,проверено статически,не проверено
+13719,FlowHelpText.__init__,self.document().documentLayout().documentSizeChanged,self._fit_height,проверено статически,не проверено
+13768,HelpZoomControls.__init__,self.minus.clicked,lambda: self.set_percent(self.percent - 25),проверено статически,не проверено
+13769,HelpZoomControls.__init__,self.plus.clicked,lambda: self.set_percent(self.percent + 25),проверено статически,не проверено
+13770,HelpZoomControls.__init__,self.reset.clicked,lambda: self.set_percent(100),проверено статически,не проверено
+13887,InformationDialog.__init__,self.copy_all.clicked,self.copy_content,проверено статически,не проверено
+13891,InformationDialog.__init__,self.zoom_controls.scaleChanged,lambda _percent: self.fit_content() if not self._user_sized else None,проверено статически,не проверено
+13894,InformationDialog.__init__,self.close_button.clicked,self.close,проверено статически,не проверено
+14096,WindowPlacement.__init__,app.screenAdded,self._screen_added,проверено статически,не проверено
+14097,WindowPlacement.__init__,app.screenRemoved,self.refresh_bounds,проверено статически,не проверено
+14102,WindowPlacement._screen_added,screen.availableGeometryChanged,self.refresh_bounds,проверено статически,не проверено
+14103,WindowPlacement._screen_added,screen.logicalDotsPerInchChanged,self.refresh_bounds,проверено статически,не проверено
+14104,WindowPlacement._screen_added,screen.geometryChanged,self.refresh_bounds,проверено статически,не проверено
+14330,ExactRowsTable.__init__,self.horizontalHeader().geometriesChanged,self.sync_metrics,проверено статически,не проверено
+14331,ExactRowsTable.__init__,self.horizontalScrollBar().rangeChanged,self.sync_metrics,проверено статически,не проверено
+14369,AudioTrackList.__init__,self.model().rowsInserted,self.sync_metrics,проверено статически,не проверено
+14370,AudioTrackList.__init__,self.model().rowsRemoved,self.sync_metrics,проверено статически,не проверено
+14371,AudioTrackList.__init__,self.model().dataChanged,self.sync_metrics,проверено статически,не проверено
+14609,TrackTable.__init__,self._width_timer.timeout,self.recalculate_column_minima,проверено статически,не проверено
+14612,TrackTable.__init__,header.sectionResized,self._enforce_column_minimum,проверено статически,не проверено
+14898,Window.__init__,self._color_save_timer.timeout,self.save_settings,проверено статически,не проверено
+14907,Window.__init__,self._relayout_timer.timeout,self.relayout,проверено статически,не проверено
+14958,Window.__init__,self._eq_restart_timer.timeout,self.restart_equalizer_audio,проверено статически,не проверено
+14960,Window.__init__,self.player.mediaStatusChanged,self.on_media_status,проверено статически,не проверено
+14961,Window.__init__,self.player.playbackStateChanged,self.on_state,проверено статически,не проверено
+14962,Window.__init__,self.player.positionChanged,self.on_position,проверено статически,не проверено
+14963,Window.__init__,self.player.durationChanged,self.on_duration,проверено статически,не проверено
+14964,Window.__init__,self.player.errorOccurred,self.on_player_error,проверено статически,не проверено
+14965,Window.__init__,self.player.seekWarning,self.on_seek_warning,проверено статически,не проверено
+14975,Window.__init__,self.video.doubleClicked,self.enter_video_fullscreen,проверено статически,не проверено
+14983,Window.__init__,self.player.frameReady,self.video.show_external_frame,проверено статически,не проверено
+14984,Window.__init__,self.player.videoSizeChanged,self.on_ff_video_size,проверено статически,не проверено
+14985,Window.__init__,self.player.backendChanged,self.on_backend_changed,проверено статически,не проверено
+14986,Window.__init__,self.video.resized,self.player.set_widget_size,проверено статически,не проверено
+14987,Window.__init__,self.video.videoSink().videoSizeChanged,self.fit_to_video,проверено статически,не проверено
+14996,Window.__init__,self.volume.valueChanged,self.on_volume_changed,проверено статически,не проверено
+15003,Window.__init__,self.seek.sliderMoved,self.on_seek_moved,проверено статически,не проверено
+15074,Window.__init__,self.profile_handle.clicked,lambda: self.set_profile_bar_visible(not self.profile_bar_visible),проверено статически,не проверено
+15105,Window.__init__,self.video.resized,self._sync_video_area_to_video,проверено статически,не проверено
+15140,Window.__init__,self.btn_prev.clicked,lambda: self.step(-1),проверено статически,не проверено
+15141,Window.__init__,self.btn_next.clicked,lambda: self.step(1),проверено статически,не проверено
+15142,Window.__init__,self.btn_pause.clicked,self.toggle_play,проверено статически,не проверено
+15143,Window.__init__,self.btn_minus.clicked,lambda: self.count.setValue(self.count.value() - 1),проверено статически,не проверено
+15144,Window.__init__,self.btn_plus.clicked,lambda: self.count.setValue(self.count.value() + 1),проверено статически,не проверено
+15145,Window.__init__,self.btn_dl.clicked,self.start_download,проверено статически,не проверено
+15146,Window.__init__,self.btn_pin.clicked,lambda: self.set_pinned(not self.pinned),проверено статически,не проверено
+15147,Window.__init__,self.btn_panel.clicked,lambda: self.set_downloads_visible(not self.downloads_visible),проверено статически,не проверено
+15148,Window.__init__,self.btn_download_info.clicked,self.toggle_download_info,проверено статически,не проверено
+15149,Window.__init__,self.btn_tracks.clicked,lambda: self.set_tracks_visible(not self.tracks_visible),проверено статически,не проверено
+15150,Window.__init__,self.btn_seek.clicked,lambda: self.set_seek_visible(not self.seek_visible),проверено статически,не проверено
+15151,Window.__init__,self.btn_size.clicked,lambda: self.set_size_visible(not self.size_visible),проверено статически,не проверено
+15152,Window.__init__,self.btn_equalizer.clicked,lambda: self.set_equalizer_visible(not self.equalizer_visible),проверено статически,не проверено
+15153,Window.__init__,self.btn_color.clicked,"lambda: self.set_panel_visible('color', not self.color_visible)",проверено статически,не проверено
+15154,Window.__init__,self.btn_converter.clicked,"lambda: self.set_panel_visible('converter', not self.converter_visible)",проверено статически,не проверено
+15155,Window.__init__,self.btn_transcode.clicked,"lambda: self.set_panel_visible('transcode', not self.transcode_visible)",проверено статически,не проверено
+15180,Window.__init__,self.btn_repeat.clicked,lambda: self.set_playback_mode('repeat'),проверено статически,не проверено
+15181,Window.__init__,self.btn_shuffle.clicked,lambda: self.set_playback_mode('shuffle'),проверено статически,не проверено
+15182,Window.__init__,self.btn_order.clicked,lambda: self.set_playback_mode('sequential'),проверено статически,не проверено
+15185,Window.__init__,self.btn_speed.clicked,self.show_playback_rate_menu,проверено статически,не проверено
+15192,Window.__init__,self.btn_settings.clicked,"lambda: self.set_panel_visible('settings', not self.settings_visible)",проверено статически,не проверено
+15193,Window.__init__,self.btn_about.clicked,"lambda: self.set_panel_visible('about', not self.about_visible)",проверено статически,не проверено
+15263,Window.__init__,self.btn_handle.clicked,lambda: self.set_controls_visible(not self.controls_visible),проверено статически,не проверено
+15352,Window.__init__,self.btn_window_min.clicked,self.showMinimized,проверено статически,не проверено
+15353,Window.__init__,self.btn_window_close.clicked,self.close,проверено статически,не проверено
+15635,Window.build_settings_panel,self.chk_default_player.toggled,self.on_default_player_toggled,проверено статически,не проверено
+15661,Window.build_settings_panel,self.spin_parallel_videos.valueChanged,self.save_settings,проверено статически,не проверено
+15662,Window.build_settings_panel,self.spin_fragment_threads.valueChanged,self.save_settings,проверено статически,не проверено
+15668,Window.build_settings_panel,self.btn_open_data.clicked,self.open_data_folder,проверено статически,не проверено
+15675,Window.build_settings_panel,self.btn_reset_layout.clicked,self.reset_panel_layout,проверено статически,не проверено
+15679,Window.build_settings_panel,self.cmb_language.currentIndexChanged,self.on_language_changed,проверено статически,не проверено
+15680,Window.build_settings_panel,self.cmb_theme.currentIndexChanged,self.on_theme_changed,проверено статически,не проверено
+15798,Window.build_about_panel,self.about_panels_doc.anchorClicked,self._open_help_link,проверено статически,не проверено
+15806,Window.build_about_panel,self.about_zoom_controls.scaleChanged,lambda _percent: self.schedule_relayout(),проверено статически,не проверено
+15817,Window._support_link_button,button.clicked,"lambda _checked=False, target=url: QDesktopServices.openUrl(QUrl(target))",проверено статически,не проверено
+16536,Window.build_downloads_panel,self.cmb_source.currentIndexChanged,self.on_dl_source_changed,проверено статически,не проверено
+16568,Window.build_downloads_panel,self.channel_edit.editingFinished,self.apply_channel_text,проверено статически,не проверено
+16590,Window.build_downloads_panel,self.folder_edit.editingFinished,self.apply_folder_text,проверено статически,не проверено
+16592,Window.build_downloads_panel,btn_browse.clicked,self.browse_folder,проверено статически,не проверено
+16610,Window.build_downloads_panel,self.cmb_resolution.currentIndexChanged,self._dl_resolution_selected,проверено статически,не проверено
+16612,Window.build_downloads_panel,self.btn_resolution_fetch.clicked,self.fetch_dl_resolutions,проверено статически,не проверено
+16624,Window.build_downloads_panel,self.cmb_vcodec.currentIndexChanged,self.on_dl_options_changed,проверено статически,не проверено
+16630,Window.build_downloads_panel,self.cmb_container.currentIndexChanged,self.on_dl_options_changed,проверено статически,не проверено
+16648,Window.build_downloads_panel,self.cmb_download_rate.currentIndexChanged,self.on_dl_options_changed,проверено статически,не проверено
+16662,Window.build_downloads_panel,self.cmb_sample_rate.currentIndexChanged,self.on_dl_options_changed,проверено статически,не проверено
+16679,Window.build_downloads_panel,self.cookies_file_edit.editingFinished,self.on_dl_options_changed,проверено статически,не проверено
+16681,Window.build_downloads_panel,self.btn_cookies_file.clicked,self.browse_cookies_file,проверено статически,не проверено
+16683,Window.build_downloads_panel,self.btn_cookies_help.clicked,self.show_cookies_help,проверено статически,не проверено
+16698,Window.build_downloads_panel,self.spotify_client_id_edit.editingFinished,self.save_settings,проверено статически,не проверено
+16701,Window.build_downloads_panel,self.btn_spotify_auth.clicked,self.authorize_spotify,проверено статически,не проверено
+16703,Window.build_downloads_panel,self.btn_spotify_client_help.clicked,lambda: self.open_information('spotify'),проверено статически,не проверено
+16716,Window.build_downloads_panel,self.cmb_spotify_format.currentIndexChanged,self.on_dl_options_changed,проверено статически,не проверено
+16722,Window.build_downloads_panel,self.cmb_spotify_bitrate.currentIndexChanged,self.on_dl_options_changed,проверено статически,не проверено
+16802,Window.build_downloads_panel,self.btn_dl_pause.clicked,self.toggle_download_pause,проверено статически,не проверено
+16807,Window.build_downloads_panel,self.btn_retry_failed.clicked,self.retry_failed_downloads,проверено статически,не проверено
+16822,Window.build_downloads_panel,self.download_table.customContextMenuRequested,self.download_item_context_menu,проверено статически,не проверено
+16836,Window.build_downloads_panel,self.dl_req_label.linkActivated,self.on_dl_req_link,проверено статически,не проверено
+16869,Window.build_downloads_panel,self.btn_direct_help.clicked,self.show_direct_video_help,проверено статически,не проверено
+16892,Window.build_downloads_panel,self.cmb_cookies.currentIndexChanged,self.update_download_state,проверено статически,не проверено
+16976,Window.fetch_dl_resolutions,probe.result,"lambda result, generation=self._resolution_generation: self._on_dl_resolutions(generation, result)",проверено статически,не проверено
+16977,Window.fetch_dl_resolutions,probe.finished,lambda: self._retire_resolution_probe(probe),проверено статически,не проверено
+17192,Window.show_message,button_box.clicked,lambda button: dialog.done(button_box.standardButton(button).value),проверено статически,не проверено
+17223,Window.prompt_input,dialog.finished,finished,проверено статически,не проверено
+17335,Window.build_converter_panel,self.converter_category.currentTextChanged,self.update_converter_formats,проверено статически,не проверено
+17336,Window.build_converter_panel,self.converter_format.currentTextChanged,self.update_converter_target_column,проверено статически,не проверено
+17337,Window.build_converter_panel,self.converter_add_btn.clicked,self.converter_add_files,проверено статически,не проверено
+17338,Window.build_converter_panel,self.converter_remove_btn.clicked,self.converter_remove_selected,проверено статически,не проверено
+17339,Window.build_converter_panel,self.converter_clear_btn.clicked,self.converter_clear_files,проверено статически,не проверено
+17340,Window.build_converter_panel,self.converter_folder_btn.clicked,self.converter_choose_folder,проверено статически,не проверено
+17341,Window.build_converter_panel,self.converter_run_btn.clicked,self.converter_start,проверено статически,не проверено
+17342,Window.build_converter_panel,self.converter_stop_btn.clicked,self.converter_stop,проверено статически,не проверено
+17372,Window.build_transcode_panel,self.transcode_info_btn.clicked,lambda: self.open_information('transcode'),проверено статически,не проверено
+17568,Window.build_transcode_panel,self.transcode_format.currentIndexChanged,self.update_transcode_target_column,проверено статически,не проверено
+17569,Window.build_transcode_panel,self.transcode_add_btn.clicked,self.transcode_add_files,проверено статически,не проверено
+17570,Window.build_transcode_panel,self.transcode_remove_btn.clicked,self.transcode_remove_selected,проверено статически,не проверено
+17571,Window.build_transcode_panel,self.transcode_clear_btn.clicked,self.transcode_clear_files,проверено статически,не проверено
+17572,Window.build_transcode_panel,self.transcode_folder_btn.clicked,self.transcode_choose_folder,проверено статически,не проверено
+17573,Window.build_transcode_panel,self.transcode_run_btn.clicked,self.transcode_start,проверено статически,не проверено
+17574,Window.build_transcode_panel,self.transcode_pause_btn.clicked,self.transcode_pause_or_resume,проверено статически,не проверено
+17575,Window.build_transcode_panel,self.transcode_stop_btn.clicked,self.transcode_stop,проверено статически,не проверено
+17576,Window.build_transcode_panel,self.transcode_table.currentCellChanged,self.transcode_update_source_info,проверено статически,не проверено
+17577,Window.build_transcode_panel,self.transcode_encoder.currentIndexChanged,self._transcode_codec_choices,проверено статически,не проверено
+17578,Window.build_transcode_panel,self.transcode_codec.currentIndexChanged,self._transcode_codec_changed,проверено статически,не проверено
+17579,Window.build_transcode_panel,self.transcode_quality.currentIndexChanged,self._transcode_quality_changed,проверено статически,не проверено
+17580,Window.build_transcode_panel,self.transcode_video_bitrate.valueChanged,self._refresh_bitrate_controls,проверено статически,не проверено
+17581,Window.build_transcode_panel,self.transcode_total_bitrate.changed,self._total_bitrate_changed,проверено статически,не проверено
+17586,Window.build_transcode_panel,self.transcode_total_bitrate.changed,self._mark_transcode_profile_manual,проверено статически,не проверено
+17587,Window.build_transcode_panel,self.transcode_no_upscale.toggled,self._mark_transcode_profile_manual,проверено статически,не проверено
+17799,Window.transcode_start,self.transcode_worker.job_status,self.transcode_on_job_status,проверено статически,не проверено
+17800,Window.transcode_start,self.transcode_worker.progress_changed,self.transcode_on_progress,проверено статически,не проверено
+17801,Window.transcode_start,self.transcode_worker.job_detail,self.transcode_on_job_detail,проверено статически,не проверено
+17802,Window.transcode_start,self.transcode_worker.live_progress,self.transcode_on_live_progress,проверено статически,не проверено
+17803,Window.transcode_start,self.transcode_worker.stream_progress,self._transcode_stream_progress,проверено статически,не проверено
+17804,Window.transcode_start,self.transcode_worker.pause_state_changed,self.transcode_on_pause_state_changed,проверено статически,не проверено
+17805,Window.transcode_start,self.transcode_worker.completed,self.transcode_on_completed,проверено статически,не проверено
+17806,Window.transcode_start,self.transcode_worker.finished,self._refresh_bitrate_controls,проверено статически,не проверено
+18045,Window.converter_start,self.converter_worker.job_status,self.converter_on_job_status,проверено статически,не проверено
+18046,Window.converter_start,self.converter_worker.progress_changed,self.converter_on_progress,проверено статически,не проверено
+18047,Window.converter_start,self.converter_worker.live_progress,self.converter_on_live_progress,проверено статически,не проверено
+18048,Window.converter_start,self.converter_worker.job_detail,self.converter_on_job_detail,проверено статически,не проверено
+18049,Window.converter_start,self.converter_worker.completed,self.converter_on_completed,проверено статически,не проверено
+18050,Window.converter_start,self.converter_worker.finished,self._refresh_bitrate_controls,проверено статически,не проверено
+18131,Window.build_download_info_panel,self.btn_dl_cancel.clicked,self.cancel_downloads,проверено статически,не проверено
+18137,Window.build_download_info_panel,self._download_activity_timer.timeout,self._refresh_download_activity,проверено статически,не проверено
+18141,Window.build_download_info_panel,self._download_animation_timer.timeout,lambda: self.download_table.viewport().update() if self.download_table.isVisible() and self._dl_active else None,проверено статически,не проверено
+18161,Window.build_equalizer_panel,self.eq_toggle.clicked,self.set_equalizer_enabled,проверено статически,не проверено
+18170,Window.build_equalizer_panel,self.eq_preset.currentIndexChanged,self.apply_equalizer_preset,проверено статически,не проверено
+18177,Window.build_equalizer_panel,self.eq_delete_preset_btn.clicked,self.delete_eq_preset,проверено статически,не проверено
+18187,Window.build_equalizer_panel,self.eq_save_btn.clicked,self.save_eq_preset,проверено статически,не проверено
+18188,Window.build_equalizer_panel,self.eq_add_freq_btn.clicked,self.add_eq_frequency,проверено статически,не проверено
+18189,Window.build_equalizer_panel,self.eq_remove_freq_btn.clicked,self.remove_eq_frequency,проверено статически,не проверено
+18225,Window.build_equalizer_panel,self.eq_scope_combo.currentIndexChanged,self._apo_scope_changed,проверено статически,не проверено
+18227,Window.build_equalizer_panel,self.eq_system_help.clicked,self.show_system_equalizer_help,проверено статически,не проверено
+18229,Window.build_equalizer_panel,self.eq_apo_manage.clicked,self.show_system_equalizer_help,проверено статически,не проверено
+18245,Window.build_equalizer_panel,self.eq_apo_devices.currentIndexChanged,self._apo_device_changed,проверено статически,не проверено
+18247,Window.build_equalizer_panel,self.eq_apo_tool.clicked,self.open_apo_configurator,проверено статически,не проверено
+18272,Window.build_equalizer_panel,self.eq_apo_diagnostics.clicked,self.show_apo_launch_diagnostics,проверено статически,не проверено
+18312,Window._apo_init,self._apo_tool_timer.timeout,self._apo_poll_tool,проверено статически,не проверено
+18316,Window._apo_init,self._apo_sync_timer.timeout,self._apo_sync,проверено статически,не проверено
+18319,Window._apo_init,self._apo_watch.timeout,self._apo_periodic_check,проверено статически,не проверено
+18412,Window._apo_begin,job.finished,finished,проверено статически,не проверено
+18693,Window.open_apo_configurator,job.finished,started,проверено статически,не проверено
+18873,Window._apo_ask_sound_result,self._apo_test_timeout.timeout,self._apo_test_dialog.reject,проверено статически,не проверено
+19088,Window._eq_band_column,slider.valueChanged,"lambda v, idx=i, box=value: self.on_eq_slider_changed(idx, v, box)",проверено статически,не проверено
+19089,Window._eq_band_column,value.valueChanged,"lambda v, idx=i, sl=slider, box=value: self.on_eq_gain_spin_changed(idx, v, sl, box)",проверено статически,не проверено
+19098,Window._eq_band_column,spin.editingFinished,"lambda idx=i, box=spin: self.change_eq_frequency(idx, box.value())",проверено статически,не проверено
+19170,Window.build_color_panel,self.color_fx.clicked,self.toggle_color_enabled,проверено статически,не проверено
+19176,Window.build_color_panel,self.color_compare_btn.clicked,self.toggle_color_compare,проверено статически,не проверено
+19198,Window.build_color_panel,self.color_amount_slider.valueChanged,self.on_color_amount,проверено статически,не проверено
+19214,Window.build_color_panel,self.color_list.itemClicked,self.on_color_item_clicked,проверено статически,не проверено
+19625,Window.restart_equalizer_audio,thread.failed,self.on_equalizer_error,проверено статически,не проверено
+19627,Window.restart_equalizer_audio,thread.finished,"lambda: _retire_audio(self, 'eq_audio_thread', thread)",проверено статически,не проверено
+19684,Window.build_tracks_panel,self.track_search.textChanged,self.filter_track_list,проверено статически,не проверено
+19695,Window.build_tracks_panel,self.playback_rate_combo.currentIndexChanged,self.on_playback_rate_changed,проверено статически,не проверено
+19715,Window.build_tracks_panel,header.sortIndicatorChanged,self._track_header_sorted,проверено статически,не проверено
+19716,Window.build_tracks_panel,header.sectionClicked,self._track_header_clicked,проверено статически,не проверено
+19717,Window.build_tracks_panel,self.track_list.reordered,self._tracks_reordered,проверено статически,не проверено
+19722,Window.build_tracks_panel,self.track_list.itemActivated,self.on_track_activated,проверено статически,не проверено
+19724,Window.build_tracks_panel,self.track_list.customContextMenuRequested,self.track_context_menu,проверено статически,не проверено
+19736,Window.build_tracks_panel,self.src_list.itemChanged,self.on_source_item_changed,проверено статически,не проверено
+19742,Window.build_tracks_panel,self.btn_src_add.clicked,self.add_source,проверено статически,не проверено
+19743,Window.build_tracks_panel,self.btn_src_del.clicked,self.remove_source,проверено статически,не проверено
+20038,Window.show_track_properties,minimize_button.clicked,dialog.showMinimized,проверено статически,не проверено
+20044,Window.show_track_properties,close_button.clicked,dialog.close,проверено статически,не проверено
+20274,Window.show_track_properties,close_footer.clicked,dialog.close,проверено статически,не проверено
+20319,Window.show_track_properties,duration_format_combo.currentIndexChanged,lambda _index: render_metadata(),проверено статически,не проверено
+20320,Window.show_track_properties,bitrate_format_combo.currentIndexChanged,lambda _index: render_metadata(),проверено статически,не проверено
+20321,Window.show_track_properties,filesize_format_combo.currentIndexChanged,lambda _index: render_metadata(),проверено статически,не проверено
+20322,Window.show_track_properties,signals.completed,apply_metadata,проверено статически,не проверено
+20325,Window.show_track_properties,dialog.finished,lambda _result: probe_cancel.set(),проверено статически,не проверено
+20347,Window.show_track_properties,dialog.finished,"lambda _=0, d=dialog: self._track_properties_dialogs.remove(d) if d in self._track_properties_dialogs else None",проверено статически,не проверено
+21233,Window.authorize_spotify,self.spotify_auth_thread.status,self.on_spotify_auth_status,проверено статически,не проверено
+21234,Window.authorize_spotify,self.spotify_auth_thread.result,self.on_spotify_auth_result,проверено статически,не проверено
+21235,Window.authorize_spotify,self.spotify_auth_thread.finished,"lambda: self.btn_spotify_auth.setEnabled(not getattr(self, '_closing', False))",проверено статически,не проверено
+21477,Window.show_video_context_menu,play_action.triggered,lambda _checked=False: self.toggle_play(),проверено статически,не проверено
+21485,Window.show_video_context_menu,copy_path.triggered,"lambda _checked=False, p=current_path: QApplication.clipboard().setText(p)",проверено статически,не проверено
+21950,Window.closeEvent,self._shutdown_timer.timeout,self._poll_shutdown,проверено статически,не проверено
+22256,Window.on_player_error,thread.finished_file,self.on_compatibility_ready,проверено статически,не проверено
+22611,Window.start_job,self.worker.status,self.on_status,проверено статически,не проверено
+22612,Window.start_job,self.worker.spotify_tokens_updated,self.on_spotify_tokens_updated,проверено статически,не проверено
+22613,Window.start_job,self.worker.stats,self.on_stats,проверено статически,не проверено
+22614,Window.start_job,self.worker.item_detail,self.on_download_detail,проверено статически,не проверено
+22615,Window.start_job,self.worker.finished,self.on_download_done,проверено статически,не проверено
+22616,Window.start_job,self.worker.queue_items,self.on_download_queue,проверено статически,не проверено
+22617,Window.start_job,self.worker.item_update,self.on_download_item_update,проверено статически,не проверено
+22827,Window.play_file,thread.ready,self._on_media_probed,проверено статически,не проверено
+22832,Window.play_file,thread.finished,finished,проверено статически,не проверено
+22962,Window._start_conversion_capabilities,probe.ready,self._conversion_capabilities_ready,проверено статически,не проверено
+23046,Window._start_transcode_probe,probe.ready,self._transcode_probe_ready,проверено статически,не проверено
+23047,Window._start_transcode_probe,probe.finished,self._transcode_probe_finished,проверено статически,не проверено
+23231,Window._transcode_audio_row,enabled.toggled,update,проверено статически,не проверено
+23232,Window._transcode_audio_row,codec.currentIndexChanged,update,проверено статически,не проверено
+23233,Window._transcode_audio_row,bitrate.valueChanged,update,проверено статически,не проверено
+976,_download_process_main,"getattr(worker, signal_name)","lambda *a, k=kind: emit(k, *a); Qt.ConnectionType.DirectConnection",проверено статически,не проверено
+9127,VideoFrameWidget.set_grade,self._worker.processed,self._on_processed,проверено статически,не проверено
+12656,AuxiliaryChrome.__init__,shortcut.activated,slot,проверено статически,не проверено
+12897,CnpFileProxy.setSourceModel,model.dataChanged,self._source_changed,проверено статически,не проверено
+12898,CnpFileProxy.setSourceModel,model.directoryLoaded,self._source_changed,проверено статически,не проверено
+13358,CnpFileDialog.__init__,view.verticalScrollBar().valueChanged,self._schedule_folder_sizes,проверено статически,не проверено
+13359,CnpFileDialog.__init__,view.horizontalScrollBar().valueChanged,self._schedule_folder_sizes,проверено статически,не проверено
+13774,HelpZoomControls.__init__,shortcut.activated,lambda d=delta: self.set_percent(self.percent + d if d else 100),проверено статически,не проверено
+13860,InformationDialog.__init__,button.clicked,slot,проверено статически,не проверено
+13877,InformationDialog.__init__,browser.anchorClicked,self.open_link,проверено статически,не проверено
+14615,TrackTable.__init__,model_signal,self.schedule_column_minima,проверено статически,не проверено
+15515,Window.set_button_theme_role,button.toggled,"lambda checked, b=button: self._refresh_button_theme_role(b, checked)",проверено статически,не проверено
+15621,Window.build_settings_panel.check,cb.toggled,"lambda state, k=key: self.on_setting_toggled(k, state)",проверено статически,не проверено
+16561,Window.build_downloads_panel,b.clicked,"lambda _checked=False, k=key: self.set_dl_kind(k)",проверено статически,не проверено
+16573,Window.build_downloads_panel,edit.returnPressed,self.start_download,проверено статически,не проверено
+16641,Window.build_downloads_panel,cmb.currentIndexChanged,self.on_dl_options_changed,проверено статически,не проверено
+16891,Window.build_downloads_panel,edit.textChanged,self.update_download_state,проверено статически,не проверено
+16896,Window.build_downloads_panel,edit.textChanged,self._invalidate_dl_resolutions,проверено статически,не проверено
+17164,Window.open_information,dialog.finished,finished,проверено статически,не проверено
+17203,Window.show_message,dialog.finished,finished,проверено статически,не проверено
+17584,Window.build_transcode_panel,combo.currentIndexChanged,self._mark_transcode_profile_manual,проверено статически,не проверено
+17585,Window.build_transcode_panel,control.valueChanged,self._mark_transcode_profile_manual,проверено статически,не проверено
+17681,Window.transcode_update_source_info,timer.timeout,self._start_transcode_probe,проверено статически,не проверено
+18266,Window.build_equalizer_panel,button.clicked,slot,проверено статически,не проверено
+18764,Window.show_apo_launch_diagnostics,dialog.finished,finished,проверено статически,не проверено
+18921,Window.show_system_equalizer_help,dialog.finished,detach_apo_controls,проверено статически,не проверено
+18932,Window.show_system_equalizer_help,dialog.finished,"lambda _result: setattr(self, '_system_eq_dialog', None)",проверено статически,не проверено
+19228,Window.build_color_panel,b.clicked,slot,проверено статически,не проверено
+19243,Window.build_color_panel,slider.valueChanged,self.on_color_slider,проверено статически,не проверено
+19251,Window.build_color_panel,sec.toggled,"lambda expanded, s=sec: self.on_color_section_toggled(s, expanded)",проверено статически,не проверено
+19513,Window._commit_eq_gain,self._eq_save_timer.timeout,self.save_settings,проверено статически,не проверено
+19659,Window.build_panel_profiles,button.clicked,"lambda _=False, k=key: self.toggle_panel_profile(k)",проверено статически,не проверено
+20900,Window.build_size_panel,b.clicked,"lambda _checked, k=key: self.set_size_mode(k)",проверено статически,не проверено
+21421,Window.show_video_context_menu,props_action.triggered,"lambda _checked=False, p=Path(current_path): self.show_track_properties(p)",проверено статически,не проверено
+21482,Window.show_video_context_menu,action.triggered,"lambda _checked=False, d=delta: self.step(d)",проверено статически,не проверено
+21882,Window.contextMenuEvent,act.triggered,"lambda state, s=slot: s(state)",проверено статически,не проверено
+12637,AuxiliaryChrome.__init__,button.clicked,slot,проверено статически,не проверено
+12900,CnpFileProxy.setSourceModel,model_signal,self._clear_search_names,проверено статически,не проверено
+15721,Window.build_about_panel,self.btn_copy_address.clicked,self.copy_donate_address,проверено статически,не проверено
+18930,Window.show_system_equalizer_help,button.clicked,slot,проверено статически,не проверено
+21437,Window.show_video_context_menu,disable.triggered,"lambda _checked=False, m=mpv: m.select_track('sub', None) if m and m.available else None",проверено статически,не проверено
+21469,Window.show_video_context_menu,action.triggered,"lambda _checked=False, k=kind, tid=track['id'], m=mpv: m.select_track(k, tid) if m and m.available else None",проверено статически,не проверено
+23368,Window._transcode_retranslate,action.triggered,"lambda checked=False, k=key, b=balanced: self.apply_transcode_profile(k, b)",проверено статически,не проверено
+14229,WindowPlacement.eventFilter,handle.screenChanged,self.refresh_bounds,проверено статически,не проверено

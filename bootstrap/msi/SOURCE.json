@@ -1,0 +1,15 @@
+{
+  "method": "File, Component, Directory and Media tables exported with libmsi/msitools 0.101 from the exact official MSIs; only application files mapped; system merge modules excluded.",
+  "catalog_sha256": {
+    "calibre.json": "fd132ee33673eb238873d5813e96576bcf199b84a6442fef16352ae2d3d6571e",
+    "inkscape.json": "5c01c149cc230501800ca5a293b4100c0cea27661c2b791b4a36ea94ec833095",
+    "libreoffice.json": "bea7d379fdb6bd6f55bd808e30beaa70126e6abe93d44872a3e57c5c68e39814",
+    "fixture.json": "d86e2f859c148a3c0fb25c4a76c5e072013b1499dc02db3a41bce2b9d6ee5b19"
+  },
+  "libreoffice_private_fonts": {
+    "count": 135,
+    "destination": "share/fonts/truetype",
+    "source_reference": "https://github.com/LibreOffice/core/blob/libreoffice-26.2.5.2/vcl/win/gdi/salfont.cxx",
+    "note": "Windows LibreOffice registers this directory as private fonts. System VC merge modules are excluded."
+  }
+}

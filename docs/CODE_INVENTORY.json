@@ -1,0 +1,6812 @@
+[
+  {
+    "name": "nop_apo_error",
+    "kind": "FunctionDef",
+    "line": 79,
+    "end_line": 81
+  },
+  {
+    "name": "nop_apo_installation",
+    "kind": "FunctionDef",
+    "line": 84,
+    "end_line": 112
+  },
+  {
+    "name": "nop_apo_devices",
+    "kind": "FunctionDef",
+    "line": 115,
+    "end_line": 187
+  },
+  {
+    "name": "nop_apo_payload",
+    "kind": "FunctionDef",
+    "line": 190,
+    "end_line": 212
+  },
+  {
+    "name": "nop_apo_block",
+    "kind": "FunctionDef",
+    "line": 215,
+    "end_line": 223
+  },
+  {
+    "name": "nop_apo_read",
+    "kind": "FunctionDef",
+    "line": 226,
+    "end_line": 233
+  },
+  {
+    "name": "nop_apo_write",
+    "kind": "FunctionDef",
+    "line": 236,
+    "end_line": 275
+  },
+  {
+    "name": "nop_apo_snapshot",
+    "kind": "FunctionDef",
+    "line": 278,
+    "end_line": 298
+  },
+  {
+    "name": "nop_apo_transaction",
+    "kind": "FunctionDef",
+    "line": 301,
+    "end_line": 380
+  },
+  {
+    "name": "nop_apo_send",
+    "kind": "FunctionDef",
+    "line": 383,
+    "end_line": 387
+  },
+  {
+    "name": "nop_apo_receive",
+    "kind": "FunctionDef",
+    "line": 390,
+    "end_line": 402
+  },
+  {
+    "name": "nop_apo_receive.take",
+    "kind": "FunctionDef",
+    "line": 391,
+    "end_line": 398
+  },
+  {
+    "name": "nop_apo_helper_main",
+    "kind": "FunctionDef",
+    "line": 405,
+    "end_line": 445
+  },
+  {
+    "name": "NopApoBridge",
+    "kind": "ClassDef",
+    "line": 448,
+    "end_line": 520
+  },
+  {
+    "name": "NopApoBridge.__init__",
+    "kind": "FunctionDef",
+    "line": 450,
+    "end_line": 452
+  },
+  {
+    "name": "NopApoBridge.elevate",
+    "kind": "FunctionDef",
+    "line": 454,
+    "end_line": 494
+  },
+  {
+    "name": "NopApoBridge.elevate.ShellInfo",
+    "kind": "ClassDef",
+    "line": 459,
+    "end_line": 464
+  },
+  {
+    "name": "NopApoBridge.execute",
+    "kind": "FunctionDef",
+    "line": 496,
+    "end_line": 511
+  },
+  {
+    "name": "NopApoBridge.close",
+    "kind": "FunctionDef",
+    "line": 513,
+    "end_line": 520
+  },
+  {
+    "name": "nop_apo_tool_files",
+    "kind": "FunctionDef",
+    "line": 529,
+    "end_line": 548
+  },
+  {
+    "name": "nop_apo_tool_environment",
+    "kind": "FunctionDef",
+    "line": 551,
+    "end_line": 582
+  },
+  {
+    "name": "nop_apo_tool_status",
+    "kind": "FunctionDef",
+    "line": 585,
+    "end_line": 593
+  },
+  {
+    "name": "nop_apo_tool_elevate",
+    "kind": "FunctionDef",
+    "line": 596,
+    "end_line": 625
+  },
+  {
+    "name": "nop_apo_tool_elevate.ShellInfo",
+    "kind": "ClassDef",
+    "line": 599,
+    "end_line": 604
+  },
+  {
+    "name": "nop_apo_tool_main",
+    "kind": "FunctionDef",
+    "line": 628,
+    "end_line": 697
+  },
+  {
+    "name": "redact_diagnostic",
+    "kind": "FunctionDef",
+    "line": 796,
+    "end_line": 812
+  },
+  {
+    "name": "redact_diagnostic.clean_url",
+    "kind": "FunctionDef",
+    "line": 802,
+    "end_line": 811
+  },
+  {
+    "name": "_private_write",
+    "kind": "FunctionDef",
+    "line": 815,
+    "end_line": 828
+  },
+  {
+    "name": "_dpapi",
+    "kind": "FunctionDef",
+    "line": 831,
+    "end_line": 864
+  },
+  {
+    "name": "_dpapi.Blob",
+    "kind": "ClassDef",
+    "line": 836,
+    "end_line": 837
+  },
+  {
+    "name": "_pack_private",
+    "kind": "FunctionDef",
+    "line": 867,
+    "end_line": 868
+  },
+  {
+    "name": "_unpack_private",
+    "kind": "FunctionDef",
+    "line": 871,
+    "end_line": 876
+  },
+  {
+    "name": "stop_owned_process",
+    "kind": "FunctionDef",
+    "line": 879,
+    "end_line": 902
+  },
+  {
+    "name": "_retire_audio",
+    "kind": "FunctionDef",
+    "line": 905,
+    "end_line": 908
+  },
+  {
+    "name": "_submit_lut",
+    "kind": "FunctionDef",
+    "line": 911,
+    "end_line": 929
+  },
+  {
+    "name": "_submit_lut.completed",
+    "kind": "FunctionDef",
+    "line": 926,
+    "end_line": 928
+  },
+  {
+    "name": "_finish_lut",
+    "kind": "FunctionDef",
+    "line": 932,
+    "end_line": 938
+  },
+  {
+    "name": "start_window_move",
+    "kind": "FunctionDef",
+    "line": 941,
+    "end_line": 944
+  },
+  {
+    "name": "DownloadCancelled",
+    "kind": "ClassDef",
+    "line": 947,
+    "end_line": 948
+  },
+  {
+    "name": "_download_process_main",
+    "kind": "FunctionDef",
+    "line": 951,
+    "end_line": 1006
+  },
+  {
+    "name": "startup_media_file",
+    "kind": "FunctionDef",
+    "line": 1119,
+    "end_line": 1125
+  },
+  {
+    "name": "audio_selectors",
+    "kind": "FunctionDef",
+    "line": 1232,
+    "end_line": 1237
+  },
+  {
+    "name": "build_format",
+    "kind": "FunctionDef",
+    "line": 1240,
+    "end_line": 1244
+  },
+  {
+    "name": "make_tag",
+    "kind": "FunctionDef",
+    "line": 1247,
+    "end_line": 1253
+  },
+  {
+    "name": "resample_eq_values",
+    "kind": "FunctionDef",
+    "line": 1290,
+    "end_line": 1351
+  },
+  {
+    "name": "load_config",
+    "kind": "FunctionDef",
+    "line": 1537,
+    "end_line": 1563
+  },
+  {
+    "name": "save_config",
+    "kind": "FunctionDef",
+    "line": 1566,
+    "end_line": 1592
+  },
+  {
+    "name": "normalize_channel",
+    "kind": "FunctionDef",
+    "line": 1595,
+    "end_line": 1607
+  },
+  {
+    "name": "normalize_video",
+    "kind": "FunctionDef",
+    "line": 1610,
+    "end_line": 1615
+  },
+  {
+    "name": "normalize_playlist",
+    "kind": "FunctionDef",
+    "line": 1618,
+    "end_line": 1623
+  },
+  {
+    "name": "canonical_youtube_url",
+    "kind": "FunctionDef",
+    "line": 1626,
+    "end_line": 1653
+  },
+  {
+    "name": "spotify_url_kind",
+    "kind": "FunctionDef",
+    "line": 1656,
+    "end_line": 1671
+  },
+  {
+    "name": "scan_folder",
+    "kind": "FunctionDef",
+    "line": 1674,
+    "end_line": 1695
+  },
+  {
+    "name": "scan_folder.mtime",
+    "kind": "FunctionDef",
+    "line": 1689,
+    "end_line": 1693
+  },
+  {
+    "name": "make_icon",
+    "kind": "FunctionDef",
+    "line": 1713,
+    "end_line": 1957
+  },
+  {
+    "name": "make_icon.poly",
+    "kind": "FunctionDef",
+    "line": 1727,
+    "end_line": 1728
+  },
+  {
+    "name": "make_icon.rect",
+    "kind": "FunctionDef",
+    "line": 1730,
+    "end_line": 1731
+  },
+  {
+    "name": "make_icon.disc",
+    "kind": "FunctionDef",
+    "line": 1733,
+    "end_line": 1734
+  },
+  {
+    "name": "make_icon.clear",
+    "kind": "FunctionDef",
+    "line": 1736,
+    "end_line": 1739
+  },
+  {
+    "name": "make_icon.stroked",
+    "kind": "FunctionDef",
+    "line": 1741,
+    "end_line": 1743
+  },
+  {
+    "name": "make_icon.filled",
+    "kind": "FunctionDef",
+    "line": 1745,
+    "end_line": 1747
+  },
+  {
+    "name": "make_icon.line",
+    "kind": "FunctionDef",
+    "line": 1749,
+    "end_line": 1750
+  },
+  {
+    "name": "make_icon.path",
+    "kind": "FunctionDef",
+    "line": 1752,
+    "end_line": 1753
+  },
+  {
+    "name": "_icon_role",
+    "kind": "FunctionDef",
+    "line": 1960,
+    "end_line": 1966
+  },
+  {
+    "name": "_role_color",
+    "kind": "FunctionDef",
+    "line": 1969,
+    "end_line": 1975
+  },
+  {
+    "name": "ensure_arrow_png",
+    "kind": "FunctionDef",
+    "line": 1978,
+    "end_line": 1990
+  },
+  {
+    "name": "make_application_icon",
+    "kind": "FunctionDef",
+    "line": 2723,
+    "end_line": 2730
+  },
+  {
+    "name": "find_asset",
+    "kind": "FunctionDef",
+    "line": 2755,
+    "end_line": 2761
+  },
+  {
+    "name": "support_url",
+    "kind": "FunctionDef",
+    "line": 2764,
+    "end_line": 2777
+  },
+  {
+    "name": "_rgb",
+    "kind": "FunctionDef",
+    "line": 2796,
+    "end_line": 2802
+  },
+  {
+    "name": "_hx",
+    "kind": "FunctionDef",
+    "line": 2805,
+    "end_line": 2806
+  },
+  {
+    "name": "_mixc",
+    "kind": "FunctionDef",
+    "line": 2809,
+    "end_line": 2811
+  },
+  {
+    "name": "_lum",
+    "kind": "FunctionDef",
+    "line": 2814,
+    "end_line": 2816
+  },
+  {
+    "name": "set_theme",
+    "kind": "FunctionDef",
+    "line": 2819,
+    "end_line": 2869
+  },
+  {
+    "name": "set_theme.shift",
+    "kind": "FunctionDef",
+    "line": 2846,
+    "end_line": 2847
+  },
+  {
+    "name": "themed",
+    "kind": "FunctionDef",
+    "line": 2872,
+    "end_line": 2919
+  },
+  {
+    "name": "set_language",
+    "kind": "FunctionDef",
+    "line": 3189,
+    "end_line": 3201
+  },
+  {
+    "name": "T",
+    "kind": "FunctionDef",
+    "line": 3204,
+    "end_line": 3207
+  },
+  {
+    "name": "T_html",
+    "kind": "FunctionDef",
+    "line": 3210,
+    "end_line": 3216
+  },
+  {
+    "name": "WrapCheck",
+    "kind": "ClassDef",
+    "line": 3225,
+    "end_line": 3251
+  },
+  {
+    "name": "WrapCheck.__init__",
+    "kind": "FunctionDef",
+    "line": 3229,
+    "end_line": 3245
+  },
+  {
+    "name": "WrapCheck.isChecked",
+    "kind": "FunctionDef",
+    "line": 3247,
+    "end_line": 3248
+  },
+  {
+    "name": "WrapCheck.setChecked",
+    "kind": "FunctionDef",
+    "line": 3250,
+    "end_line": 3251
+  },
+  {
+    "name": "fmt_time",
+    "kind": "FunctionDef",
+    "line": 3254,
+    "end_line": 3258
+  },
+  {
+    "name": "parse_name",
+    "kind": "FunctionDef",
+    "line": 3264,
+    "end_line": 3267
+  },
+  {
+    "name": "display_name",
+    "kind": "FunctionDef",
+    "line": 3270,
+    "end_line": 3280
+  },
+  {
+    "name": "is_complete_media",
+    "kind": "FunctionDef",
+    "line": 3283,
+    "end_line": 3291
+  },
+  {
+    "name": "downloaded_ids",
+    "kind": "FunctionDef",
+    "line": 3294,
+    "end_line": 3310
+  },
+  {
+    "name": "WheelSafeComboBox",
+    "kind": "ClassDef",
+    "line": 3313,
+    "end_line": 3345
+  },
+  {
+    "name": "WheelSafeComboBox.__init__",
+    "kind": "FunctionDef",
+    "line": 3316,
+    "end_line": 3319
+  },
+  {
+    "name": "WheelSafeComboBox.wheelEvent",
+    "kind": "FunctionDef",
+    "line": 3321,
+    "end_line": 3329
+  },
+  {
+    "name": "WheelSafeComboBox.mouseMoveEvent",
+    "kind": "FunctionDef",
+    "line": 3331,
+    "end_line": 3338
+  },
+  {
+    "name": "WheelSafeComboBox.leaveEvent",
+    "kind": "FunctionDef",
+    "line": 3340,
+    "end_line": 3345
+  },
+  {
+    "name": "NoWheelSlider",
+    "kind": "ClassDef",
+    "line": 3348,
+    "end_line": 3352
+  },
+  {
+    "name": "NoWheelSlider.wheelEvent",
+    "kind": "FunctionDef",
+    "line": 3351,
+    "end_line": 3352
+  },
+  {
+    "name": "WheelSafeSpinBox",
+    "kind": "ClassDef",
+    "line": 3355,
+    "end_line": 3364
+  },
+  {
+    "name": "WheelSafeSpinBox.__init__",
+    "kind": "FunctionDef",
+    "line": 3358,
+    "end_line": 3361
+  },
+  {
+    "name": "WheelSafeSpinBox.wheelEvent",
+    "kind": "FunctionDef",
+    "line": 3363,
+    "end_line": 3364
+  },
+  {
+    "name": "WheelSafeDoubleSpinBox",
+    "kind": "ClassDef",
+    "line": 3367,
+    "end_line": 3376
+  },
+  {
+    "name": "WheelSafeDoubleSpinBox.__init__",
+    "kind": "FunctionDef",
+    "line": 3370,
+    "end_line": 3373
+  },
+  {
+    "name": "WheelSafeDoubleSpinBox.wheelEvent",
+    "kind": "FunctionDef",
+    "line": 3375,
+    "end_line": 3376
+  },
+  {
+    "name": "ClickSlider",
+    "kind": "ClassDef",
+    "line": 3379,
+    "end_line": 3416
+  },
+  {
+    "name": "ClickSlider._apply",
+    "kind": "FunctionDef",
+    "line": 3384,
+    "end_line": 3394
+  },
+  {
+    "name": "ClickSlider.mousePressEvent",
+    "kind": "FunctionDef",
+    "line": 3396,
+    "end_line": 3402
+  },
+  {
+    "name": "ClickSlider.mouseMoveEvent",
+    "kind": "FunctionDef",
+    "line": 3404,
+    "end_line": 3409
+  },
+  {
+    "name": "ClickSlider.mouseReleaseEvent",
+    "kind": "FunctionDef",
+    "line": 3411,
+    "end_line": 3416
+  },
+  {
+    "name": "fmt_size",
+    "kind": "FunctionDef",
+    "line": 3419,
+    "end_line": 3424
+  },
+  {
+    "name": "fmt_speed",
+    "kind": "FunctionDef",
+    "line": 3427,
+    "end_line": 3428
+  },
+  {
+    "name": "flatten",
+    "kind": "FunctionDef",
+    "line": 3431,
+    "end_line": 3439
+  },
+  {
+    "name": "ElidedLabel",
+    "kind": "ClassDef",
+    "line": 3442,
+    "end_line": 3470
+  },
+  {
+    "name": "ElidedLabel.__init__",
+    "kind": "FunctionDef",
+    "line": 3446,
+    "end_line": 3451
+  },
+  {
+    "name": "ElidedLabel.setText",
+    "kind": "FunctionDef",
+    "line": 3453,
+    "end_line": 3456
+  },
+  {
+    "name": "ElidedLabel.text",
+    "kind": "FunctionDef",
+    "line": 3458,
+    "end_line": 3459
+  },
+  {
+    "name": "ElidedLabel.resizeEvent",
+    "kind": "FunctionDef",
+    "line": 3461,
+    "end_line": 3463
+  },
+  {
+    "name": "ElidedLabel._refresh",
+    "kind": "FunctionDef",
+    "line": 3465,
+    "end_line": 3470
+  },
+  {
+    "name": "FitScrollArea",
+    "kind": "ClassDef",
+    "line": 3473,
+    "end_line": 3488
+  },
+  {
+    "name": "FitScrollArea.sizeHint",
+    "kind": "FunctionDef",
+    "line": 3480,
+    "end_line": 3488
+  },
+  {
+    "name": "LowerScrollArea",
+    "kind": "ClassDef",
+    "line": 3491,
+    "end_line": 3515
+  },
+  {
+    "name": "LowerScrollArea.__init__",
+    "kind": "FunctionDef",
+    "line": 3496,
+    "end_line": 3501
+  },
+  {
+    "name": "LowerScrollArea.sizeHint",
+    "kind": "FunctionDef",
+    "line": 3503,
+    "end_line": 3512
+  },
+  {
+    "name": "LowerScrollArea.minimumSizeHint",
+    "kind": "FunctionDef",
+    "line": 3514,
+    "end_line": 3515
+  },
+  {
+    "name": "HFitScrollArea",
+    "kind": "ClassDef",
+    "line": 3518,
+    "end_line": 3534
+  },
+  {
+    "name": "HFitScrollArea.sizeHint",
+    "kind": "FunctionDef",
+    "line": 3524,
+    "end_line": 3531
+  },
+  {
+    "name": "HFitScrollArea.minimumSizeHint",
+    "kind": "FunctionDef",
+    "line": 3533,
+    "end_line": 3534
+  },
+  {
+    "name": "RowScrollArea",
+    "kind": "ClassDef",
+    "line": 3537,
+    "end_line": 3550
+  },
+  {
+    "name": "RowScrollArea.sizeHint",
+    "kind": "FunctionDef",
+    "line": 3544,
+    "end_line": 3550
+  },
+  {
+    "name": "SpotifyAuthThread",
+    "kind": "ClassDef",
+    "line": 3553,
+    "end_line": 3689
+  },
+  {
+    "name": "SpotifyAuthThread.__init__",
+    "kind": "FunctionDef",
+    "line": 3561,
+    "end_line": 3564
+  },
+  {
+    "name": "SpotifyAuthThread.run",
+    "kind": "FunctionDef",
+    "line": 3566,
+    "end_line": 3685
+  },
+  {
+    "name": "SpotifyAuthThread.request_stop",
+    "kind": "FunctionDef",
+    "line": 3687,
+    "end_line": 3689
+  },
+  {
+    "name": "AudioSampleRatePP",
+    "kind": "ClassDef",
+    "line": 3692,
+    "end_line": 3770
+  },
+  {
+    "name": "AudioSampleRatePP.__init__",
+    "kind": "FunctionDef",
+    "line": 3697,
+    "end_line": 3701
+  },
+  {
+    "name": "AudioSampleRatePP.run",
+    "kind": "FunctionDef",
+    "line": 3703,
+    "end_line": 3770
+  },
+  {
+    "name": "download_url",
+    "kind": "FunctionDef",
+    "line": 3777,
+    "end_line": 3812
+  },
+  {
+    "name": "DownloadSourceError",
+    "kind": "ClassDef",
+    "line": 3815,
+    "end_line": 3816
+  },
+  {
+    "name": "check_direct_video_url",
+    "kind": "FunctionDef",
+    "line": 3819,
+    "end_line": 3846
+  },
+  {
+    "name": "check_direct_video_url.MediaRedirect",
+    "kind": "ClassDef",
+    "line": 3821,
+    "end_line": 3824
+  },
+  {
+    "name": "check_direct_video_url.MediaRedirect.redirect_request",
+    "kind": "FunctionDef",
+    "line": 3822,
+    "end_line": 3824
+  },
+  {
+    "name": "audio_bitrate_codec",
+    "kind": "FunctionDef",
+    "line": 3849,
+    "end_line": 3856
+  },
+  {
+    "name": "validate_audio_bitrate",
+    "kind": "FunctionDef",
+    "line": 3859,
+    "end_line": 3874
+  },
+  {
+    "name": "total_bitrate_plan",
+    "kind": "FunctionDef",
+    "line": 3877,
+    "end_line": 3903
+  },
+  {
+    "name": "target_video_codec",
+    "kind": "FunctionDef",
+    "line": 3906,
+    "end_line": 3930
+  },
+  {
+    "name": "TotalBitrateControl",
+    "kind": "ClassDef",
+    "line": 3933,
+    "end_line": 3980
+  },
+  {
+    "name": "TotalBitrateControl.__init__",
+    "kind": "FunctionDef",
+    "line": 3936,
+    "end_line": 3959
+  },
+  {
+    "name": "TotalBitrateControl.kbps",
+    "kind": "FunctionDef",
+    "line": 3961,
+    "end_line": 3962
+  },
+  {
+    "name": "TotalBitrateControl._change_unit",
+    "kind": "FunctionDef",
+    "line": 3964,
+    "end_line": 3972
+  },
+  {
+    "name": "TotalBitrateControl.refresh_text",
+    "kind": "FunctionDef",
+    "line": 3974,
+    "end_line": 3980
+  },
+  {
+    "name": "video_profile",
+    "kind": "FunctionDef",
+    "line": 3983,
+    "end_line": 3991
+  },
+  {
+    "name": "format_number",
+    "kind": "FunctionDef",
+    "line": 3994,
+    "end_line": 3999
+  },
+  {
+    "name": "codec_family",
+    "kind": "FunctionDef",
+    "line": 4002,
+    "end_line": 4010
+  },
+  {
+    "name": "source_rate",
+    "kind": "FunctionDef",
+    "line": 4013,
+    "end_line": 4023
+  },
+  {
+    "name": "source_container",
+    "kind": "FunctionDef",
+    "line": 4026,
+    "end_line": 4037
+  },
+  {
+    "name": "video_resolution",
+    "kind": "FunctionDef",
+    "line": 4040,
+    "end_line": 4046
+  },
+  {
+    "name": "source_resolution",
+    "kind": "FunctionDef",
+    "line": 4049,
+    "end_line": 4051
+  },
+  {
+    "name": "available_video_resolutions",
+    "kind": "FunctionDef",
+    "line": 4054,
+    "end_line": 4058
+  },
+  {
+    "name": "select_source_formats",
+    "kind": "FunctionDef",
+    "line": 4061,
+    "end_line": 4181
+  },
+  {
+    "name": "describe_source_selection",
+    "kind": "FunctionDef",
+    "line": 4184,
+    "end_line": 4219
+  },
+  {
+    "name": "_resolution_process_main",
+    "kind": "FunctionDef",
+    "line": 4222,
+    "end_line": 4249
+  },
+  {
+    "name": "ResolutionProbe",
+    "kind": "ClassDef",
+    "line": 4252,
+    "end_line": 4291
+  },
+  {
+    "name": "ResolutionProbe.__init__",
+    "kind": "FunctionDef",
+    "line": 4255,
+    "end_line": 4258
+  },
+  {
+    "name": "ResolutionProbe.request_stop",
+    "kind": "FunctionDef",
+    "line": 4260,
+    "end_line": 4262
+  },
+  {
+    "name": "ResolutionProbe.run",
+    "kind": "FunctionDef",
+    "line": 4264,
+    "end_line": 4291
+  },
+  {
+    "name": "SourceMetadataPP",
+    "kind": "ClassDef",
+    "line": 4294,
+    "end_line": 4299
+  },
+  {
+    "name": "SourceMetadataPP.__init__",
+    "kind": "FunctionDef",
+    "line": 4295,
+    "end_line": 4296
+  },
+  {
+    "name": "SourceMetadataPP.run",
+    "kind": "FunctionDef",
+    "line": 4297,
+    "end_line": 4299
+  },
+  {
+    "name": "SourceStreamRemuxPP",
+    "kind": "ClassDef",
+    "line": 4302,
+    "end_line": 4330
+  },
+  {
+    "name": "SourceStreamRemuxPP.__init__",
+    "kind": "FunctionDef",
+    "line": 4304,
+    "end_line": 4305
+  },
+  {
+    "name": "SourceStreamRemuxPP.run",
+    "kind": "FunctionDef",
+    "line": 4306,
+    "end_line": 4330
+  },
+  {
+    "name": "DownloadAttempt",
+    "kind": "ClassDef",
+    "line": 4333,
+    "end_line": 4463
+  },
+  {
+    "name": "DownloadAttempt.__init__",
+    "kind": "FunctionDef",
+    "line": 4339,
+    "end_line": 4349
+  },
+  {
+    "name": "DownloadAttempt._write",
+    "kind": "FunctionDef",
+    "line": 4351,
+    "end_line": 4353
+  },
+  {
+    "name": "DownloadAttempt.publish",
+    "kind": "FunctionDef",
+    "line": 4355,
+    "end_line": 4391
+  },
+  {
+    "name": "DownloadAttempt.commit",
+    "kind": "FunctionDef",
+    "line": 4393,
+    "end_line": 4399
+  },
+  {
+    "name": "DownloadAttempt._remove_outputs",
+    "kind": "FunctionDef",
+    "line": 4402,
+    "end_line": 4429
+  },
+  {
+    "name": "DownloadAttempt.cleanup_record",
+    "kind": "FunctionDef",
+    "line": 4432,
+    "end_line": 4463
+  },
+  {
+    "name": "DownloadPopen",
+    "kind": "ClassDef",
+    "line": 4469,
+    "end_line": 4539
+  },
+  {
+    "name": "DownloadPopen.__init__",
+    "kind": "FunctionDef",
+    "line": 4471,
+    "end_line": 4490
+  },
+  {
+    "name": "DownloadPopen._monitor_task",
+    "kind": "FunctionDef",
+    "line": 4492,
+    "end_line": 4532
+  },
+  {
+    "name": "DownloadPopen.__exit__",
+    "kind": "FunctionDef",
+    "line": 4534,
+    "end_line": 4539
+  },
+  {
+    "name": "DownloadYoutubeDL",
+    "kind": "ClassDef",
+    "line": 4542,
+    "end_line": 4556
+  },
+  {
+    "name": "DownloadYoutubeDL.__init__",
+    "kind": "FunctionDef",
+    "line": 4543,
+    "end_line": 4545
+  },
+  {
+    "name": "DownloadYoutubeDL.__enter__",
+    "kind": "FunctionDef",
+    "line": 4547,
+    "end_line": 4550
+  },
+  {
+    "name": "DownloadYoutubeDL.__exit__",
+    "kind": "FunctionDef",
+    "line": 4552,
+    "end_line": 4556
+  },
+  {
+    "name": "run_download_command",
+    "kind": "FunctionDef",
+    "line": 4565,
+    "end_line": 4567
+  },
+  {
+    "name": "Downloader",
+    "kind": "ClassDef",
+    "line": 4570,
+    "end_line": 6366
+  },
+  {
+    "name": "Downloader.__init__",
+    "kind": "FunctionDef",
+    "line": 4580,
+    "end_line": 4650
+  },
+  {
+    "name": "Downloader.log",
+    "kind": "FunctionDef",
+    "line": 4653,
+    "end_line": 4657
+  },
+  {
+    "name": "Downloader._spotify_access_token",
+    "kind": "FunctionDef",
+    "line": 4659,
+    "end_line": 4697
+  },
+  {
+    "name": "Downloader._spotify_api_get",
+    "kind": "FunctionDef",
+    "line": 4700,
+    "end_line": 4721
+  },
+  {
+    "name": "Downloader._spotify_api_get.NoRedirect",
+    "kind": "ClassDef",
+    "line": 4705,
+    "end_line": 4707
+  },
+  {
+    "name": "Downloader._spotify_api_get.NoRedirect.redirect_request",
+    "kind": "FunctionDef",
+    "line": 4706,
+    "end_line": 4707
+  },
+  {
+    "name": "Downloader._spotify_collection_metadata",
+    "kind": "FunctionDef",
+    "line": 4723,
+    "end_line": 4782
+  },
+  {
+    "name": "Downloader._write_spotify_tracklist",
+    "kind": "FunctionDef",
+    "line": 4784,
+    "end_line": 4828
+  },
+  {
+    "name": "Downloader.emit_stats",
+    "kind": "FunctionDef",
+    "line": 4830,
+    "end_line": 4832
+  },
+  {
+    "name": "Downloader.render",
+    "kind": "FunctionDef",
+    "line": 4834,
+    "end_line": 4846
+  },
+  {
+    "name": "Downloader.ytdlp_auth_options",
+    "kind": "FunctionDef",
+    "line": 4848,
+    "end_line": 4866
+  },
+  {
+    "name": "Downloader._check_download_info",
+    "kind": "FunctionDef",
+    "line": 4868,
+    "end_line": 4879
+  },
+  {
+    "name": "Downloader._decode_meta_content",
+    "kind": "FunctionDef",
+    "line": 4883,
+    "end_line": 4893
+  },
+  {
+    "name": "Downloader._spotify_track_metadata",
+    "kind": "FunctionDef",
+    "line": 4895,
+    "end_line": 5093
+  },
+  {
+    "name": "Downloader._download_spotisaver_track",
+    "kind": "FunctionDef",
+    "line": 5095,
+    "end_line": 5257
+  },
+  {
+    "name": "Downloader._download_spotisaver_track.request",
+    "kind": "FunctionDef",
+    "line": 5114,
+    "end_line": 5149
+  },
+  {
+    "name": "Downloader._download_spotisaver_track.b64_context",
+    "kind": "FunctionDef",
+    "line": 5160,
+    "end_line": 5162
+  },
+  {
+    "name": "Downloader._download_spotisaver_track.get_signature",
+    "kind": "FunctionDef",
+    "line": 5164,
+    "end_line": 5171
+  },
+  {
+    "name": "Downloader._cover_match_key",
+    "kind": "FunctionDef",
+    "line": 5260,
+    "end_line": 5263
+  },
+  {
+    "name": "Downloader._find_spotify_cover_url",
+    "kind": "FunctionDef",
+    "line": 5265,
+    "end_line": 5344
+  },
+  {
+    "name": "Downloader._save_spotify_cover",
+    "kind": "FunctionDef",
+    "line": 5346,
+    "end_line": 5409
+  },
+  {
+    "name": "Downloader._download_spotify_audio",
+    "kind": "FunctionDef",
+    "line": 5411,
+    "end_line": 5752
+  },
+  {
+    "name": "Downloader.get_entries",
+    "kind": "FunctionDef",
+    "line": 5754,
+    "end_line": 5804
+  },
+  {
+    "name": "Downloader._run_job",
+    "kind": "FunctionDef",
+    "line": 5807,
+    "end_line": 5925
+  },
+  {
+    "name": "Downloader.make_hook",
+    "kind": "FunctionDef",
+    "line": 5927,
+    "end_line": 5972
+  },
+  {
+    "name": "Downloader.make_hook.hook",
+    "kind": "FunctionDef",
+    "line": 5928,
+    "end_line": 5971
+  },
+  {
+    "name": "Downloader.cancel_item",
+    "kind": "FunctionDef",
+    "line": 5974,
+    "end_line": 5981
+  },
+  {
+    "name": "Downloader.reorder_pending_item",
+    "kind": "FunctionDef",
+    "line": 5983,
+    "end_line": 6002
+  },
+  {
+    "name": "Downloader.is_item_cancelled",
+    "kind": "FunctionDef",
+    "line": 6004,
+    "end_line": 6006
+  },
+  {
+    "name": "Downloader.set_paused",
+    "kind": "FunctionDef",
+    "line": 6008,
+    "end_line": 6015
+  },
+  {
+    "name": "Downloader.choose_source_format",
+    "kind": "FunctionDef",
+    "line": 6017,
+    "end_line": 6044
+  },
+  {
+    "name": "Downloader.fetch",
+    "kind": "FunctionDef",
+    "line": 6046,
+    "end_line": 6146
+  },
+  {
+    "name": "Downloader._send_control",
+    "kind": "FunctionDef",
+    "line": 6148,
+    "end_line": 6156
+  },
+  {
+    "name": "Downloader.request_stop",
+    "kind": "FunctionDef",
+    "line": 6158,
+    "end_line": 6163
+  },
+  {
+    "name": "Downloader._checkpoint",
+    "kind": "FunctionDef",
+    "line": 6165,
+    "end_line": 6170
+  },
+  {
+    "name": "Downloader._set_item_detail",
+    "kind": "FunctionDef",
+    "line": 6172,
+    "end_line": 6184
+  },
+  {
+    "name": "Downloader._ffmpeg_progress",
+    "kind": "FunctionDef",
+    "line": 6186,
+    "end_line": 6207
+  },
+  {
+    "name": "Downloader._ffmpeg_duration",
+    "kind": "FunctionDef",
+    "line": 6209,
+    "end_line": 6237
+  },
+  {
+    "name": "Downloader._cleanup_attempt",
+    "kind": "FunctionDef",
+    "line": 6239,
+    "end_line": 6248
+  },
+  {
+    "name": "Downloader.make_post_hook",
+    "kind": "FunctionDef",
+    "line": 6250,
+    "end_line": 6263
+  },
+  {
+    "name": "Downloader.make_post_hook.hook",
+    "kind": "FunctionDef",
+    "line": 6251,
+    "end_line": 6262
+  },
+  {
+    "name": "Downloader.run",
+    "kind": "FunctionDef",
+    "line": 6265,
+    "end_line": 6349
+  },
+  {
+    "name": "Downloader.make_logger",
+    "kind": "FunctionDef",
+    "line": 6351,
+    "end_line": 6366
+  },
+  {
+    "name": "Downloader.make_logger.Logger",
+    "kind": "ClassDef",
+    "line": 6353,
+    "end_line": 6365
+  },
+  {
+    "name": "Downloader.make_logger.Logger.debug",
+    "kind": "FunctionDef",
+    "line": 6354,
+    "end_line": 6355
+  },
+  {
+    "name": "Downloader.make_logger.Logger.warning",
+    "kind": "FunctionDef",
+    "line": 6356,
+    "end_line": 6360
+  },
+  {
+    "name": "Downloader.make_logger.Logger.error",
+    "kind": "FunctionDef",
+    "line": 6361,
+    "end_line": 6365
+  },
+  {
+    "name": "VideoCompatibilityThread",
+    "kind": "ClassDef",
+    "line": 6369,
+    "end_line": 6423
+  },
+  {
+    "name": "VideoCompatibilityThread.__init__",
+    "kind": "FunctionDef",
+    "line": 6373,
+    "end_line": 6375
+  },
+  {
+    "name": "VideoCompatibilityThread.run",
+    "kind": "FunctionDef",
+    "line": 6377,
+    "end_line": 6420
+  },
+  {
+    "name": "VideoCompatibilityThread.request_stop",
+    "kind": "FunctionDef",
+    "line": 6422,
+    "end_line": 6423
+  },
+  {
+    "name": "EqualizerAudioThread",
+    "kind": "ClassDef",
+    "line": 6426,
+    "end_line": 6600
+  },
+  {
+    "name": "EqualizerAudioThread.__init__",
+    "kind": "FunctionDef",
+    "line": 6430,
+    "end_line": 6443
+  },
+  {
+    "name": "EqualizerAudioThread.stop_audio",
+    "kind": "FunctionDef",
+    "line": 6445,
+    "end_line": 6453
+  },
+  {
+    "name": "EqualizerAudioThread.set_paused",
+    "kind": "FunctionDef",
+    "line": 6455,
+    "end_line": 6459
+  },
+  {
+    "name": "EqualizerAudioThread._update_clock",
+    "kind": "FunctionDef",
+    "line": 6461,
+    "end_line": 6468
+  },
+  {
+    "name": "EqualizerAudioThread._drain",
+    "kind": "FunctionDef",
+    "line": 6470,
+    "end_line": 6480
+  },
+  {
+    "name": "EqualizerAudioThread.set_volume",
+    "kind": "FunctionDef",
+    "line": 6482,
+    "end_line": 6483
+  },
+  {
+    "name": "EqualizerAudioThread.run",
+    "kind": "FunctionDef",
+    "line": 6485,
+    "end_line": 6600
+  },
+  {
+    "name": "_P",
+    "kind": "FunctionDef",
+    "line": 6634,
+    "end_line": 6635
+  },
+  {
+    "name": "_srgb_to_linear",
+    "kind": "FunctionDef",
+    "line": 6685,
+    "end_line": 6687
+  },
+  {
+    "name": "_linear_to_srgb",
+    "kind": "FunctionDef",
+    "line": 6690,
+    "end_line": 6692
+  },
+  {
+    "name": "_smoothstep",
+    "kind": "FunctionDef",
+    "line": 6695,
+    "end_line": 6697
+  },
+  {
+    "name": "_hue_chroma",
+    "kind": "FunctionDef",
+    "line": 6700,
+    "end_line": 6705
+  },
+  {
+    "name": "blend_color_preset",
+    "kind": "FunctionDef",
+    "line": 6708,
+    "end_line": 6717
+  },
+  {
+    "name": "ColorGrade",
+    "kind": "ClassDef",
+    "line": 6720,
+    "end_line": 6994
+  },
+  {
+    "name": "ColorGrade.__init__",
+    "kind": "FunctionDef",
+    "line": 6729,
+    "end_line": 6733
+  },
+  {
+    "name": "ColorGrade.normalize",
+    "kind": "FunctionDef",
+    "line": 6737,
+    "end_line": 6745
+  },
+  {
+    "name": "ColorGrade._effective",
+    "kind": "FunctionDef",
+    "line": 6748,
+    "end_line": 6759
+  },
+  {
+    "name": "ColorGrade.is_neutral_params",
+    "kind": "FunctionDef",
+    "line": 6762,
+    "end_line": 6763
+  },
+  {
+    "name": "ColorGrade.is_neutral",
+    "kind": "FunctionDef",
+    "line": 6766,
+    "end_line": 6767
+  },
+  {
+    "name": "ColorGrade.set_params",
+    "kind": "FunctionDef",
+    "line": 6769,
+    "end_line": 6772
+  },
+  {
+    "name": "ColorGrade._compile",
+    "kind": "FunctionDef",
+    "line": 6775,
+    "end_line": 6841
+  },
+  {
+    "name": "ColorGrade._vignette_mask",
+    "kind": "FunctionDef",
+    "line": 6843,
+    "end_line": 6857
+  },
+  {
+    "name": "ColorGrade.process",
+    "kind": "FunctionDef",
+    "line": 6860,
+    "end_line": 6911
+  },
+  {
+    "name": "ColorGrade.write_cube",
+    "kind": "FunctionDef",
+    "line": 6913,
+    "end_line": 6923
+  },
+  {
+    "name": "ColorGrade._pq_to_nits",
+    "kind": "FunctionDef",
+    "line": 6926,
+    "end_line": 6937
+  },
+  {
+    "name": "ColorGrade._hable",
+    "kind": "FunctionDef",
+    "line": 6940,
+    "end_line": 6945
+  },
+  {
+    "name": "ColorGrade.write_mpv_cube",
+    "kind": "FunctionDef",
+    "line": 6947,
+    "end_line": 6982
+  },
+  {
+    "name": "ColorGrade.apply_to_image",
+    "kind": "FunctionDef",
+    "line": 6984,
+    "end_line": 6994
+  },
+  {
+    "name": "qimage_to_rgb",
+    "kind": "FunctionDef",
+    "line": 6997,
+    "end_line": 7005
+  },
+  {
+    "name": "rgb_to_qimage",
+    "kind": "FunctionDef",
+    "line": 7008,
+    "end_line": 7011
+  },
+  {
+    "name": "make_color_reference",
+    "kind": "FunctionDef",
+    "line": 7014,
+    "end_line": 7023
+  },
+  {
+    "name": "GradeWorker",
+    "kind": "ClassDef",
+    "line": 7026,
+    "end_line": 7071
+  },
+  {
+    "name": "GradeWorker.__init__",
+    "kind": "FunctionDef",
+    "line": 7032,
+    "end_line": 7038
+  },
+  {
+    "name": "GradeWorker.submit",
+    "kind": "FunctionDef",
+    "line": 7040,
+    "end_line": 7043
+  },
+  {
+    "name": "GradeWorker.stop",
+    "kind": "FunctionDef",
+    "line": 7045,
+    "end_line": 7047
+  },
+  {
+    "name": "GradeWorker.request_stop",
+    "kind": "FunctionDef",
+    "line": 7049,
+    "end_line": 7051
+  },
+  {
+    "name": "GradeWorker.run",
+    "kind": "FunctionDef",
+    "line": 7053,
+    "end_line": 7071
+  },
+  {
+    "name": "ResetSlider",
+    "kind": "ClassDef",
+    "line": 7074,
+    "end_line": 7083
+  },
+  {
+    "name": "ResetSlider.__init__",
+    "kind": "FunctionDef",
+    "line": 7077,
+    "end_line": 7079
+  },
+  {
+    "name": "ResetSlider.mouseDoubleClickEvent",
+    "kind": "FunctionDef",
+    "line": 7081,
+    "end_line": 7083
+  },
+  {
+    "name": "ParamSlider",
+    "kind": "ClassDef",
+    "line": 7100,
+    "end_line": 7157
+  },
+  {
+    "name": "ParamSlider.__init__",
+    "kind": "FunctionDef",
+    "line": 7105,
+    "end_line": 7136
+  },
+  {
+    "name": "ParamSlider._update_label",
+    "kind": "FunctionDef",
+    "line": 7138,
+    "end_line": 7147
+  },
+  {
+    "name": "ParamSlider._changed",
+    "kind": "FunctionDef",
+    "line": 7149,
+    "end_line": 7151
+  },
+  {
+    "name": "ParamSlider.setValue",
+    "kind": "FunctionDef",
+    "line": 7153,
+    "end_line": 7157
+  },
+  {
+    "name": "CollapsibleSection",
+    "kind": "ClassDef",
+    "line": 7160,
+    "end_line": 7193
+  },
+  {
+    "name": "CollapsibleSection.__init__",
+    "kind": "FunctionDef",
+    "line": 7165,
+    "end_line": 7183
+  },
+  {
+    "name": "CollapsibleSection._apply",
+    "kind": "FunctionDef",
+    "line": 7185,
+    "end_line": 7189
+  },
+  {
+    "name": "CollapsibleSection._on_toggled",
+    "kind": "FunctionDef",
+    "line": 7191,
+    "end_line": 7193
+  },
+  {
+    "name": "MediaInfo",
+    "kind": "ClassDef",
+    "line": 7216,
+    "end_line": 7243
+  },
+  {
+    "name": "MediaInfo.__init__",
+    "kind": "FunctionDef",
+    "line": 7219,
+    "end_line": 7230
+  },
+  {
+    "name": "MediaInfo.has_video",
+    "kind": "FunctionDef",
+    "line": 7233,
+    "end_line": 7234
+  },
+  {
+    "name": "MediaInfo.has_audio",
+    "kind": "FunctionDef",
+    "line": 7237,
+    "end_line": 7238
+  },
+  {
+    "name": "MediaInfo.disp_size",
+    "kind": "FunctionDef",
+    "line": 7241,
+    "end_line": 7243
+  },
+  {
+    "name": "parse_ffmpeg_info",
+    "kind": "FunctionDef",
+    "line": 7246,
+    "end_line": 7281
+  },
+  {
+    "name": "probe_media",
+    "kind": "FunctionDef",
+    "line": 7287,
+    "end_line": 7322
+  },
+  {
+    "name": "MediaProbeThread",
+    "kind": "ClassDef",
+    "line": 7325,
+    "end_line": 7341
+  },
+  {
+    "name": "MediaProbeThread.__init__",
+    "kind": "FunctionDef",
+    "line": 7327,
+    "end_line": 7329
+  },
+  {
+    "name": "MediaProbeThread.request_stop",
+    "kind": "FunctionDef",
+    "line": 7330,
+    "end_line": 7331
+  },
+  {
+    "name": "MediaProbeThread.run",
+    "kind": "FunctionDef",
+    "line": 7332,
+    "end_line": 7341
+  },
+  {
+    "name": "choose_backend",
+    "kind": "FunctionDef",
+    "line": 7344,
+    "end_line": 7362
+  },
+  {
+    "name": "snap_fps",
+    "kind": "FunctionDef",
+    "line": 7365,
+    "end_line": 7371
+  },
+  {
+    "name": "build_ffmpeg_video_cmd",
+    "kind": "FunctionDef",
+    "line": 7374,
+    "end_line": 7398
+  },
+  {
+    "name": "_VideoPipe",
+    "kind": "ClassDef",
+    "line": 7401,
+    "end_line": 7499
+  },
+  {
+    "name": "_VideoPipe.__init__",
+    "kind": "FunctionDef",
+    "line": 7405,
+    "end_line": 7420
+  },
+  {
+    "name": "_VideoPipe._drain_stderr",
+    "kind": "FunctionDef",
+    "line": 7422,
+    "end_line": 7427
+  },
+  {
+    "name": "_VideoPipe._read_frames",
+    "kind": "FunctionDef",
+    "line": 7429,
+    "end_line": 7459
+  },
+  {
+    "name": "_VideoPipe.pop_due",
+    "kind": "FunctionDef",
+    "line": 7461,
+    "end_line": 7472
+  },
+  {
+    "name": "_VideoPipe.pending",
+    "kind": "FunctionDef",
+    "line": 7475,
+    "end_line": 7477
+  },
+  {
+    "name": "_VideoPipe.error_text",
+    "kind": "FunctionDef",
+    "line": 7479,
+    "end_line": 7480
+  },
+  {
+    "name": "_VideoPipe.kill",
+    "kind": "FunctionDef",
+    "line": 7482,
+    "end_line": 7499
+  },
+  {
+    "name": "FFmpegPlayer",
+    "kind": "ClassDef",
+    "line": 7502,
+    "end_line": 7955
+  },
+  {
+    "name": "FFmpegPlayer.__init__",
+    "kind": "FunctionDef",
+    "line": 7519,
+    "end_line": 7562
+  },
+  {
+    "name": "FFmpegPlayer.set_media",
+    "kind": "FunctionDef",
+    "line": 7565,
+    "end_line": 7576
+  },
+  {
+    "name": "FFmpegPlayer.duration",
+    "kind": "FunctionDef",
+    "line": 7578,
+    "end_line": 7579
+  },
+  {
+    "name": "FFmpegPlayer.playbackState",
+    "kind": "FunctionDef",
+    "line": 7581,
+    "end_line": 7582
+  },
+  {
+    "name": "FFmpegPlayer.position",
+    "kind": "FunctionDef",
+    "line": 7584,
+    "end_line": 7585
+  },
+  {
+    "name": "FFmpegPlayer._begin_clock",
+    "kind": "FunctionDef",
+    "line": 7588,
+    "end_line": 7592
+  },
+  {
+    "name": "FFmpegPlayer._switch_to_wall",
+    "kind": "FunctionDef",
+    "line": 7594,
+    "end_line": 7596
+  },
+  {
+    "name": "FFmpegPlayer._clock_ms",
+    "kind": "FunctionDef",
+    "line": 7598,
+    "end_line": 7614
+  },
+  {
+    "name": "FFmpegPlayer.play",
+    "kind": "FunctionDef",
+    "line": 7617,
+    "end_line": 7636
+  },
+  {
+    "name": "FFmpegPlayer.play_from",
+    "kind": "FunctionDef",
+    "line": 7638,
+    "end_line": 7650
+  },
+  {
+    "name": "FFmpegPlayer.pause",
+    "kind": "FunctionDef",
+    "line": 7652,
+    "end_line": 7661
+  },
+  {
+    "name": "FFmpegPlayer.stop",
+    "kind": "FunctionDef",
+    "line": 7663,
+    "end_line": 7672
+  },
+  {
+    "name": "FFmpegPlayer.setPosition",
+    "kind": "FunctionDef",
+    "line": 7674,
+    "end_line": 7686
+  },
+  {
+    "name": "FFmpegPlayer._do_seek",
+    "kind": "FunctionDef",
+    "line": 7688,
+    "end_line": 7699
+  },
+  {
+    "name": "FFmpegPlayer.set_volume",
+    "kind": "FunctionDef",
+    "line": 7702,
+    "end_line": 7706
+  },
+  {
+    "name": "FFmpegPlayer.set_equalizer",
+    "kind": "FunctionDef",
+    "line": 7708,
+    "end_line": 7722
+  },
+  {
+    "name": "FFmpegPlayer._start_audio",
+    "kind": "FunctionDef",
+    "line": 7725,
+    "end_line": 7737
+  },
+  {
+    "name": "FFmpegPlayer._stop_audio",
+    "kind": "FunctionDef",
+    "line": 7739,
+    "end_line": 7747
+  },
+  {
+    "name": "FFmpegPlayer._on_audio_failed",
+    "kind": "FunctionDef",
+    "line": 7749,
+    "end_line": 7756
+  },
+  {
+    "name": "FFmpegPlayer._make_ladder",
+    "kind": "FunctionDef",
+    "line": 7759,
+    "end_line": 7772
+  },
+  {
+    "name": "FFmpegPlayer._choose_out_size",
+    "kind": "FunctionDef",
+    "line": 7774,
+    "end_line": 7788
+  },
+  {
+    "name": "FFmpegPlayer._choose_fps",
+    "kind": "FunctionDef",
+    "line": 7790,
+    "end_line": 7793
+  },
+  {
+    "name": "FFmpegPlayer._start_video",
+    "kind": "FunctionDef",
+    "line": 7795,
+    "end_line": 7801
+  },
+  {
+    "name": "FFmpegPlayer._launch_video",
+    "kind": "FunctionDef",
+    "line": 7803,
+    "end_line": 7817
+  },
+  {
+    "name": "FFmpegPlayer._restart_video",
+    "kind": "FunctionDef",
+    "line": 7819,
+    "end_line": 7821
+  },
+  {
+    "name": "FFmpegPlayer._kill_video",
+    "kind": "FunctionDef",
+    "line": 7823,
+    "end_line": 7826
+  },
+  {
+    "name": "FFmpegPlayer._kill_all",
+    "kind": "FunctionDef",
+    "line": 7828,
+    "end_line": 7830
+  },
+  {
+    "name": "FFmpegPlayer.set_color",
+    "kind": "FunctionDef",
+    "line": 7833,
+    "end_line": 7838
+  },
+  {
+    "name": "FFmpegPlayer._apply_grade",
+    "kind": "FunctionDef",
+    "line": 7840,
+    "end_line": 7859
+  },
+  {
+    "name": "FFmpegPlayer._apply_grade.work",
+    "kind": "FunctionDef",
+    "line": 7850,
+    "end_line": 7857
+  },
+  {
+    "name": "FFmpegPlayer._on_lut_ready",
+    "kind": "FunctionDef",
+    "line": 7861,
+    "end_line": 7871
+  },
+  {
+    "name": "FFmpegPlayer.set_widget_size",
+    "kind": "FunctionDef",
+    "line": 7873,
+    "end_line": 7876
+  },
+  {
+    "name": "FFmpegPlayer._on_resized",
+    "kind": "FunctionDef",
+    "line": 7878,
+    "end_line": 7883
+  },
+  {
+    "name": "FFmpegPlayer._to_image",
+    "kind": "FunctionDef",
+    "line": 7886,
+    "end_line": 7888
+  },
+  {
+    "name": "FFmpegPlayer._tick",
+    "kind": "FunctionDef",
+    "line": 7890,
+    "end_line": 7908
+  },
+  {
+    "name": "FFmpegPlayer._on_pipe_dead",
+    "kind": "FunctionDef",
+    "line": 7910,
+    "end_line": 7921
+  },
+  {
+    "name": "FFmpegPlayer._check_end",
+    "kind": "FunctionDef",
+    "line": 7923,
+    "end_line": 7934
+  },
+  {
+    "name": "FFmpegPlayer._finish",
+    "kind": "FunctionDef",
+    "line": 7936,
+    "end_line": 7942
+  },
+  {
+    "name": "FFmpegPlayer._fail",
+    "kind": "FunctionDef",
+    "line": 7944,
+    "end_line": 7949
+  },
+  {
+    "name": "FFmpegPlayer.shutdown",
+    "kind": "FunctionDef",
+    "line": 7951,
+    "end_line": 7955
+  },
+  {
+    "name": "MpvPlayer",
+    "kind": "ClassDef",
+    "line": 7958,
+    "end_line": 8702
+  },
+  {
+    "name": "MpvPlayer._Event",
+    "kind": "ClassDef",
+    "line": 7978,
+    "end_line": 7980
+  },
+  {
+    "name": "MpvPlayer._EndFile",
+    "kind": "ClassDef",
+    "line": 7982,
+    "end_line": 7984
+  },
+  {
+    "name": "MpvPlayer.__init__",
+    "kind": "FunctionDef",
+    "line": 7986,
+    "end_line": 8023
+  },
+  {
+    "name": "MpvPlayer.available",
+    "kind": "FunctionDef",
+    "line": 8026,
+    "end_line": 8027
+  },
+  {
+    "name": "MpvPlayer.load_error",
+    "kind": "FunctionDef",
+    "line": 8030,
+    "end_line": 8031
+  },
+  {
+    "name": "MpvPlayer.set_video_widget",
+    "kind": "FunctionDef",
+    "line": 8033,
+    "end_line": 8034
+  },
+  {
+    "name": "MpvPlayer._mpv_dir_candidates",
+    "kind": "FunctionDef",
+    "line": 8037,
+    "end_line": 8038
+  },
+  {
+    "name": "MpvPlayer._find_library",
+    "kind": "FunctionDef",
+    "line": 8040,
+    "end_line": 8045
+  },
+  {
+    "name": "MpvPlayer.ensure_initialized",
+    "kind": "FunctionDef",
+    "line": 8047,
+    "end_line": 8145
+  },
+  {
+    "name": "MpvPlayer._error_text",
+    "kind": "FunctionDef",
+    "line": 8148,
+    "end_line": 8153
+  },
+  {
+    "name": "MpvPlayer._command",
+    "kind": "FunctionDef",
+    "line": 8155,
+    "end_line": 8161
+  },
+  {
+    "name": "MpvPlayer._set_property",
+    "kind": "FunctionDef",
+    "line": 8163,
+    "end_line": 8168
+  },
+  {
+    "name": "MpvPlayer._set_option",
+    "kind": "FunctionDef",
+    "line": 8170,
+    "end_line": 8179
+  },
+  {
+    "name": "MpvPlayer._get_double",
+    "kind": "FunctionDef",
+    "line": 8181,
+    "end_line": 8186
+  },
+  {
+    "name": "MpvPlayer._get_int64",
+    "kind": "FunctionDef",
+    "line": 8188,
+    "end_line": 8193
+  },
+  {
+    "name": "MpvPlayer._get_flag",
+    "kind": "FunctionDef",
+    "line": 8195,
+    "end_line": 8200
+  },
+  {
+    "name": "MpvPlayer._get_string",
+    "kind": "FunctionDef",
+    "line": 8202,
+    "end_line": 8212
+  },
+  {
+    "name": "MpvPlayer.get_tracks",
+    "kind": "FunctionDef",
+    "line": 8214,
+    "end_line": 8235
+  },
+  {
+    "name": "MpvPlayer.select_track",
+    "kind": "FunctionDef",
+    "line": 8237,
+    "end_line": 8243
+  },
+  {
+    "name": "MpvPlayer.set_media",
+    "kind": "FunctionDef",
+    "line": 8245,
+    "end_line": 8286
+  },
+  {
+    "name": "MpvPlayer.duration",
+    "kind": "FunctionDef",
+    "line": 8288,
+    "end_line": 8292
+  },
+  {
+    "name": "MpvPlayer.position",
+    "kind": "FunctionDef",
+    "line": 8294,
+    "end_line": 8298
+  },
+  {
+    "name": "MpvPlayer.playbackState",
+    "kind": "FunctionDef",
+    "line": 8300,
+    "end_line": 8301
+  },
+  {
+    "name": "MpvPlayer.play",
+    "kind": "FunctionDef",
+    "line": 8303,
+    "end_line": 8315
+  },
+  {
+    "name": "MpvPlayer.play_from",
+    "kind": "FunctionDef",
+    "line": 8317,
+    "end_line": 8321
+  },
+  {
+    "name": "MpvPlayer.pause",
+    "kind": "FunctionDef",
+    "line": 8323,
+    "end_line": 8329
+  },
+  {
+    "name": "MpvPlayer.stop",
+    "kind": "FunctionDef",
+    "line": 8331,
+    "end_line": 8349
+  },
+  {
+    "name": "MpvPlayer.set_playback_rate",
+    "kind": "FunctionDef",
+    "line": 8351,
+    "end_line": 8355
+  },
+  {
+    "name": "MpvPlayer.setPosition",
+    "kind": "FunctionDef",
+    "line": 8357,
+    "end_line": 8380
+  },
+  {
+    "name": "MpvPlayer._seek_warning",
+    "kind": "FunctionDef",
+    "line": 8382,
+    "end_line": 8386
+  },
+  {
+    "name": "MpvPlayer._flush_seek",
+    "kind": "FunctionDef",
+    "line": 8388,
+    "end_line": 8419
+  },
+  {
+    "name": "MpvPlayer._read_events",
+    "kind": "FunctionDef",
+    "line": 8421,
+    "end_line": 8446
+  },
+  {
+    "name": "MpvPlayer.set_volume",
+    "kind": "FunctionDef",
+    "line": 8448,
+    "end_line": 8451
+  },
+  {
+    "name": "MpvPlayer.set_equalizer",
+    "kind": "FunctionDef",
+    "line": 8453,
+    "end_line": 8463
+  },
+  {
+    "name": "MpvPlayer._apply_equalizer",
+    "kind": "FunctionDef",
+    "line": 8465,
+    "end_line": 8486
+  },
+  {
+    "name": "MpvPlayer.set_color",
+    "kind": "FunctionDef",
+    "line": 8488,
+    "end_line": 8498
+  },
+  {
+    "name": "MpvPlayer.set_vignette",
+    "kind": "FunctionDef",
+    "line": 8500,
+    "end_line": 8570
+  },
+  {
+    "name": "MpvPlayer._request_lut_generation",
+    "kind": "FunctionDef",
+    "line": 8572,
+    "end_line": 8598
+  },
+  {
+    "name": "MpvPlayer._request_lut_generation.work",
+    "kind": "FunctionDef",
+    "line": 8589,
+    "end_line": 8596
+  },
+  {
+    "name": "MpvPlayer._on_lut_ready",
+    "kind": "FunctionDef",
+    "line": 8600,
+    "end_line": 8614
+  },
+  {
+    "name": "MpvPlayer._apply_video_filters",
+    "kind": "FunctionDef",
+    "line": 8616,
+    "end_line": 8653
+  },
+  {
+    "name": "MpvPlayer._poll",
+    "kind": "FunctionDef",
+    "line": 8655,
+    "end_line": 8689
+  },
+  {
+    "name": "MpvPlayer.shutdown",
+    "kind": "FunctionDef",
+    "line": 8691,
+    "end_line": 8702
+  },
+  {
+    "name": "PlayerFacade",
+    "kind": "ClassDef",
+    "line": 8705,
+    "end_line": 8929
+  },
+  {
+    "name": "PlayerFacade.__init__",
+    "kind": "FunctionDef",
+    "line": 8718,
+    "end_line": 8756
+  },
+  {
+    "name": "PlayerFacade._from",
+    "kind": "FunctionDef",
+    "line": 8758,
+    "end_line": 8760
+  },
+  {
+    "name": "PlayerFacade.setAudioOutput",
+    "kind": "FunctionDef",
+    "line": 8763,
+    "end_line": 8764
+  },
+  {
+    "name": "PlayerFacade.setVideoSink",
+    "kind": "FunctionDef",
+    "line": 8766,
+    "end_line": 8768
+  },
+  {
+    "name": "PlayerFacade.setVideoWidget",
+    "kind": "FunctionDef",
+    "line": 8770,
+    "end_line": 8772
+  },
+  {
+    "name": "PlayerFacade._on_qt_frame",
+    "kind": "FunctionDef",
+    "line": 8774,
+    "end_line": 8775
+  },
+  {
+    "name": "PlayerFacade.setSource",
+    "kind": "FunctionDef",
+    "line": 8778,
+    "end_line": 8815
+  },
+  {
+    "name": "PlayerFacade.play",
+    "kind": "FunctionDef",
+    "line": 8817,
+    "end_line": 8825
+  },
+  {
+    "name": "PlayerFacade.pause",
+    "kind": "FunctionDef",
+    "line": 8827,
+    "end_line": 8828
+  },
+  {
+    "name": "PlayerFacade.stop",
+    "kind": "FunctionDef",
+    "line": 8830,
+    "end_line": 8833
+  },
+  {
+    "name": "PlayerFacade.setPosition",
+    "kind": "FunctionDef",
+    "line": 8835,
+    "end_line": 8838
+  },
+  {
+    "name": "PlayerFacade.set_playback_rate",
+    "kind": "FunctionDef",
+    "line": 8840,
+    "end_line": 8852
+  },
+  {
+    "name": "PlayerFacade.position",
+    "kind": "FunctionDef",
+    "line": 8854,
+    "end_line": 8855
+  },
+  {
+    "name": "PlayerFacade.duration",
+    "kind": "FunctionDef",
+    "line": 8857,
+    "end_line": 8858
+  },
+  {
+    "name": "PlayerFacade.playbackState",
+    "kind": "FunctionDef",
+    "line": 8860,
+    "end_line": 8861
+  },
+  {
+    "name": "PlayerFacade.set_volume",
+    "kind": "FunctionDef",
+    "line": 8864,
+    "end_line": 8866
+  },
+  {
+    "name": "PlayerFacade.set_color",
+    "kind": "FunctionDef",
+    "line": 8868,
+    "end_line": 8872
+  },
+  {
+    "name": "PlayerFacade.set_vignette",
+    "kind": "FunctionDef",
+    "line": 8874,
+    "end_line": 8877
+  },
+  {
+    "name": "PlayerFacade.set_equalizer",
+    "kind": "FunctionDef",
+    "line": 8879,
+    "end_line": 8883
+  },
+  {
+    "name": "PlayerFacade.set_widget_size",
+    "kind": "FunctionDef",
+    "line": 8885,
+    "end_line": 8886
+  },
+  {
+    "name": "PlayerFacade.shutdown",
+    "kind": "FunctionDef",
+    "line": 8888,
+    "end_line": 8895
+  },
+  {
+    "name": "PlayerFacade._on_qt_status",
+    "kind": "FunctionDef",
+    "line": 8898,
+    "end_line": 8903
+  },
+  {
+    "name": "PlayerFacade._on_qt_error",
+    "kind": "FunctionDef",
+    "line": 8905,
+    "end_line": 8910
+  },
+  {
+    "name": "PlayerFacade._try_ff",
+    "kind": "FunctionDef",
+    "line": 8912,
+    "end_line": 8922
+  },
+  {
+    "name": "PlayerFacade._watchdog",
+    "kind": "FunctionDef",
+    "line": 8924,
+    "end_line": 8929
+  },
+  {
+    "name": "rounded_widget_region",
+    "kind": "FunctionDef",
+    "line": 8936,
+    "end_line": 8950
+  },
+  {
+    "name": "VideoFrameWidget",
+    "kind": "ClassDef",
+    "line": 8953,
+    "end_line": 9189
+  },
+  {
+    "name": "VideoFrameWidget.__init__",
+    "kind": "FunctionDef",
+    "line": 8961,
+    "end_line": 8996
+  },
+  {
+    "name": "VideoFrameWidget.set_static_cover",
+    "kind": "FunctionDef",
+    "line": 8999,
+    "end_line": 9005
+  },
+  {
+    "name": "VideoFrameWidget.videoSink",
+    "kind": "FunctionDef",
+    "line": 9007,
+    "end_line": 9008
+  },
+  {
+    "name": "VideoFrameWidget.mpv_surface",
+    "kind": "FunctionDef",
+    "line": 9010,
+    "end_line": 9011
+  },
+  {
+    "name": "VideoFrameWidget.set_mpv_active",
+    "kind": "FunctionDef",
+    "line": 9013,
+    "end_line": 9021
+  },
+  {
+    "name": "VideoFrameWidget._sync_rounded_video",
+    "kind": "FunctionDef",
+    "line": 9023,
+    "end_line": 9046
+  },
+  {
+    "name": "VideoFrameWidget.sync_mpv_surfaces",
+    "kind": "FunctionDef",
+    "line": 9049,
+    "end_line": 9057
+  },
+  {
+    "name": "VideoFrameWidget.native_size",
+    "kind": "FunctionDef",
+    "line": 9059,
+    "end_line": 9061
+  },
+  {
+    "name": "VideoFrameWidget.set_native_size",
+    "kind": "FunctionDef",
+    "line": 9063,
+    "end_line": 9064
+  },
+  {
+    "name": "VideoFrameWidget.set_external",
+    "kind": "FunctionDef",
+    "line": 9066,
+    "end_line": 9073
+  },
+  {
+    "name": "VideoFrameWidget.mouseDoubleClickEvent",
+    "kind": "FunctionDef",
+    "line": 9075,
+    "end_line": 9080
+  },
+  {
+    "name": "VideoFrameWidget.moveEvent",
+    "kind": "FunctionDef",
+    "line": 9082,
+    "end_line": 9083
+  },
+  {
+    "name": "VideoFrameWidget.resizeEvent",
+    "kind": "FunctionDef",
+    "line": 9086,
+    "end_line": 9089
+  },
+  {
+    "name": "VideoFrameWidget._on_frame",
+    "kind": "FunctionDef",
+    "line": 9092,
+    "end_line": 9102
+  },
+  {
+    "name": "VideoFrameWidget.show_external_frame",
+    "kind": "FunctionDef",
+    "line": 9104,
+    "end_line": 9107
+  },
+  {
+    "name": "VideoFrameWidget._show",
+    "kind": "FunctionDef",
+    "line": 9109,
+    "end_line": 9111
+  },
+  {
+    "name": "VideoFrameWidget._on_processed",
+    "kind": "FunctionDef",
+    "line": 9113,
+    "end_line": 9115
+  },
+  {
+    "name": "VideoFrameWidget.set_grade",
+    "kind": "FunctionDef",
+    "line": 9117,
+    "end_line": 9131
+  },
+  {
+    "name": "VideoFrameWidget.set_vignette",
+    "kind": "FunctionDef",
+    "line": 9133,
+    "end_line": 9142
+  },
+  {
+    "name": "VideoFrameWidget.shutdown",
+    "kind": "FunctionDef",
+    "line": 9144,
+    "end_line": 9152
+  },
+  {
+    "name": "VideoFrameWidget._vignette_overlay",
+    "kind": "FunctionDef",
+    "line": 9155,
+    "end_line": 9167
+  },
+  {
+    "name": "VideoFrameWidget.paintEvent",
+    "kind": "FunctionDef",
+    "line": 9169,
+    "end_line": 9189
+  },
+  {
+    "name": "VideoFullscreenWindow",
+    "kind": "ClassDef",
+    "line": 9192,
+    "end_line": 9425
+  },
+  {
+    "name": "VideoFullscreenWindow.__init__",
+    "kind": "FunctionDef",
+    "line": 9197,
+    "end_line": 9269
+  },
+  {
+    "name": "VideoFullscreenWindow._button",
+    "kind": "FunctionDef",
+    "line": 9271,
+    "end_line": 9280
+  },
+  {
+    "name": "VideoFullscreenWindow.update_theme",
+    "kind": "FunctionDef",
+    "line": 9282,
+    "end_line": 9294
+  },
+  {
+    "name": "VideoFullscreenWindow.resizeEvent",
+    "kind": "FunctionDef",
+    "line": 9296,
+    "end_line": 9301
+  },
+  {
+    "name": "VideoFullscreenWindow._layout_fullscreen_children",
+    "kind": "FunctionDef",
+    "line": 9303,
+    "end_line": 9326
+  },
+  {
+    "name": "VideoFullscreenWindow.eventFilter",
+    "kind": "FunctionDef",
+    "line": 9328,
+    "end_line": 9354
+  },
+  {
+    "name": "VideoFullscreenWindow.show_controls",
+    "kind": "FunctionDef",
+    "line": 9356,
+    "end_line": 9363
+  },
+  {
+    "name": "VideoFullscreenWindow.hide_controls",
+    "kind": "FunctionDef",
+    "line": 9365,
+    "end_line": 9369
+  },
+  {
+    "name": "VideoFullscreenWindow.update_position",
+    "kind": "FunctionDef",
+    "line": 9371,
+    "end_line": 9374
+  },
+  {
+    "name": "VideoFullscreenWindow.update_duration",
+    "kind": "FunctionDef",
+    "line": 9376,
+    "end_line": 9378
+  },
+  {
+    "name": "VideoFullscreenWindow.update_state",
+    "kind": "FunctionDef",
+    "line": 9380,
+    "end_line": 9381
+  },
+  {
+    "name": "VideoFullscreenWindow.activate",
+    "kind": "FunctionDef",
+    "line": 9383,
+    "end_line": 9389
+  },
+  {
+    "name": "VideoFullscreenWindow.keyPressEvent",
+    "kind": "FunctionDef",
+    "line": 9391,
+    "end_line": 9408
+  },
+  {
+    "name": "VideoFullscreenWindow.closeEvent",
+    "kind": "FunctionDef",
+    "line": 9410,
+    "end_line": 9412
+  },
+  {
+    "name": "VideoFullscreenWindow.detach",
+    "kind": "FunctionDef",
+    "line": 9414,
+    "end_line": 9425
+  },
+  {
+    "name": "find_converter_tool",
+    "kind": "FunctionDef",
+    "line": 9428,
+    "end_line": 9474
+  },
+  {
+    "name": "_bounded_probe_run",
+    "kind": "FunctionDef",
+    "line": 9477,
+    "end_line": 9503
+  },
+  {
+    "name": "probe_media_info",
+    "kind": "FunctionDef",
+    "line": 9506,
+    "end_line": 9582
+  },
+  {
+    "name": "probe_media_info.kbps",
+    "kind": "FunctionDef",
+    "line": 9530,
+    "end_line": 9535
+  },
+  {
+    "name": "probe_media_info.frame_rate",
+    "kind": "FunctionDef",
+    "line": 9561,
+    "end_line": 9567
+  },
+  {
+    "name": "FilePropertiesSignals",
+    "kind": "ClassDef",
+    "line": 9585,
+    "end_line": 9586
+  },
+  {
+    "name": "_metadata_display",
+    "kind": "FunctionDef",
+    "line": 9589,
+    "end_line": 9594
+  },
+  {
+    "name": "_property_measure",
+    "kind": "FunctionDef",
+    "line": 9600,
+    "end_line": 9608
+  },
+  {
+    "name": "_compact_number",
+    "kind": "FunctionDef",
+    "line": 9611,
+    "end_line": 9615
+  },
+  {
+    "name": "_format_duration_value",
+    "kind": "FunctionDef",
+    "line": 9618,
+    "end_line": 9638
+  },
+  {
+    "name": "_format_bitrate_value",
+    "kind": "FunctionDef",
+    "line": 9641,
+    "end_line": 9667
+  },
+  {
+    "name": "_format_filesize_value",
+    "kind": "FunctionDef",
+    "line": 9670,
+    "end_line": 9695
+  },
+  {
+    "name": "_format_file_property_value",
+    "kind": "FunctionDef",
+    "line": 9698,
+    "end_line": 9710
+  },
+  {
+    "name": "collect_file_properties",
+    "kind": "FunctionDef",
+    "line": 9713,
+    "end_line": 9931
+  },
+  {
+    "name": "format_time_seconds",
+    "kind": "FunctionDef",
+    "line": 9933,
+    "end_line": 9940
+  },
+  {
+    "name": "ConversionText",
+    "kind": "ClassDef",
+    "line": 9944,
+    "end_line": 9961
+  },
+  {
+    "name": "ConversionText.__new__",
+    "kind": "FunctionDef",
+    "line": 9946,
+    "end_line": 9949
+  },
+  {
+    "name": "ConversionText.__add__",
+    "kind": "FunctionDef",
+    "line": 9951,
+    "end_line": 9955
+  },
+  {
+    "name": "ConversionText.__radd__",
+    "kind": "FunctionDef",
+    "line": 9957,
+    "end_line": 9961
+  },
+  {
+    "name": "conversion_probe_error",
+    "kind": "FunctionDef",
+    "line": 9964,
+    "end_line": 9970
+  },
+  {
+    "name": "conversion_text",
+    "kind": "FunctionDef",
+    "line": 9973,
+    "end_line": 9974
+  },
+  {
+    "name": "ConversionCleanupError",
+    "kind": "ClassDef",
+    "line": 9977,
+    "end_line": 9978
+  },
+  {
+    "name": "ConversionOutputTransaction",
+    "kind": "ClassDef",
+    "line": 9981,
+    "end_line": 10128
+  },
+  {
+    "name": "ConversionOutputTransaction.__init__",
+    "kind": "FunctionDef",
+    "line": 9983,
+    "end_line": 9997
+  },
+  {
+    "name": "ConversionOutputTransaction._identity",
+    "kind": "FunctionDef",
+    "line": 10000,
+    "end_line": 10002
+  },
+  {
+    "name": "ConversionOutputTransaction._unlink_owned",
+    "kind": "FunctionDef",
+    "line": 10005,
+    "end_line": 10010
+  },
+  {
+    "name": "ConversionOutputTransaction._publish_file",
+    "kind": "FunctionDef",
+    "line": 10012,
+    "end_line": 10044
+  },
+  {
+    "name": "ConversionOutputTransaction.publish",
+    "kind": "FunctionDef",
+    "line": 10046,
+    "end_line": 10108
+  },
+  {
+    "name": "ConversionOutputTransaction.close",
+    "kind": "FunctionDef",
+    "line": 10110,
+    "end_line": 10128
+  },
+  {
+    "name": "ConversionWindowsJob",
+    "kind": "ClassDef",
+    "line": 10132,
+    "end_line": 10202
+  },
+  {
+    "name": "ConversionWindowsJob.__init__",
+    "kind": "FunctionDef",
+    "line": 10134,
+    "end_line": 10170
+  },
+  {
+    "name": "ConversionWindowsJob.__init__.Basic",
+    "kind": "ClassDef",
+    "line": 10136,
+    "end_line": 10141
+  },
+  {
+    "name": "ConversionWindowsJob.__init__.Counters",
+    "kind": "ClassDef",
+    "line": 10142,
+    "end_line": 10144
+  },
+  {
+    "name": "ConversionWindowsJob.__init__.Extended",
+    "kind": "ClassDef",
+    "line": 10145,
+    "end_line": 10148
+  },
+  {
+    "name": "ConversionWindowsJob.assign_and_resume",
+    "kind": "FunctionDef",
+    "line": 10172,
+    "end_line": 10180
+  },
+  {
+    "name": "ConversionWindowsJob.close",
+    "kind": "FunctionDef",
+    "line": 10182,
+    "end_line": 10202
+  },
+  {
+    "name": "conversion_stop_process",
+    "kind": "FunctionDef",
+    "line": 10206,
+    "end_line": 10241
+  },
+  {
+    "name": "ConversionPipeReader",
+    "kind": "ClassDef",
+    "line": 10244,
+    "end_line": 10280
+  },
+  {
+    "name": "ConversionPipeReader.__init__",
+    "kind": "FunctionDef",
+    "line": 10246,
+    "end_line": 10259
+  },
+  {
+    "name": "ConversionPipeReader.read",
+    "kind": "FunctionDef",
+    "line": 10261,
+    "end_line": 10280
+  },
+  {
+    "name": "ConversionOutputLines",
+    "kind": "ClassDef",
+    "line": 10284,
+    "end_line": 10309
+  },
+  {
+    "name": "ConversionOutputLines.__init__",
+    "kind": "FunctionDef",
+    "line": 10285,
+    "end_line": 10288
+  },
+  {
+    "name": "ConversionOutputLines.feed",
+    "kind": "FunctionDef",
+    "line": 10290,
+    "end_line": 10309
+  },
+  {
+    "name": "cached_conversion_probe",
+    "kind": "FunctionDef",
+    "line": 10316,
+    "end_line": 10331
+  },
+  {
+    "name": "ConversionMediaProbe",
+    "kind": "ClassDef",
+    "line": 10334,
+    "end_line": 10353
+  },
+  {
+    "name": "ConversionMediaProbe.__init__",
+    "kind": "FunctionDef",
+    "line": 10337,
+    "end_line": 10339
+  },
+  {
+    "name": "ConversionMediaProbe.request_stop",
+    "kind": "FunctionDef",
+    "line": 10341,
+    "end_line": 10342
+  },
+  {
+    "name": "ConversionMediaProbe.run",
+    "kind": "FunctionDef",
+    "line": 10344,
+    "end_line": 10353
+  },
+  {
+    "name": "conversion_archive_zip_preflight",
+    "kind": "FunctionDef",
+    "line": 10356,
+    "end_line": 10411
+  },
+  {
+    "name": "ConversionTarInfo",
+    "kind": "ClassDef",
+    "line": 10414,
+    "end_line": 10435
+  },
+  {
+    "name": "ConversionTarInfo._metadata_budget",
+    "kind": "FunctionDef",
+    "line": 10415,
+    "end_line": 10418
+  },
+  {
+    "name": "ConversionTarInfo._proc_pax",
+    "kind": "FunctionDef",
+    "line": 10420,
+    "end_line": 10422
+  },
+  {
+    "name": "ConversionTarInfo._proc_gnulong",
+    "kind": "FunctionDef",
+    "line": 10424,
+    "end_line": 10426
+  },
+  {
+    "name": "ConversionTarInfo._proc_sparse",
+    "kind": "FunctionDef",
+    "line": 10428,
+    "end_line": 10429
+  },
+  {
+    "name": "ConversionTarInfo._proc_gnusparse_00",
+    "kind": "FunctionDef",
+    "line": 10431,
+    "end_line": 10432
+  },
+  {
+    "name": "conversion_ffmpeg_capabilities",
+    "kind": "FunctionDef",
+    "line": 10482,
+    "end_line": 10512
+  },
+  {
+    "name": "conversion_require_codecs",
+    "kind": "FunctionDef",
+    "line": 10516,
+    "end_line": 10528
+  },
+  {
+    "name": "conversion_office_tool",
+    "kind": "FunctionDef",
+    "line": 10532,
+    "end_line": 10533
+  },
+  {
+    "name": "conversion_vector_tool",
+    "kind": "FunctionDef",
+    "line": 10536,
+    "end_line": 10537
+  },
+  {
+    "name": "conversion_office_filters",
+    "kind": "FunctionDef",
+    "line": 10540,
+    "end_line": 10574
+  },
+  {
+    "name": "conversion_subtitle_codec",
+    "kind": "FunctionDef",
+    "line": 10577,
+    "end_line": 10584
+  },
+  {
+    "name": "conversion_video_rate_options",
+    "kind": "FunctionDef",
+    "line": 10588,
+    "end_line": 10608
+  },
+  {
+    "name": "conversion_stem",
+    "kind": "FunctionDef",
+    "line": 10612,
+    "end_line": 10619
+  },
+  {
+    "name": "unique_conversion_output",
+    "kind": "FunctionDef",
+    "line": 10622,
+    "end_line": 10632
+  },
+  {
+    "name": "transcode_audio_compatible",
+    "kind": "FunctionDef",
+    "line": 10638,
+    "end_line": 10646
+  },
+  {
+    "name": "ConverterWorker",
+    "kind": "ClassDef",
+    "line": 10649,
+    "end_line": 11441
+  },
+  {
+    "name": "ConverterWorker.__init__",
+    "kind": "FunctionDef",
+    "line": 10659,
+    "end_line": 10683
+  },
+  {
+    "name": "ConverterWorker._control_process",
+    "kind": "FunctionDef",
+    "line": 10685,
+    "end_line": 10720
+  },
+  {
+    "name": "ConverterWorker.toggle_pause",
+    "kind": "FunctionDef",
+    "line": 10724,
+    "end_line": 10749
+  },
+  {
+    "name": "ConverterWorker._active_elapsed",
+    "kind": "FunctionDef",
+    "line": 10751,
+    "end_line": 10756
+  },
+  {
+    "name": "ConverterWorker._overall_elapsed",
+    "kind": "FunctionDef",
+    "line": 10758,
+    "end_line": 10765
+  },
+  {
+    "name": "ConverterWorker._parse_ffmpeg_time",
+    "kind": "FunctionDef",
+    "line": 10768,
+    "end_line": 10775
+  },
+  {
+    "name": "ConverterWorker._run_command",
+    "kind": "FunctionDef",
+    "line": 10777,
+    "end_line": 10885
+  },
+  {
+    "name": "ConverterWorker._convert_ffmpeg",
+    "kind": "FunctionDef",
+    "line": 10889,
+    "end_line": 11084
+  },
+  {
+    "name": "ConverterWorker._convert_office",
+    "kind": "FunctionDef",
+    "line": 11089,
+    "end_line": 11109
+  },
+  {
+    "name": "ConverterWorker._convert_ebook",
+    "kind": "FunctionDef",
+    "line": 11113,
+    "end_line": 11119
+  },
+  {
+    "name": "ConverterWorker._convert_vector",
+    "kind": "FunctionDef",
+    "line": 11122,
+    "end_line": 11128
+  },
+  {
+    "name": "ConverterWorker._convert_3d",
+    "kind": "FunctionDef",
+    "line": 11131,
+    "end_line": 11193
+  },
+  {
+    "name": "ConverterWorker._safe_extract",
+    "kind": "FunctionDef",
+    "line": 11196,
+    "end_line": 11240
+  },
+  {
+    "name": "ConverterWorker._safe_extract.checked_path",
+    "kind": "FunctionDef",
+    "line": 11199,
+    "end_line": 11212
+  },
+  {
+    "name": "ConverterWorker._convert_archive",
+    "kind": "FunctionDef",
+    "line": 11243,
+    "end_line": 11279
+  },
+  {
+    "name": "ConverterWorker._convert_one",
+    "kind": "FunctionDef",
+    "line": 11281,
+    "end_line": 11309
+  },
+  {
+    "name": "ConverterWorker.run",
+    "kind": "FunctionDef",
+    "line": 11313,
+    "end_line": 11375
+  },
+  {
+    "name": "ConverterWorker.request_stop",
+    "kind": "FunctionDef",
+    "line": 11379,
+    "end_line": 11380
+  },
+  {
+    "name": "ConverterWorker._archive_checkpoint",
+    "kind": "FunctionDef",
+    "line": 11382,
+    "end_line": 11384
+  },
+  {
+    "name": "ConverterWorker._copy_archive_stream",
+    "kind": "FunctionDef",
+    "line": 11386,
+    "end_line": 11396
+  },
+  {
+    "name": "ConverterWorker._emit_conversion_progress",
+    "kind": "FunctionDef",
+    "line": 11399,
+    "end_line": 11430
+  },
+  {
+    "name": "ConverterWorker._conversion_notice",
+    "kind": "FunctionDef",
+    "line": 11434,
+    "end_line": 11441
+  },
+  {
+    "name": "ConversionCapabilityProbe",
+    "kind": "ClassDef",
+    "line": 11446,
+    "end_line": 11528
+  },
+  {
+    "name": "ConversionCapabilityProbe.__init__",
+    "kind": "FunctionDef",
+    "line": 11449,
+    "end_line": 11450
+  },
+  {
+    "name": "ConversionCapabilityProbe.run",
+    "kind": "FunctionDef",
+    "line": 11452,
+    "end_line": 11528
+  },
+  {
+    "name": "transcode_codec",
+    "kind": "FunctionDef",
+    "line": 11543,
+    "end_line": 11555
+  },
+  {
+    "name": "transcode_profile_quality",
+    "kind": "FunctionDef",
+    "line": 11558,
+    "end_line": 11559
+  },
+  {
+    "name": "transcode_rate_options",
+    "kind": "FunctionDef",
+    "line": 11562,
+    "end_line": 11586
+  },
+  {
+    "name": "transcode_scale_filter",
+    "kind": "FunctionDef",
+    "line": 11589,
+    "end_line": 11596
+  },
+  {
+    "name": "TranscodePreviewCanvas",
+    "kind": "ClassDef",
+    "line": 11602,
+    "end_line": 11621
+  },
+  {
+    "name": "TranscodePreviewCanvas.__init__",
+    "kind": "FunctionDef",
+    "line": 11604,
+    "end_line": 11609
+  },
+  {
+    "name": "TranscodePreviewCanvas.sizeHint",
+    "kind": "FunctionDef",
+    "line": 11611,
+    "end_line": 11612
+  },
+  {
+    "name": "TranscodePreviewCanvas.paintEvent",
+    "kind": "FunctionDef",
+    "line": 11614,
+    "end_line": 11621
+  },
+  {
+    "name": "TranscodePreviewFullscreen",
+    "kind": "ClassDef",
+    "line": 11624,
+    "end_line": 11638
+  },
+  {
+    "name": "TranscodePreviewFullscreen.__init__",
+    "kind": "FunctionDef",
+    "line": 11625,
+    "end_line": 11631
+  },
+  {
+    "name": "TranscodePreviewFullscreen.reject",
+    "kind": "FunctionDef",
+    "line": 11633,
+    "end_line": 11634
+  },
+  {
+    "name": "TranscodePreviewFullscreen.closeEvent",
+    "kind": "FunctionDef",
+    "line": 11636,
+    "end_line": 11638
+  },
+  {
+    "name": "TranscodePreview",
+    "kind": "ClassDef",
+    "line": 11641,
+    "end_line": 11875
+  },
+  {
+    "name": "TranscodePreview.__init__",
+    "kind": "FunctionDef",
+    "line": 11643,
+    "end_line": 11702
+  },
+  {
+    "name": "TranscodePreview.eventFilter",
+    "kind": "FunctionDef",
+    "line": 11704,
+    "end_line": 11711
+  },
+  {
+    "name": "TranscodePreview.update_language",
+    "kind": "FunctionDef",
+    "line": 11713,
+    "end_line": 11727
+  },
+  {
+    "name": "TranscodePreview._remember_position",
+    "kind": "FunctionDef",
+    "line": 11729,
+    "end_line": 11734
+  },
+  {
+    "name": "TranscodePreview.set_source",
+    "kind": "FunctionDef",
+    "line": 11736,
+    "end_line": 11749
+  },
+  {
+    "name": "TranscodePreview._media_status",
+    "kind": "FunctionDef",
+    "line": 11751,
+    "end_line": 11763
+  },
+  {
+    "name": "TranscodePreview._frame",
+    "kind": "FunctionDef",
+    "line": 11765,
+    "end_line": 11777
+  },
+  {
+    "name": "TranscodePreview._duration",
+    "kind": "FunctionDef",
+    "line": 11779,
+    "end_line": 11783
+  },
+  {
+    "name": "TranscodePreview._position",
+    "kind": "FunctionDef",
+    "line": 11785,
+    "end_line": 11790
+  },
+  {
+    "name": "TranscodePreview._seek_changed",
+    "kind": "FunctionDef",
+    "line": 11792,
+    "end_line": 11794
+  },
+  {
+    "name": "TranscodePreview._error",
+    "kind": "FunctionDef",
+    "line": 11796,
+    "end_line": 11803
+  },
+  {
+    "name": "TranscodePreview.toggle_play",
+    "kind": "FunctionDef",
+    "line": 11805,
+    "end_line": 11814
+  },
+  {
+    "name": "TranscodePreview.toggle_fullscreen",
+    "kind": "FunctionDef",
+    "line": 11816,
+    "end_line": 11839
+  },
+  {
+    "name": "TranscodePreview.exit_fullscreen",
+    "kind": "FunctionDef",
+    "line": 11841,
+    "end_line": 11853
+  },
+  {
+    "name": "TranscodePreview.hideEvent",
+    "kind": "FunctionDef",
+    "line": 11855,
+    "end_line": 11859
+  },
+  {
+    "name": "TranscodePreview.shutdown",
+    "kind": "FunctionDef",
+    "line": 11861,
+    "end_line": 11875
+  },
+  {
+    "name": "PanelToolButton",
+    "kind": "ClassDef",
+    "line": 11878,
+    "end_line": 11904
+  },
+  {
+    "name": "PanelToolButton.paintEvent",
+    "kind": "FunctionDef",
+    "line": 11885,
+    "end_line": 11904
+  },
+  {
+    "name": "DraggableSideBlock",
+    "kind": "ClassDef",
+    "line": 11907,
+    "end_line": 11917
+  },
+  {
+    "name": "DraggableSideBlock.__init__",
+    "kind": "FunctionDef",
+    "line": 11909,
+    "end_line": 11917
+  },
+  {
+    "name": "DraggableSideSeparator",
+    "kind": "ClassDef",
+    "line": 11920,
+    "end_line": 11971
+  },
+  {
+    "name": "DraggableSideSeparator.__init__",
+    "kind": "FunctionDef",
+    "line": 11922,
+    "end_line": 11931
+  },
+  {
+    "name": "DraggableSideSeparator.paintEvent",
+    "kind": "FunctionDef",
+    "line": 11933,
+    "end_line": 11941
+  },
+  {
+    "name": "DraggableSideSeparator.mousePressEvent",
+    "kind": "FunctionDef",
+    "line": 11943,
+    "end_line": 11948
+  },
+  {
+    "name": "DraggableSideSeparator.mouseMoveEvent",
+    "kind": "FunctionDef",
+    "line": 11950,
+    "end_line": 11957
+  },
+  {
+    "name": "DraggableSideSeparator.mouseReleaseEvent",
+    "kind": "FunctionDef",
+    "line": 11959,
+    "end_line": 11963
+  },
+  {
+    "name": "DraggableSideSeparator.keyPressEvent",
+    "kind": "FunctionDef",
+    "line": 11965,
+    "end_line": 11971
+  },
+  {
+    "name": "ui_text",
+    "kind": "FunctionDef",
+    "line": 11986,
+    "end_line": 11987
+  },
+  {
+    "name": "guide_steps",
+    "kind": "FunctionDef",
+    "line": 12303,
+    "end_line": 12304
+  },
+  {
+    "name": "CnpQtTranslator",
+    "kind": "ClassDef",
+    "line": 12467,
+    "end_line": 12489
+  },
+  {
+    "name": "CnpQtTranslator.__init__",
+    "kind": "FunctionDef",
+    "line": 12473,
+    "end_line": 12478
+  },
+  {
+    "name": "CnpQtTranslator.isEmpty",
+    "kind": "FunctionDef",
+    "line": 12480,
+    "end_line": 12481
+  },
+  {
+    "name": "CnpQtTranslator.translate",
+    "kind": "FunctionDef",
+    "line": 12483,
+    "end_line": 12489
+  },
+  {
+    "name": "window_title_style",
+    "kind": "FunctionDef",
+    "line": 12519,
+    "end_line": 12526
+  },
+  {
+    "name": "auxiliary_style",
+    "kind": "FunctionDef",
+    "line": 12529,
+    "end_line": 12535
+  },
+  {
+    "name": "WindowResizeEdge",
+    "kind": "ClassDef",
+    "line": 12538,
+    "end_line": 12575
+  },
+  {
+    "name": "WindowResizeEdge.__init__",
+    "kind": "FunctionDef",
+    "line": 12539,
+    "end_line": 12545
+  },
+  {
+    "name": "WindowResizeEdge.mousePressEvent",
+    "kind": "FunctionDef",
+    "line": 12547,
+    "end_line": 12552
+  },
+  {
+    "name": "WindowResizeEdge.mouseMoveEvent",
+    "kind": "FunctionDef",
+    "line": 12554,
+    "end_line": 12571
+  },
+  {
+    "name": "WindowResizeEdge.mouseReleaseEvent",
+    "kind": "FunctionDef",
+    "line": 12573,
+    "end_line": 12575
+  },
+  {
+    "name": "AuxiliaryChrome",
+    "kind": "ClassDef",
+    "line": 12578,
+    "end_line": 12748
+  },
+  {
+    "name": "AuxiliaryChrome.__init__",
+    "kind": "FunctionDef",
+    "line": 12580,
+    "end_line": 12658
+  },
+  {
+    "name": "AuxiliaryChrome.update_theme",
+    "kind": "FunctionDef",
+    "line": 12660,
+    "end_line": 12673
+  },
+  {
+    "name": "AuxiliaryChrome.update_language",
+    "kind": "FunctionDef",
+    "line": 12675,
+    "end_line": 12679
+  },
+  {
+    "name": "AuxiliaryChrome.toggle_maximized",
+    "kind": "FunctionDef",
+    "line": 12681,
+    "end_line": 12683
+  },
+  {
+    "name": "AuxiliaryChrome.arrange_edges",
+    "kind": "FunctionDef",
+    "line": 12685,
+    "end_line": 12692
+  },
+  {
+    "name": "AuxiliaryChrome.system_menu",
+    "kind": "FunctionDef",
+    "line": 12694,
+    "end_line": 12705
+  },
+  {
+    "name": "AuxiliaryChrome.keyboard_geometry",
+    "kind": "FunctionDef",
+    "line": 12707,
+    "end_line": 12711
+  },
+  {
+    "name": "AuxiliaryChrome.eventFilter",
+    "kind": "FunctionDef",
+    "line": 12713,
+    "end_line": 12748
+  },
+  {
+    "name": "NopInputDialog",
+    "kind": "ClassDef",
+    "line": 12751,
+    "end_line": 12795
+  },
+  {
+    "name": "NopInputDialog.__init__",
+    "kind": "FunctionDef",
+    "line": 12753,
+    "end_line": 12777
+  },
+  {
+    "name": "NopInputDialog.value",
+    "kind": "FunctionDef",
+    "line": 12779,
+    "end_line": 12782
+  },
+  {
+    "name": "NopInputDialog.update_language",
+    "kind": "FunctionDef",
+    "line": 12784,
+    "end_line": 12795
+  },
+  {
+    "name": "CnpFileIcons",
+    "kind": "ClassDef",
+    "line": 12798,
+    "end_line": 12832
+  },
+  {
+    "name": "CnpFileIcons.__init__",
+    "kind": "FunctionDef",
+    "line": 12800,
+    "end_line": 12802
+  },
+  {
+    "name": "CnpFileIcons.update_theme",
+    "kind": "FunctionDef",
+    "line": 12804,
+    "end_line": 12811
+  },
+  {
+    "name": "CnpFileIcons.icon",
+    "kind": "FunctionDef",
+    "line": 12813,
+    "end_line": 12829
+  },
+  {
+    "name": "CnpFileIcons.type",
+    "kind": "FunctionDef",
+    "line": 12831,
+    "end_line": 12832
+  },
+  {
+    "name": "CnpFileProxy",
+    "kind": "ClassDef",
+    "line": 12835,
+    "end_line": 13230
+  },
+  {
+    "name": "CnpFileProxy.__init__",
+    "kind": "FunctionDef",
+    "line": 12852,
+    "end_line": 12877
+  },
+  {
+    "name": "CnpFileProxy.close",
+    "kind": "FunctionDef",
+    "line": 12879,
+    "end_line": 12886
+  },
+  {
+    "name": "CnpFileProxy.setSourceModel",
+    "kind": "FunctionDef",
+    "line": 12888,
+    "end_line": 12900
+  },
+  {
+    "name": "CnpFileProxy._clear_search_names",
+    "kind": "FunctionDef",
+    "line": 12902,
+    "end_line": 12905
+  },
+  {
+    "name": "CnpFileProxy._source_changed",
+    "kind": "FunctionDef",
+    "line": 12907,
+    "end_line": 12931
+  },
+  {
+    "name": "CnpFileProxy.set_search",
+    "kind": "FunctionDef",
+    "line": 12933,
+    "end_line": 12948
+  },
+  {
+    "name": "CnpFileProxy._refresh_search_filter",
+    "kind": "FunctionDef",
+    "line": 12950,
+    "end_line": 12952
+  },
+  {
+    "name": "CnpFileProxy.filterAcceptsRow",
+    "kind": "FunctionDef",
+    "line": 12954,
+    "end_line": 12963
+  },
+  {
+    "name": "CnpFileProxy._request_stat",
+    "kind": "FunctionDef",
+    "line": 12965,
+    "end_line": 12975
+  },
+  {
+    "name": "CnpFileProxy._stat_worker",
+    "kind": "FunctionDef",
+    "line": 12977,
+    "end_line": 12993
+  },
+  {
+    "name": "CnpFileProxy._details",
+    "kind": "FunctionDef",
+    "line": 12995,
+    "end_line": 13016
+  },
+  {
+    "name": "CnpFileProxy.data",
+    "kind": "FunctionDef",
+    "line": 13018,
+    "end_line": 13050
+  },
+  {
+    "name": "CnpFileProxy.headerData",
+    "kind": "FunctionDef",
+    "line": 13052,
+    "end_line": 13055
+  },
+  {
+    "name": "CnpFileProxy.lessThan",
+    "kind": "FunctionDef",
+    "line": 13057,
+    "end_line": 13071
+  },
+  {
+    "name": "CnpFileProxy.change_directory",
+    "kind": "FunctionDef",
+    "line": 13073,
+    "end_line": 13078
+  },
+  {
+    "name": "CnpFileProxy.set_visible_folders",
+    "kind": "FunctionDef",
+    "line": 13080,
+    "end_line": 13114
+  },
+  {
+    "name": "CnpFileProxy._folder_stamp",
+    "kind": "FunctionDef",
+    "line": 13117,
+    "end_line": 13119
+  },
+  {
+    "name": "CnpFileProxy._scan_folder",
+    "kind": "FunctionDef",
+    "line": 13121,
+    "end_line": 13192
+  },
+  {
+    "name": "CnpFileProxy._folder_worker",
+    "kind": "FunctionDef",
+    "line": 13194,
+    "end_line": 13207
+  },
+  {
+    "name": "CnpFileProxy._receive",
+    "kind": "FunctionDef",
+    "line": 13209,
+    "end_line": 13230
+  },
+  {
+    "name": "CnpFileHeader",
+    "kind": "ClassDef",
+    "line": 13233,
+    "end_line": 13268
+  },
+  {
+    "name": "CnpFileHeader.__init__",
+    "kind": "FunctionDef",
+    "line": 13235,
+    "end_line": 13244
+  },
+  {
+    "name": "CnpFileHeader.update_theme",
+    "kind": "FunctionDef",
+    "line": 13246,
+    "end_line": 13248
+  },
+  {
+    "name": "CnpFileHeader.paintSection",
+    "kind": "FunctionDef",
+    "line": 13250,
+    "end_line": 13268
+  },
+  {
+    "name": "CnpFileDialog",
+    "kind": "ClassDef",
+    "line": 13271,
+    "end_line": 13625
+  },
+  {
+    "name": "CnpFileDialog.__init__",
+    "kind": "FunctionDef",
+    "line": 13273,
+    "end_line": 13367
+  },
+  {
+    "name": "CnpFileDialog.focus_search",
+    "kind": "FunctionDef",
+    "line": 13369,
+    "end_line": 13371
+  },
+  {
+    "name": "CnpFileDialog._queue_search",
+    "kind": "FunctionDef",
+    "line": 13373,
+    "end_line": 13378
+  },
+  {
+    "name": "CnpFileDialog._apply_search",
+    "kind": "FunctionDef",
+    "line": 13380,
+    "end_line": 13384
+  },
+  {
+    "name": "CnpFileDialog._translated_filter",
+    "kind": "FunctionDef",
+    "line": 13387,
+    "end_line": 13392
+  },
+  {
+    "name": "CnpFileDialog.update_language",
+    "kind": "FunctionDef",
+    "line": 13394,
+    "end_line": 13430
+  },
+  {
+    "name": "CnpFileDialog.update_theme",
+    "kind": "FunctionDef",
+    "line": 13432,
+    "end_line": 13466
+  },
+  {
+    "name": "CnpFileDialog._fit_file_columns",
+    "kind": "FunctionDef",
+    "line": 13468,
+    "end_line": 13478
+  },
+  {
+    "name": "CnpFileDialog._schedule_folder_sizes",
+    "kind": "FunctionDef",
+    "line": 13480,
+    "end_line": 13482
+  },
+  {
+    "name": "CnpFileDialog._folder_directory_changed",
+    "kind": "FunctionDef",
+    "line": 13484,
+    "end_line": 13493
+  },
+  {
+    "name": "CnpFileDialog._scan_visible_folders",
+    "kind": "FunctionDef",
+    "line": 13495,
+    "end_line": 13518
+  },
+  {
+    "name": "CnpFileDialog.paintEvent",
+    "kind": "FunctionDef",
+    "line": 13520,
+    "end_line": 13526
+  },
+  {
+    "name": "CnpFileDialog.eventFilter",
+    "kind": "FunctionDef",
+    "line": 13528,
+    "end_line": 13541
+  },
+  {
+    "name": "CnpFileDialog.showEvent",
+    "kind": "FunctionDef",
+    "line": 13543,
+    "end_line": 13568
+  },
+  {
+    "name": "CnpFileDialog.changeEvent",
+    "kind": "FunctionDef",
+    "line": 13570,
+    "end_line": 13573
+  },
+  {
+    "name": "CnpFileDialog.accept",
+    "kind": "FunctionDef",
+    "line": 13575,
+    "end_line": 13598
+  },
+  {
+    "name": "CnpFileDialog.choose",
+    "kind": "FunctionDef",
+    "line": 13601,
+    "end_line": 13625
+  },
+  {
+    "name": "CnpFileDialog.choose.finished",
+    "kind": "FunctionDef",
+    "line": 13619,
+    "end_line": 13622
+  },
+  {
+    "name": "HelpTextBrowser",
+    "kind": "ClassDef",
+    "line": 13668,
+    "end_line": 13702
+  },
+  {
+    "name": "HelpTextBrowser.__init__",
+    "kind": "FunctionDef",
+    "line": 13670,
+    "end_line": 13675
+  },
+  {
+    "name": "HelpTextBrowser.setHtml",
+    "kind": "FunctionDef",
+    "line": 13677,
+    "end_line": 13679
+  },
+  {
+    "name": "HelpTextBrowser.set_zoom",
+    "kind": "FunctionDef",
+    "line": 13681,
+    "end_line": 13683
+  },
+  {
+    "name": "HelpTextBrowser.refresh_zoom",
+    "kind": "FunctionDef",
+    "line": 13685,
+    "end_line": 13702
+  },
+  {
+    "name": "FlowHelpText",
+    "kind": "ClassDef",
+    "line": 13705,
+    "end_line": 13747
+  },
+  {
+    "name": "FlowHelpText.__init__",
+    "kind": "FunctionDef",
+    "line": 13707,
+    "end_line": 13719
+  },
+  {
+    "name": "FlowHelpText.text",
+    "kind": "FunctionDef",
+    "line": 13721,
+    "end_line": 13722
+  },
+  {
+    "name": "FlowHelpText.setText",
+    "kind": "FunctionDef",
+    "line": 13724,
+    "end_line": 13727
+  },
+  {
+    "name": "FlowHelpText.setTextFormat",
+    "kind": "FunctionDef",
+    "line": 13729,
+    "end_line": 13731
+  },
+  {
+    "name": "FlowHelpText.resizeEvent",
+    "kind": "FunctionDef",
+    "line": 13733,
+    "end_line": 13735
+  },
+  {
+    "name": "FlowHelpText._fit_height",
+    "kind": "FunctionDef",
+    "line": 13737,
+    "end_line": 13747
+  },
+  {
+    "name": "HelpZoomControls",
+    "kind": "ClassDef",
+    "line": 13750,
+    "end_line": 13820
+  },
+  {
+    "name": "HelpZoomControls.__init__",
+    "kind": "FunctionDef",
+    "line": 13754,
+    "end_line": 13777
+  },
+  {
+    "name": "HelpZoomControls.update_language",
+    "kind": "FunctionDef",
+    "line": 13779,
+    "end_line": 13782
+  },
+  {
+    "name": "HelpZoomControls.set_percent",
+    "kind": "FunctionDef",
+    "line": 13784,
+    "end_line": 13789
+  },
+  {
+    "name": "HelpZoomControls.refresh",
+    "kind": "FunctionDef",
+    "line": 13791,
+    "end_line": 13809
+  },
+  {
+    "name": "HelpZoomControls.eventFilter",
+    "kind": "FunctionDef",
+    "line": 13811,
+    "end_line": 13820
+  },
+  {
+    "name": "InformationDialog",
+    "kind": "ClassDef",
+    "line": 13823,
+    "end_line": 14079
+  },
+  {
+    "name": "InformationDialog.__init__",
+    "kind": "FunctionDef",
+    "line": 13825,
+    "end_line": 13902
+  },
+  {
+    "name": "InformationDialog.use_compact_confirmation",
+    "kind": "FunctionDef",
+    "line": 13904,
+    "end_line": 13929
+  },
+  {
+    "name": "InformationDialog.browser",
+    "kind": "FunctionDef",
+    "line": 13932,
+    "end_line": 13933
+  },
+  {
+    "name": "InformationDialog.update_language",
+    "kind": "FunctionDef",
+    "line": 13935,
+    "end_line": 13958
+  },
+  {
+    "name": "InformationDialog._fill_pages",
+    "kind": "FunctionDef",
+    "line": 13960,
+    "end_line": 13970
+  },
+  {
+    "name": "InformationDialog.update_theme",
+    "kind": "FunctionDef",
+    "line": 13972,
+    "end_line": 13982
+  },
+  {
+    "name": "InformationDialog.content_html",
+    "kind": "FunctionDef",
+    "line": 13984,
+    "end_line": 13999
+  },
+  {
+    "name": "InformationDialog.copy_content",
+    "kind": "FunctionDef",
+    "line": 14001,
+    "end_line": 14004
+  },
+  {
+    "name": "InformationDialog.fit_content",
+    "kind": "FunctionDef",
+    "line": 14006,
+    "end_line": 14069
+  },
+  {
+    "name": "InformationDialog.resizeEvent",
+    "kind": "FunctionDef",
+    "line": 14071,
+    "end_line": 14074
+  },
+  {
+    "name": "InformationDialog.open_link",
+    "kind": "FunctionDef",
+    "line": 14077,
+    "end_line": 14079
+  },
+  {
+    "name": "WindowPlacement",
+    "kind": "ClassDef",
+    "line": 14083,
+    "end_line": 14232
+  },
+  {
+    "name": "WindowPlacement.__init__",
+    "kind": "FunctionDef",
+    "line": 14089,
+    "end_line": 14099
+  },
+  {
+    "name": "WindowPlacement._screen_added",
+    "kind": "FunctionDef",
+    "line": 14101,
+    "end_line": 14104
+  },
+  {
+    "name": "WindowPlacement.owns",
+    "kind": "FunctionDef",
+    "line": 14106,
+    "end_line": 14112
+  },
+  {
+    "name": "WindowPlacement.refresh_bounds",
+    "kind": "FunctionDef",
+    "line": 14114,
+    "end_line": 14120
+  },
+  {
+    "name": "WindowPlacement.theme",
+    "kind": "FunctionDef",
+    "line": 14122,
+    "end_line": 14152
+  },
+  {
+    "name": "WindowPlacement.refresh_theme",
+    "kind": "FunctionDef",
+    "line": 14154,
+    "end_line": 14157
+  },
+  {
+    "name": "WindowPlacement.fit",
+    "kind": "FunctionDef",
+    "line": 14159,
+    "end_line": 14202
+  },
+  {
+    "name": "WindowPlacement.eventFilter",
+    "kind": "FunctionDef",
+    "line": 14204,
+    "end_line": 14232
+  },
+  {
+    "name": "InterfaceScrollArea",
+    "kind": "ClassDef",
+    "line": 14235,
+    "end_line": 14268
+  },
+  {
+    "name": "InterfaceScrollArea.__init__",
+    "kind": "FunctionDef",
+    "line": 14241,
+    "end_line": 14249
+  },
+  {
+    "name": "InterfaceScrollArea.minimumSizeHint",
+    "kind": "FunctionDef",
+    "line": 14251,
+    "end_line": 14253
+  },
+  {
+    "name": "InterfaceScrollArea.fitted_size",
+    "kind": "FunctionDef",
+    "line": 14256,
+    "end_line": 14268
+  },
+  {
+    "name": "DownloadTable",
+    "kind": "ClassDef",
+    "line": 14271,
+    "end_line": 14318
+  },
+  {
+    "name": "DownloadTable.__init__",
+    "kind": "FunctionDef",
+    "line": 14273,
+    "end_line": 14283
+  },
+  {
+    "name": "DownloadTable.sync_metrics",
+    "kind": "FunctionDef",
+    "line": 14285,
+    "end_line": 14291
+  },
+  {
+    "name": "DownloadTable.changeEvent",
+    "kind": "FunctionDef",
+    "line": 14293,
+    "end_line": 14296
+  },
+  {
+    "name": "DownloadTable.wheelEvent",
+    "kind": "FunctionDef",
+    "line": 14298,
+    "end_line": 14312
+  },
+  {
+    "name": "DownloadTable.eventFilter",
+    "kind": "FunctionDef",
+    "line": 14314,
+    "end_line": 14318
+  },
+  {
+    "name": "ExactRowsTable",
+    "kind": "ClassDef",
+    "line": 14321,
+    "end_line": 14355
+  },
+  {
+    "name": "ExactRowsTable.__init__",
+    "kind": "FunctionDef",
+    "line": 14323,
+    "end_line": 14332
+  },
+  {
+    "name": "ExactRowsTable.sync_metrics",
+    "kind": "FunctionDef",
+    "line": 14334,
+    "end_line": 14350
+  },
+  {
+    "name": "ExactRowsTable.changeEvent",
+    "kind": "FunctionDef",
+    "line": 14352,
+    "end_line": 14355
+  },
+  {
+    "name": "AudioTrackList",
+    "kind": "ClassDef",
+    "line": 14358,
+    "end_line": 14424
+  },
+  {
+    "name": "AudioTrackList.__init__",
+    "kind": "FunctionDef",
+    "line": 14360,
+    "end_line": 14372
+  },
+  {
+    "name": "AudioTrackList.sync_metrics",
+    "kind": "FunctionDef",
+    "line": 14374,
+    "end_line": 14414
+  },
+  {
+    "name": "AudioTrackList.resizeEvent",
+    "kind": "FunctionDef",
+    "line": 14416,
+    "end_line": 14419
+  },
+  {
+    "name": "AudioTrackList.changeEvent",
+    "kind": "FunctionDef",
+    "line": 14421,
+    "end_line": 14424
+  },
+  {
+    "name": "download_status_text",
+    "kind": "FunctionDef",
+    "line": 14427,
+    "end_line": 14438
+  },
+  {
+    "name": "download_size_text",
+    "kind": "FunctionDef",
+    "line": 14441,
+    "end_line": 14464
+  },
+  {
+    "name": "download_size_text.number",
+    "kind": "FunctionDef",
+    "line": 14442,
+    "end_line": 14447
+  },
+  {
+    "name": "DownloadDelegate",
+    "kind": "ClassDef",
+    "line": 14467,
+    "end_line": 14522
+  },
+  {
+    "name": "DownloadDelegate.__init__",
+    "kind": "FunctionDef",
+    "line": 14469,
+    "end_line": 14471
+  },
+  {
+    "name": "DownloadDelegate.paint",
+    "kind": "FunctionDef",
+    "line": 14473,
+    "end_line": 14519
+  },
+  {
+    "name": "DownloadDelegate.sizeHint",
+    "kind": "FunctionDef",
+    "line": 14521,
+    "end_line": 14522
+  },
+  {
+    "name": "choice_text",
+    "kind": "FunctionDef",
+    "line": 14539,
+    "end_line": 14547
+  },
+  {
+    "name": "TrackCell",
+    "kind": "ClassDef",
+    "line": 14570,
+    "end_line": 14584
+  },
+  {
+    "name": "TrackCell.__lt__",
+    "kind": "FunctionDef",
+    "line": 14571,
+    "end_line": 14584
+  },
+  {
+    "name": "TrackTable",
+    "kind": "ClassDef",
+    "line": 14587,
+    "end_line": 14688
+  },
+  {
+    "name": "TrackTable.__init__",
+    "kind": "FunctionDef",
+    "line": 14590,
+    "end_line": 14616
+  },
+  {
+    "name": "TrackTable.schedule_column_minima",
+    "kind": "FunctionDef",
+    "line": 14618,
+    "end_line": 14619
+  },
+  {
+    "name": "TrackTable.recalculate_column_minima",
+    "kind": "FunctionDef",
+    "line": 14621,
+    "end_line": 14628
+  },
+  {
+    "name": "TrackTable._enforce_column_minimum",
+    "kind": "FunctionDef",
+    "line": 14630,
+    "end_line": 14635
+  },
+  {
+    "name": "TrackTable.changeEvent",
+    "kind": "FunctionDef",
+    "line": 14637,
+    "end_line": 14640
+  },
+  {
+    "name": "TrackTable.event",
+    "kind": "FunctionDef",
+    "line": 14642,
+    "end_line": 14646
+  },
+  {
+    "name": "TrackTable.eventFilter",
+    "kind": "FunctionDef",
+    "line": 14648,
+    "end_line": 14651
+  },
+  {
+    "name": "TrackTable.move_rows",
+    "kind": "FunctionDef",
+    "line": 14653,
+    "end_line": 14674
+  },
+  {
+    "name": "TrackTable.dropEvent",
+    "kind": "FunctionDef",
+    "line": 14676,
+    "end_line": 14688
+  },
+  {
+    "name": "NopApoJob",
+    "kind": "ClassDef",
+    "line": 14694,
+    "end_line": 14707
+  },
+  {
+    "name": "NopApoJob.__init__",
+    "kind": "FunctionDef",
+    "line": 14696,
+    "end_line": 14699
+  },
+  {
+    "name": "NopApoJob.run",
+    "kind": "FunctionDef",
+    "line": 14701,
+    "end_line": 14707
+  },
+  {
+    "name": "Window",
+    "kind": "ClassDef",
+    "line": 14719,
+    "end_line": 23478
+  },
+  {
+    "name": "Window._clear_row",
+    "kind": "FunctionDef",
+    "line": 14754,
+    "end_line": 14760
+  },
+  {
+    "name": "Window.__init__",
+    "kind": "FunctionDef",
+    "line": 14765,
+    "end_line": 15474
+  },
+  {
+    "name": "Window.__init__.hline",
+    "kind": "FunctionDef",
+    "line": 15159,
+    "end_line": 15163
+  },
+  {
+    "name": "Window.__init__.button_grid",
+    "kind": "FunctionDef",
+    "line": 15165,
+    "end_line": 15172
+  },
+  {
+    "name": "Window.icon_button",
+    "kind": "FunctionDef",
+    "line": 15479,
+    "end_line": 15499
+  },
+  {
+    "name": "Window.set_button_theme_role",
+    "kind": "FunctionDef",
+    "line": 15501,
+    "end_line": 15517
+  },
+  {
+    "name": "Window.instruction_button",
+    "kind": "FunctionDef",
+    "line": 15519,
+    "end_line": 15525
+  },
+  {
+    "name": "Window._refresh_button_theme_role",
+    "kind": "FunctionDef",
+    "line": 15527,
+    "end_line": 15531
+  },
+  {
+    "name": "Window._scroll_panel",
+    "kind": "FunctionDef",
+    "line": 15534,
+    "end_line": 15558
+  },
+  {
+    "name": "Window._label",
+    "kind": "FunctionDef",
+    "line": 15561,
+    "end_line": 15566
+  },
+  {
+    "name": "Window._help_label",
+    "kind": "FunctionDef",
+    "line": 15569,
+    "end_line": 15574
+  },
+  {
+    "name": "Window._theme_swatch",
+    "kind": "FunctionDef",
+    "line": 15577,
+    "end_line": 15588
+  },
+  {
+    "name": "Window.build_settings_panel",
+    "kind": "FunctionDef",
+    "line": 15590,
+    "end_line": 15681
+  },
+  {
+    "name": "Window.build_settings_panel.check",
+    "kind": "FunctionDef",
+    "line": 15619,
+    "end_line": 15622
+  },
+  {
+    "name": "Window.build_about_panel",
+    "kind": "FunctionDef",
+    "line": 15683,
+    "end_line": 15809
+  },
+  {
+    "name": "Window._support_link_button",
+    "kind": "FunctionDef",
+    "line": 15811,
+    "end_line": 15818
+  },
+  {
+    "name": "Window._qr_label",
+    "kind": "FunctionDef",
+    "line": 15820,
+    "end_line": 15837
+  },
+  {
+    "name": "Window.fill_about",
+    "kind": "FunctionDef",
+    "line": 15839,
+    "end_line": 15861
+  },
+  {
+    "name": "Window._refresh_about_selection",
+    "kind": "FunctionDef",
+    "line": 15863,
+    "end_line": 15876
+  },
+  {
+    "name": "Window.refresh_avatar",
+    "kind": "FunctionDef",
+    "line": 15878,
+    "end_line": 15907
+  },
+  {
+    "name": "Window.copy_donate_address",
+    "kind": "FunctionDef",
+    "line": 15909,
+    "end_line": 15912
+  },
+  {
+    "name": "Window._register_default_player_windows",
+    "kind": "FunctionDef",
+    "line": 15916,
+    "end_line": 15977
+  },
+  {
+    "name": "Window._register_default_player_windows.write",
+    "kind": "FunctionDef",
+    "line": 15934,
+    "end_line": 15936
+  },
+  {
+    "name": "Window.on_default_player_toggled",
+    "kind": "FunctionDef",
+    "line": 15979,
+    "end_line": 16002
+  },
+  {
+    "name": "Window.on_setting_toggled",
+    "kind": "FunctionDef",
+    "line": 16005,
+    "end_line": 16007
+  },
+  {
+    "name": "Window.on_language_changed",
+    "kind": "FunctionDef",
+    "line": 16009,
+    "end_line": 16014
+  },
+  {
+    "name": "Window.on_theme_changed",
+    "kind": "FunctionDef",
+    "line": 16016,
+    "end_line": 16018
+  },
+  {
+    "name": "Window.apply_theme",
+    "kind": "FunctionDef",
+    "line": 16020,
+    "end_line": 16048
+  },
+  {
+    "name": "Window._set_window_status",
+    "kind": "FunctionDef",
+    "line": 16051,
+    "end_line": 16053
+  },
+  {
+    "name": "Window._update_app_title",
+    "kind": "FunctionDef",
+    "line": 16055,
+    "end_line": 16068
+  },
+  {
+    "name": "Window._refresh_title_bar_theme",
+    "kind": "FunctionDef",
+    "line": 16070,
+    "end_line": 16072
+  },
+  {
+    "name": "Window.refresh_theme_icons",
+    "kind": "FunctionDef",
+    "line": 16074,
+    "end_line": 16118
+  },
+  {
+    "name": "Window._refresh_transport_icons",
+    "kind": "FunctionDef",
+    "line": 16120,
+    "end_line": 16133
+  },
+  {
+    "name": "Window.retranslate_ui",
+    "kind": "FunctionDef",
+    "line": 16135,
+    "end_line": 16235
+  },
+  {
+    "name": "Window.retranslate_ui.tr",
+    "kind": "FunctionDef",
+    "line": 16140,
+    "end_line": 16141
+  },
+  {
+    "name": "Window.retranslate_ui.sync",
+    "kind": "FunctionDef",
+    "line": 16143,
+    "end_line": 16154
+  },
+  {
+    "name": "Window.open_data_folder",
+    "kind": "FunctionDef",
+    "line": 16237,
+    "end_line": 16246
+  },
+  {
+    "name": "Window._begin_side_separator_drag",
+    "kind": "FunctionDef",
+    "line": 16248,
+    "end_line": 16308
+  },
+  {
+    "name": "Window._rebuild_side_block_layout",
+    "kind": "FunctionDef",
+    "line": 16310,
+    "end_line": 16339
+  },
+  {
+    "name": "Window._move_side_dragged_block",
+    "kind": "FunctionDef",
+    "line": 16341,
+    "end_line": 16353
+  },
+  {
+    "name": "Window._update_side_separator_drop_target",
+    "kind": "FunctionDef",
+    "line": 16355,
+    "end_line": 16389
+  },
+  {
+    "name": "Window._finish_side_separator_drag",
+    "kind": "FunctionDef",
+    "line": 16391,
+    "end_line": 16426
+  },
+  {
+    "name": "Window._cancel_side_separator_drag",
+    "kind": "FunctionDef",
+    "line": 16428,
+    "end_line": 16463
+  },
+  {
+    "name": "Window.reorder_side_block",
+    "kind": "FunctionDef",
+    "line": 16465,
+    "end_line": 16478
+  },
+  {
+    "name": "Window.reset_panel_layout",
+    "kind": "FunctionDef",
+    "line": 16480,
+    "end_line": 16503
+  },
+  {
+    "name": "Window.build_downloads_panel",
+    "kind": "FunctionDef",
+    "line": 16505,
+    "end_line": 16898
+  },
+  {
+    "name": "Window.build_downloads_panel.muted",
+    "kind": "FunctionDef",
+    "line": 16518,
+    "end_line": 16521
+  },
+  {
+    "name": "Window._fill_dl_resolutions",
+    "kind": "FunctionDef",
+    "line": 16900,
+    "end_line": 16913
+  },
+  {
+    "name": "Window._dl_resolution_selected",
+    "kind": "FunctionDef",
+    "line": 16915,
+    "end_line": 16917
+  },
+  {
+    "name": "Window._dl_resolution_context",
+    "kind": "FunctionDef",
+    "line": 16919,
+    "end_line": 16927
+  },
+  {
+    "name": "Window._invalidate_dl_resolutions",
+    "kind": "FunctionDef",
+    "line": 16929,
+    "end_line": 16940
+  },
+  {
+    "name": "Window._refresh_resolution_status",
+    "kind": "FunctionDef",
+    "line": 16942,
+    "end_line": 16963
+  },
+  {
+    "name": "Window.fetch_dl_resolutions",
+    "kind": "FunctionDef",
+    "line": 16965,
+    "end_line": 16979
+  },
+  {
+    "name": "Window._retire_resolution_probe",
+    "kind": "FunctionDef",
+    "line": 16981,
+    "end_line": 16984
+  },
+  {
+    "name": "Window._on_dl_resolutions",
+    "kind": "FunctionDef",
+    "line": 16986,
+    "end_line": 16994
+  },
+  {
+    "name": "Window._dl_url_field",
+    "kind": "FunctionDef",
+    "line": 16996,
+    "end_line": 17000
+  },
+  {
+    "name": "Window.set_dl_kind",
+    "kind": "FunctionDef",
+    "line": 17002,
+    "end_line": 17013
+  },
+  {
+    "name": "Window.update_dl_fields",
+    "kind": "FunctionDef",
+    "line": 17015,
+    "end_line": 17030
+  },
+  {
+    "name": "Window.dl_missing",
+    "kind": "FunctionDef",
+    "line": 17032,
+    "end_line": 17058
+  },
+  {
+    "name": "Window._dl_button_tip",
+    "kind": "FunctionDef",
+    "line": 17060,
+    "end_line": 17069
+  },
+  {
+    "name": "Window._refresh_bitrate_controls",
+    "kind": "FunctionDef",
+    "line": 17071,
+    "end_line": 17101
+  },
+  {
+    "name": "Window._total_bitrate_changed",
+    "kind": "FunctionDef",
+    "line": 17104,
+    "end_line": 17112
+  },
+  {
+    "name": "Window.update_download_state",
+    "kind": "FunctionDef",
+    "line": 17114,
+    "end_line": 17140
+  },
+  {
+    "name": "Window.on_dl_req_link",
+    "kind": "FunctionDef",
+    "line": 17142,
+    "end_line": 17144
+  },
+  {
+    "name": "Window.show_cookies_help",
+    "kind": "FunctionDef",
+    "line": 17146,
+    "end_line": 17147
+  },
+  {
+    "name": "Window.show_direct_video_help",
+    "kind": "FunctionDef",
+    "line": 17149,
+    "end_line": 17150
+  },
+  {
+    "name": "Window.open_information",
+    "kind": "FunctionDef",
+    "line": 17152,
+    "end_line": 17168
+  },
+  {
+    "name": "Window.show_message",
+    "kind": "FunctionDef",
+    "line": 17170,
+    "end_line": 17206
+  },
+  {
+    "name": "Window.prompt_input",
+    "kind": "FunctionDef",
+    "line": 17209,
+    "end_line": 17226
+  },
+  {
+    "name": "Window.prompt_input.finished",
+    "kind": "FunctionDef",
+    "line": 17219,
+    "end_line": 17222
+  },
+  {
+    "name": "Window.build_converter_panel",
+    "kind": "FunctionDef",
+    "line": 17228,
+    "end_line": 17345
+  },
+  {
+    "name": "Window.update_converter_tools_label",
+    "kind": "FunctionDef",
+    "line": 17347,
+    "end_line": 17356
+  },
+  {
+    "name": "Window.build_transcode_panel",
+    "kind": "FunctionDef",
+    "line": 17359,
+    "end_line": 17592
+  },
+  {
+    "name": "Window.update_transcode_target_column",
+    "kind": "FunctionDef",
+    "line": 17595,
+    "end_line": 17619
+  },
+  {
+    "name": "Window.transcode_add_files",
+    "kind": "FunctionDef",
+    "line": 17622,
+    "end_line": 17625
+  },
+  {
+    "name": "Window._transcode_add_paths",
+    "kind": "FunctionDef",
+    "line": 17627,
+    "end_line": 17652
+  },
+  {
+    "name": "Window.transcode_update_source_info",
+    "kind": "FunctionDef",
+    "line": 17654,
+    "end_line": 17682
+  },
+  {
+    "name": "Window.transcode_remove_selected",
+    "kind": "FunctionDef",
+    "line": 17688,
+    "end_line": 17704
+  },
+  {
+    "name": "Window.transcode_clear_files",
+    "kind": "FunctionDef",
+    "line": 17708,
+    "end_line": 17725
+  },
+  {
+    "name": "Window.transcode_choose_folder",
+    "kind": "FunctionDef",
+    "line": 17728,
+    "end_line": 17733
+  },
+  {
+    "name": "Window.transcode_choose_folder.chosen",
+    "kind": "FunctionDef",
+    "line": 17730,
+    "end_line": 17732
+  },
+  {
+    "name": "Window.transcode_start",
+    "kind": "FunctionDef",
+    "line": 17735,
+    "end_line": 17807
+  },
+  {
+    "name": "Window.transcode_pause_or_resume",
+    "kind": "FunctionDef",
+    "line": 17811,
+    "end_line": 17814
+  },
+  {
+    "name": "Window.transcode_on_pause_state_changed",
+    "kind": "FunctionDef",
+    "line": 17816,
+    "end_line": 17819
+  },
+  {
+    "name": "Window.transcode_stop",
+    "kind": "FunctionDef",
+    "line": 17822,
+    "end_line": 17828
+  },
+  {
+    "name": "Window.transcode_on_job_status",
+    "kind": "FunctionDef",
+    "line": 17831,
+    "end_line": 17849
+  },
+  {
+    "name": "Window.transcode_on_progress",
+    "kind": "FunctionDef",
+    "line": 17852,
+    "end_line": 17858
+  },
+  {
+    "name": "Window.transcode_on_live_progress",
+    "kind": "FunctionDef",
+    "line": 17860,
+    "end_line": 17866
+  },
+  {
+    "name": "Window.transcode_on_completed",
+    "kind": "FunctionDef",
+    "line": 17868,
+    "end_line": 17890
+  },
+  {
+    "name": "Window.update_converter_formats",
+    "kind": "FunctionDef",
+    "line": 17895,
+    "end_line": 17916
+  },
+  {
+    "name": "Window._converter_selected_ext",
+    "kind": "FunctionDef",
+    "line": 17919,
+    "end_line": 17931
+  },
+  {
+    "name": "Window.update_converter_target_column",
+    "kind": "FunctionDef",
+    "line": 17934,
+    "end_line": 17939
+  },
+  {
+    "name": "Window.converter_add_files",
+    "kind": "FunctionDef",
+    "line": 17941,
+    "end_line": 17946
+  },
+  {
+    "name": "Window._converter_add_paths",
+    "kind": "FunctionDef",
+    "line": 17948,
+    "end_line": 17970
+  },
+  {
+    "name": "Window.converter_remove_selected",
+    "kind": "FunctionDef",
+    "line": 17973,
+    "end_line": 17983
+  },
+  {
+    "name": "Window.converter_clear_files",
+    "kind": "FunctionDef",
+    "line": 17986,
+    "end_line": 17993
+  },
+  {
+    "name": "Window.converter_choose_folder",
+    "kind": "FunctionDef",
+    "line": 17996,
+    "end_line": 18001
+  },
+  {
+    "name": "Window.converter_choose_folder.chosen",
+    "kind": "FunctionDef",
+    "line": 17998,
+    "end_line": 18000
+  },
+  {
+    "name": "Window.converter_start",
+    "kind": "FunctionDef",
+    "line": 18003,
+    "end_line": 18051
+  },
+  {
+    "name": "Window.converter_stop",
+    "kind": "FunctionDef",
+    "line": 18054,
+    "end_line": 18059
+  },
+  {
+    "name": "Window.converter_on_job_status",
+    "kind": "FunctionDef",
+    "line": 18062,
+    "end_line": 18070
+  },
+  {
+    "name": "Window.converter_on_progress",
+    "kind": "FunctionDef",
+    "line": 18073,
+    "end_line": 18082
+  },
+  {
+    "name": "Window.converter_on_completed",
+    "kind": "FunctionDef",
+    "line": 18085,
+    "end_line": 18100
+  },
+  {
+    "name": "Window.build_download_info_panel",
+    "kind": "FunctionDef",
+    "line": 18104,
+    "end_line": 18144
+  },
+  {
+    "name": "Window.build_equalizer_panel",
+    "kind": "FunctionDef",
+    "line": 18149,
+    "end_line": 18282
+  },
+  {
+    "name": "Window._apo_init",
+    "kind": "FunctionDef",
+    "line": 18284,
+    "end_line": 18320
+  },
+  {
+    "name": "Window._local_eq_enabled",
+    "kind": "FunctionDef",
+    "line": 18322,
+    "end_line": 18323
+  },
+  {
+    "name": "Window._apo_set_state",
+    "kind": "FunctionDef",
+    "line": 18325,
+    "end_line": 18327
+  },
+  {
+    "name": "Window._apo_refresh_ui",
+    "kind": "FunctionDef",
+    "line": 18329,
+    "end_line": 18364
+  },
+  {
+    "name": "Window._apo_discover",
+    "kind": "FunctionDef",
+    "line": 18366,
+    "end_line": 18370
+  },
+  {
+    "name": "Window._apo_begin",
+    "kind": "FunctionDef",
+    "line": 18372,
+    "end_line": 18413
+  },
+  {
+    "name": "Window._apo_begin.finished",
+    "kind": "FunctionDef",
+    "line": 18383,
+    "end_line": 18411
+  },
+  {
+    "name": "Window._apo_admin_declined",
+    "kind": "FunctionDef",
+    "line": 18415,
+    "end_line": 18419
+  },
+  {
+    "name": "Window._apo_apply_inspection",
+    "kind": "FunctionDef",
+    "line": 18421,
+    "end_line": 18497
+  },
+  {
+    "name": "Window.check_system_equalizer",
+    "kind": "FunctionDef",
+    "line": 18499,
+    "end_line": 18511
+  },
+  {
+    "name": "Window.check_system_equalizer.checked",
+    "kind": "FunctionDef",
+    "line": 18502,
+    "end_line": 18510
+  },
+  {
+    "name": "Window._apo_periodic_check",
+    "kind": "FunctionDef",
+    "line": 18513,
+    "end_line": 18519
+  },
+  {
+    "name": "Window._apo_scope_changed",
+    "kind": "FunctionDef",
+    "line": 18521,
+    "end_line": 18537
+  },
+  {
+    "name": "Window._apo_device_changed",
+    "kind": "FunctionDef",
+    "line": 18539,
+    "end_line": 18542
+  },
+  {
+    "name": "Window._apo_spec",
+    "kind": "FunctionDef",
+    "line": 18544,
+    "end_line": 18549
+  },
+  {
+    "name": "Window.connect_system_equalizer",
+    "kind": "FunctionDef",
+    "line": 18551,
+    "end_line": 18581
+  },
+  {
+    "name": "Window.connect_system_equalizer.discovered",
+    "kind": "FunctionDef",
+    "line": 18556,
+    "end_line": 18580
+  },
+  {
+    "name": "Window._apo_connected",
+    "kind": "FunctionDef",
+    "line": 18583,
+    "end_line": 18592
+  },
+  {
+    "name": "Window._apo_device_labels",
+    "kind": "FunctionDef",
+    "line": 18594,
+    "end_line": 18623
+  },
+  {
+    "name": "Window._apo_tool_instructions",
+    "kind": "FunctionDef",
+    "line": 18625,
+    "end_line": 18635
+  },
+  {
+    "name": "Window.open_apo_configurator",
+    "kind": "FunctionDef",
+    "line": 18637,
+    "end_line": 18694
+  },
+  {
+    "name": "Window.open_apo_configurator.start",
+    "kind": "FunctionDef",
+    "line": 18663,
+    "end_line": 18676
+  },
+  {
+    "name": "Window.open_apo_configurator.started",
+    "kind": "FunctionDef",
+    "line": 18679,
+    "end_line": 18692
+  },
+  {
+    "name": "Window._apo_poll_tool",
+    "kind": "FunctionDef",
+    "line": 18696,
+    "end_line": 18726
+  },
+  {
+    "name": "Window._apo_tool_error_text",
+    "kind": "FunctionDef",
+    "line": 18728,
+    "end_line": 18745
+  },
+  {
+    "name": "Window._apo_tool_failure",
+    "kind": "FunctionDef",
+    "line": 18747,
+    "end_line": 18751
+  },
+  {
+    "name": "Window.show_apo_launch_diagnostics",
+    "kind": "FunctionDef",
+    "line": 18753,
+    "end_line": 18770
+  },
+  {
+    "name": "Window._apo_refresh_tool_diagnostics",
+    "kind": "FunctionDef",
+    "line": 18772,
+    "end_line": 18794
+  },
+  {
+    "name": "Window.disconnect_system_equalizer",
+    "kind": "FunctionDef",
+    "line": 18797,
+    "end_line": 18805
+  },
+  {
+    "name": "Window._apo_cancel_disconnect",
+    "kind": "FunctionDef",
+    "line": 18807,
+    "end_line": 18809
+  },
+  {
+    "name": "Window._apo_disconnected",
+    "kind": "FunctionDef",
+    "line": 18811,
+    "end_line": 18821
+  },
+  {
+    "name": "Window.schedule_apo_sync",
+    "kind": "FunctionDef",
+    "line": 18823,
+    "end_line": 18827
+  },
+  {
+    "name": "Window._apo_sync",
+    "kind": "FunctionDef",
+    "line": 18829,
+    "end_line": 18843
+  },
+  {
+    "name": "Window._apo_offer_sound_test",
+    "kind": "FunctionDef",
+    "line": 18845,
+    "end_line": 18853
+  },
+  {
+    "name": "Window._apo_start_sound_test",
+    "kind": "FunctionDef",
+    "line": 18855,
+    "end_line": 18862
+  },
+  {
+    "name": "Window._apo_ask_sound_result",
+    "kind": "FunctionDef",
+    "line": 18864,
+    "end_line": 18874
+  },
+  {
+    "name": "Window._apo_finish_sound_test",
+    "kind": "FunctionDef",
+    "line": 18876,
+    "end_line": 18887
+  },
+  {
+    "name": "Window._apo_finish_sound_test.restored",
+    "kind": "FunctionDef",
+    "line": 18880,
+    "end_line": 18886
+  },
+  {
+    "name": "Window.equalizer_apo_text",
+    "kind": "FunctionDef",
+    "line": 18890,
+    "end_line": 18893
+  },
+  {
+    "name": "Window.export_equalizer_apo",
+    "kind": "FunctionDef",
+    "line": 18895,
+    "end_line": 18899
+  },
+  {
+    "name": "Window._export_equalizer_apo",
+    "kind": "FunctionDef",
+    "line": 18901,
+    "end_line": 18909
+  },
+  {
+    "name": "Window.show_system_equalizer_help",
+    "kind": "FunctionDef",
+    "line": 18911,
+    "end_line": 18934
+  },
+  {
+    "name": "Window.format_frequency",
+    "kind": "FunctionDef",
+    "line": 18937,
+    "end_line": 18938
+  },
+  {
+    "name": "Window.delete_eq_preset",
+    "kind": "FunctionDef",
+    "line": 18940,
+    "end_line": 18951
+  },
+  {
+    "name": "Window.rebuild_eq_preset_combo",
+    "kind": "FunctionDef",
+    "line": 18953,
+    "end_line": 18965
+  },
+  {
+    "name": "Window.save_eq_preset",
+    "kind": "FunctionDef",
+    "line": 18967,
+    "end_line": 18968
+  },
+  {
+    "name": "Window._save_eq_preset",
+    "kind": "FunctionDef",
+    "line": 18970,
+    "end_line": 18986
+  },
+  {
+    "name": "Window.change_eq_frequency",
+    "kind": "FunctionDef",
+    "line": 18988,
+    "end_line": 19005
+  },
+  {
+    "name": "Window.add_eq_frequency",
+    "kind": "FunctionDef",
+    "line": 19007,
+    "end_line": 19009
+  },
+  {
+    "name": "Window._add_eq_frequency",
+    "kind": "FunctionDef",
+    "line": 19011,
+    "end_line": 19019
+  },
+  {
+    "name": "Window.remove_eq_frequency",
+    "kind": "FunctionDef",
+    "line": 19021,
+    "end_line": 19025
+  },
+  {
+    "name": "Window._remove_eq_frequency",
+    "kind": "FunctionDef",
+    "line": 19027,
+    "end_line": 19033
+  },
+  {
+    "name": "Window._eq_spacer",
+    "kind": "FunctionDef",
+    "line": 19037,
+    "end_line": 19040
+  },
+  {
+    "name": "Window._eq_scale_column",
+    "kind": "FunctionDef",
+    "line": 19042,
+    "end_line": 19064
+  },
+  {
+    "name": "Window._eq_band_column",
+    "kind": "FunctionDef",
+    "line": 19066,
+    "end_line": 19104
+  },
+  {
+    "name": "Window.rebuild_eq_bands",
+    "kind": "FunctionDef",
+    "line": 19106,
+    "end_line": 19130
+  },
+  {
+    "name": "Window.make_color_icon",
+    "kind": "FunctionDef",
+    "line": 19137,
+    "end_line": 19144
+  },
+  {
+    "name": "Window.build_color_panel",
+    "kind": "FunctionDef",
+    "line": 19146,
+    "end_line": 19271
+  },
+  {
+    "name": "Window.on_color_section_toggled",
+    "kind": "FunctionDef",
+    "line": 19273,
+    "end_line": 19278
+  },
+  {
+    "name": "Window._add_color_header",
+    "kind": "FunctionDef",
+    "line": 19281,
+    "end_line": 19289
+  },
+  {
+    "name": "Window._add_color_item",
+    "kind": "FunctionDef",
+    "line": 19291,
+    "end_line": 19294
+  },
+  {
+    "name": "Window.rebuild_color_list",
+    "kind": "FunctionDef",
+    "line": 19296,
+    "end_line": 19309
+  },
+  {
+    "name": "Window.sync_color_list_selection",
+    "kind": "FunctionDef",
+    "line": 19311,
+    "end_line": 19321
+  },
+  {
+    "name": "Window.update_color_state",
+    "kind": "FunctionDef",
+    "line": 19323,
+    "end_line": 19334
+  },
+  {
+    "name": "Window.color_preset_params",
+    "kind": "FunctionDef",
+    "line": 19337,
+    "end_line": 19345
+  },
+  {
+    "name": "Window.apply_color_preset",
+    "kind": "FunctionDef",
+    "line": 19347,
+    "end_line": 19359
+  },
+  {
+    "name": "Window.on_color_item_clicked",
+    "kind": "FunctionDef",
+    "line": 19361,
+    "end_line": 19364
+  },
+  {
+    "name": "Window.on_color_amount",
+    "kind": "FunctionDef",
+    "line": 19366,
+    "end_line": 19370
+  },
+  {
+    "name": "Window.on_color_slider",
+    "kind": "FunctionDef",
+    "line": 19372,
+    "end_line": 19379
+  },
+  {
+    "name": "Window.reset_color",
+    "kind": "FunctionDef",
+    "line": 19381,
+    "end_line": 19387
+  },
+  {
+    "name": "Window.save_color_preset",
+    "kind": "FunctionDef",
+    "line": 19389,
+    "end_line": 19390
+  },
+  {
+    "name": "Window._save_color_preset",
+    "kind": "FunctionDef",
+    "line": 19392,
+    "end_line": 19406
+  },
+  {
+    "name": "Window.delete_color_preset",
+    "kind": "FunctionDef",
+    "line": 19408,
+    "end_line": 19419
+  },
+  {
+    "name": "Window.toggle_color_enabled",
+    "kind": "FunctionDef",
+    "line": 19421,
+    "end_line": 19425
+  },
+  {
+    "name": "Window.toggle_color_compare",
+    "kind": "FunctionDef",
+    "line": 19427,
+    "end_line": 19429
+  },
+  {
+    "name": "Window.apply_color",
+    "kind": "FunctionDef",
+    "line": 19431,
+    "end_line": 19450
+  },
+  {
+    "name": "Window.schedule_color_save",
+    "kind": "FunctionDef",
+    "line": 19452,
+    "end_line": 19453
+  },
+  {
+    "name": "Window.load_equalizer_values",
+    "kind": "FunctionDef",
+    "line": 19455,
+    "end_line": 19464
+  },
+  {
+    "name": "Window.apply_equalizer_preset",
+    "kind": "FunctionDef",
+    "line": 19466,
+    "end_line": 19485
+  },
+  {
+    "name": "Window._commit_eq_gain",
+    "kind": "FunctionDef",
+    "line": 19487,
+    "end_line": 19514
+  },
+  {
+    "name": "Window.on_eq_slider_changed",
+    "kind": "FunctionDef",
+    "line": 19516,
+    "end_line": 19517
+  },
+  {
+    "name": "Window.on_eq_gain_spin_changed",
+    "kind": "FunctionDef",
+    "line": 19519,
+    "end_line": 19521
+  },
+  {
+    "name": "Window.set_equalizer_enabled",
+    "kind": "FunctionDef",
+    "line": 19523,
+    "end_line": 19536
+  },
+  {
+    "name": "Window.on_ff_video_size",
+    "kind": "FunctionDef",
+    "line": 19538,
+    "end_line": 19540
+  },
+  {
+    "name": "Window.on_backend_changed",
+    "kind": "FunctionDef",
+    "line": 19542,
+    "end_line": 19561
+  },
+  {
+    "name": "Window.sync_ff_equalizer",
+    "kind": "FunctionDef",
+    "line": 19563,
+    "end_line": 19564
+  },
+  {
+    "name": "Window.update_volume_ui",
+    "kind": "FunctionDef",
+    "line": 19566,
+    "end_line": 19568
+  },
+  {
+    "name": "Window.on_volume_changed",
+    "kind": "FunctionDef",
+    "line": 19570,
+    "end_line": 19576
+  },
+  {
+    "name": "Window.stop_equalizer_audio",
+    "kind": "FunctionDef",
+    "line": 19578,
+    "end_line": 19585
+  },
+  {
+    "name": "Window.update_equalizer_routing",
+    "kind": "FunctionDef",
+    "line": 19587,
+    "end_line": 19600
+  },
+  {
+    "name": "Window.schedule_equalizer_restart",
+    "kind": "FunctionDef",
+    "line": 19602,
+    "end_line": 19605
+  },
+  {
+    "name": "Window.restart_equalizer_audio",
+    "kind": "FunctionDef",
+    "line": 19607,
+    "end_line": 19629
+  },
+  {
+    "name": "Window.on_equalizer_error",
+    "kind": "FunctionDef",
+    "line": 19631,
+    "end_line": 19635
+  },
+  {
+    "name": "Window.set_equalizer_visible",
+    "kind": "FunctionDef",
+    "line": 19637,
+    "end_line": 19638
+  },
+  {
+    "name": "Window.build_panel_profiles",
+    "kind": "FunctionDef",
+    "line": 19646,
+    "end_line": 19665
+  },
+  {
+    "name": "Window.build_tracks_panel",
+    "kind": "FunctionDef",
+    "line": 19667,
+    "end_line": 19763
+  },
+  {
+    "name": "Window.set_profile_bar_visible",
+    "kind": "FunctionDef",
+    "line": 19765,
+    "end_line": 19773
+  },
+  {
+    "name": "Window._panel_snapshot",
+    "kind": "FunctionDef",
+    "line": 19775,
+    "end_line": 19777
+  },
+  {
+    "name": "Window._sync_profile_buttons",
+    "kind": "FunctionDef",
+    "line": 19779,
+    "end_line": 19784
+  },
+  {
+    "name": "Window.toggle_panel_profile",
+    "kind": "FunctionDef",
+    "line": 19786,
+    "end_line": 19803
+  },
+  {
+    "name": "Window.apply_panel_profile",
+    "kind": "FunctionDef",
+    "line": 19805,
+    "end_line": 19843
+  },
+  {
+    "name": "Window.show_playback_rate_menu",
+    "kind": "FunctionDef",
+    "line": 19845,
+    "end_line": 19863
+  },
+  {
+    "name": "Window.update_playback_speed_button",
+    "kind": "FunctionDef",
+    "line": 19865,
+    "end_line": 19883
+  },
+  {
+    "name": "Window.on_playback_rate_changed",
+    "kind": "FunctionDef",
+    "line": 19885,
+    "end_line": 19901
+  },
+  {
+    "name": "Window.save_resume_position",
+    "kind": "FunctionDef",
+    "line": 19903,
+    "end_line": 19919
+  },
+  {
+    "name": "Window.filter_track_list",
+    "kind": "FunctionDef",
+    "line": 19921,
+    "end_line": 19936
+  },
+  {
+    "name": "Window._refresh_track_metadata",
+    "kind": "FunctionDef",
+    "line": 19938,
+    "end_line": 19957
+  },
+  {
+    "name": "Window.sort_track_list",
+    "kind": "FunctionDef",
+    "line": 19959,
+    "end_line": 19963
+  },
+  {
+    "name": "Window._track_header_sorted",
+    "kind": "FunctionDef",
+    "line": 19965,
+    "end_line": 19970
+  },
+  {
+    "name": "Window._track_header_clicked",
+    "kind": "FunctionDef",
+    "line": 19972,
+    "end_line": 19977
+  },
+  {
+    "name": "Window._tracks_reordered",
+    "kind": "FunctionDef",
+    "line": 19979,
+    "end_line": 19984
+  },
+  {
+    "name": "Window._playback_tracks",
+    "kind": "FunctionDef",
+    "line": 19986,
+    "end_line": 19988
+  },
+  {
+    "name": "Window.show_track_properties",
+    "kind": "FunctionDef",
+    "line": 19990,
+    "end_line": 20349
+  },
+  {
+    "name": "Window.show_track_properties.make_format_selector",
+    "kind": "FunctionDef",
+    "line": 20087,
+    "end_line": 20102
+  },
+  {
+    "name": "Window.show_track_properties.ResponsivePropertiesContent",
+    "kind": "ClassDef",
+    "line": 20147,
+    "end_line": 20157
+  },
+  {
+    "name": "Window.show_track_properties.ResponsivePropertiesContent.__init__",
+    "kind": "FunctionDef",
+    "line": 20149,
+    "end_line": 20151
+  },
+  {
+    "name": "Window.show_track_properties.ResponsivePropertiesContent.resizeEvent",
+    "kind": "FunctionDef",
+    "line": 20153,
+    "end_line": 20157
+  },
+  {
+    "name": "Window.show_track_properties.reflow_sections",
+    "kind": "FunctionDef",
+    "line": 20169,
+    "end_line": 20185
+  },
+  {
+    "name": "Window.show_track_properties.format_value",
+    "kind": "FunctionDef",
+    "line": 20189,
+    "end_line": 20195
+  },
+  {
+    "name": "Window.show_track_properties.add_section",
+    "kind": "FunctionDef",
+    "line": 20197,
+    "end_line": 20242
+  },
+  {
+    "name": "Window.show_track_properties.clear_content",
+    "kind": "FunctionDef",
+    "line": 20244,
+    "end_line": 20252
+  },
+  {
+    "name": "Window.show_track_properties.render_metadata",
+    "kind": "FunctionDef",
+    "line": 20295,
+    "end_line": 20310
+  },
+  {
+    "name": "Window.show_track_properties.apply_metadata",
+    "kind": "FunctionDef",
+    "line": 20312,
+    "end_line": 20317
+  },
+  {
+    "name": "Window.show_track_properties.worker",
+    "kind": "FunctionDef",
+    "line": 20326,
+    "end_line": 20338
+  },
+  {
+    "name": "Window._format_file_size",
+    "kind": "FunctionDef",
+    "line": 20352,
+    "end_line": 20357
+  },
+  {
+    "name": "Window.track_context_menu",
+    "kind": "FunctionDef",
+    "line": 20359,
+    "end_line": 20375
+  },
+  {
+    "name": "Window.copy_track_link",
+    "kind": "FunctionDef",
+    "line": 20377,
+    "end_line": 20382
+  },
+  {
+    "name": "Window.open_file_folder",
+    "kind": "FunctionDef",
+    "line": 20384,
+    "end_line": 20391
+  },
+  {
+    "name": "Window.rename_track",
+    "kind": "FunctionDef",
+    "line": 20393,
+    "end_line": 20395
+  },
+  {
+    "name": "Window._rename_track",
+    "kind": "FunctionDef",
+    "line": 20397,
+    "end_line": 20423
+  },
+  {
+    "name": "Window.delete_track",
+    "kind": "FunctionDef",
+    "line": 20425,
+    "end_line": 20433
+  },
+  {
+    "name": "Window._delete_track",
+    "kind": "FunctionDef",
+    "line": 20435,
+    "end_line": 20444
+  },
+  {
+    "name": "Window.adjust_window_size",
+    "kind": "FunctionDef",
+    "line": 20449,
+    "end_line": 20451
+  },
+  {
+    "name": "Window.schedule_relayout",
+    "kind": "FunctionDef",
+    "line": 20453,
+    "end_line": 20460
+  },
+  {
+    "name": "Window._suspend_panel_layouts",
+    "kind": "FunctionDef",
+    "line": 20462,
+    "end_line": 20483
+  },
+  {
+    "name": "Window._resume_panel_layouts",
+    "kind": "FunctionDef",
+    "line": 20485,
+    "end_line": 20491
+  },
+  {
+    "name": "Window._begin_panel_layout",
+    "kind": "FunctionDef",
+    "line": 20493,
+    "end_line": 20508
+  },
+  {
+    "name": "Window._finish_panel_layout",
+    "kind": "FunctionDef",
+    "line": 20510,
+    "end_line": 20518
+  },
+  {
+    "name": "Window._sync_video_control_gaps",
+    "kind": "FunctionDef",
+    "line": 20520,
+    "end_line": 20528
+  },
+  {
+    "name": "Window._sync_rounded_window",
+    "kind": "FunctionDef",
+    "line": 20530,
+    "end_line": 20543
+  },
+  {
+    "name": "Window.showEvent",
+    "kind": "FunctionDef",
+    "line": 20545,
+    "end_line": 20547
+  },
+  {
+    "name": "Window.changeEvent",
+    "kind": "FunctionDef",
+    "line": 20549,
+    "end_line": 20557
+  },
+  {
+    "name": "Window.resizeEvent",
+    "kind": "FunctionDef",
+    "line": 20560,
+    "end_line": 20566
+  },
+  {
+    "name": "Window.relayout",
+    "kind": "FunctionDef",
+    "line": 20569,
+    "end_line": 20614
+  },
+  {
+    "name": "Window._video_layout_anchor",
+    "kind": "FunctionDef",
+    "line": 20616,
+    "end_line": 20621
+  },
+  {
+    "name": "Window._activate_work_layouts",
+    "kind": "FunctionDef",
+    "line": 20623,
+    "end_line": 20640
+  },
+  {
+    "name": "Window._activate_work_layouts.activate",
+    "kind": "FunctionDef",
+    "line": 20629,
+    "end_line": 20639
+  },
+  {
+    "name": "Window._fit_interface",
+    "kind": "FunctionDef",
+    "line": 20642,
+    "end_line": 20720
+  },
+  {
+    "name": "Window._invalidate_layout_hierarchy",
+    "kind": "FunctionDef",
+    "line": 20722,
+    "end_line": 20754
+  },
+  {
+    "name": "Window._invalidate_layout_hierarchy.visit",
+    "kind": "FunctionDef",
+    "line": 20729,
+    "end_line": 20746
+  },
+  {
+    "name": "Window._adapt_panel_widths_to_screen",
+    "kind": "FunctionDef",
+    "line": 20756,
+    "end_line": 20772
+  },
+  {
+    "name": "Window._sync_video_area_to_video",
+    "kind": "FunctionDef",
+    "line": 20775,
+    "end_line": 20827
+  },
+  {
+    "name": "Window._sync_sidebar_height_to_video",
+    "kind": "FunctionDef",
+    "line": 20829,
+    "end_line": 20869
+  },
+  {
+    "name": "Window.update_lower_cap",
+    "kind": "FunctionDef",
+    "line": 20871,
+    "end_line": 20875
+  },
+  {
+    "name": "Window.fit_to_video",
+    "kind": "FunctionDef",
+    "line": 20877,
+    "end_line": 20880
+  },
+  {
+    "name": "Window.build_size_panel",
+    "kind": "FunctionDef",
+    "line": 20882,
+    "end_line": 20909
+  },
+  {
+    "name": "Window.video_target_size",
+    "kind": "FunctionDef",
+    "line": 20911,
+    "end_line": 20919
+  },
+  {
+    "name": "Window.fit_video_to_screen",
+    "kind": "FunctionDef",
+    "line": 20921,
+    "end_line": 20928
+  },
+  {
+    "name": "Window.apply_size",
+    "kind": "FunctionDef",
+    "line": 20930,
+    "end_line": 20937
+  },
+  {
+    "name": "Window._collapse_panels_to_fit",
+    "kind": "FunctionDef",
+    "line": 20939,
+    "end_line": 20941
+  },
+  {
+    "name": "Window.keep_window_on_screen",
+    "kind": "FunctionDef",
+    "line": 20943,
+    "end_line": 20946
+  },
+  {
+    "name": "Window.arrange_top",
+    "kind": "FunctionDef",
+    "line": 20948,
+    "end_line": 20988
+  },
+  {
+    "name": "Window.arrange_bottom",
+    "kind": "FunctionDef",
+    "line": 20990,
+    "end_line": 21000
+  },
+  {
+    "name": "Window._is_fullscreen_layout",
+    "kind": "FunctionDef",
+    "line": 21002,
+    "end_line": 21004
+  },
+  {
+    "name": "Window._sync_fullscreen_video_layout",
+    "kind": "FunctionDef",
+    "line": 21006,
+    "end_line": 21029
+  },
+  {
+    "name": "Window.enter_fullscreen",
+    "kind": "FunctionDef",
+    "line": 21031,
+    "end_line": 21065
+  },
+  {
+    "name": "Window.leave_fullscreen",
+    "kind": "FunctionDef",
+    "line": 21067,
+    "end_line": 21089
+  },
+  {
+    "name": "Window.refresh_panels_paint",
+    "kind": "FunctionDef",
+    "line": 21091,
+    "end_line": 21112
+  },
+  {
+    "name": "Window.set_size_mode",
+    "kind": "FunctionDef",
+    "line": 21114,
+    "end_line": 21122
+  },
+  {
+    "name": "Window.set_size_visible",
+    "kind": "FunctionDef",
+    "line": 21124,
+    "end_line": 21125
+  },
+  {
+    "name": "Window.on_escape",
+    "kind": "FunctionDef",
+    "line": 21127,
+    "end_line": 21135
+  },
+  {
+    "name": "Window.toggle_fullscreen",
+    "kind": "FunctionDef",
+    "line": 21137,
+    "end_line": 21141
+  },
+  {
+    "name": "Window.center_window",
+    "kind": "FunctionDef",
+    "line": 21143,
+    "end_line": 21148
+  },
+  {
+    "name": "Window._center_now",
+    "kind": "FunctionDef",
+    "line": 21150,
+    "end_line": 21163
+  },
+  {
+    "name": "Window.on_dl_source_changed",
+    "kind": "FunctionDef",
+    "line": 21166,
+    "end_line": 21208
+  },
+  {
+    "name": "Window.authorize_spotify",
+    "kind": "FunctionDef",
+    "line": 21210,
+    "end_line": 21236
+  },
+  {
+    "name": "Window.on_spotify_auth_status",
+    "kind": "FunctionDef",
+    "line": 21238,
+    "end_line": 21239
+  },
+  {
+    "name": "Window.on_spotify_auth_result",
+    "kind": "FunctionDef",
+    "line": 21241,
+    "end_line": 21253
+  },
+  {
+    "name": "Window.on_spotify_tokens_updated",
+    "kind": "FunctionDef",
+    "line": 21255,
+    "end_line": 21259
+  },
+  {
+    "name": "Window.on_dl_options_changed",
+    "kind": "FunctionDef",
+    "line": 21261,
+    "end_line": 21290
+  },
+  {
+    "name": "Window.set_pinned",
+    "kind": "FunctionDef",
+    "line": 21292,
+    "end_line": 21304
+  },
+  {
+    "name": "Window._panel_spec",
+    "kind": "FunctionDef",
+    "line": 21307,
+    "end_line": 21324
+  },
+  {
+    "name": "Window.set_panel_visible",
+    "kind": "FunctionDef",
+    "line": 21326,
+    "end_line": 21358
+  },
+  {
+    "name": "Window.set_controls_visible",
+    "kind": "FunctionDef",
+    "line": 21360,
+    "end_line": 21361
+  },
+  {
+    "name": "Window.set_downloads_visible",
+    "kind": "FunctionDef",
+    "line": 21363,
+    "end_line": 21364
+  },
+  {
+    "name": "Window.toggle_download_info",
+    "kind": "FunctionDef",
+    "line": 21366,
+    "end_line": 21367
+  },
+  {
+    "name": "Window.set_download_info_visible",
+    "kind": "FunctionDef",
+    "line": 21369,
+    "end_line": 21371
+  },
+  {
+    "name": "Window.tint",
+    "kind": "FunctionDef",
+    "line": 21373,
+    "end_line": 21406
+  },
+  {
+    "name": "Window.set_seek_visible",
+    "kind": "FunctionDef",
+    "line": 21408,
+    "end_line": 21409
+  },
+  {
+    "name": "Window.set_tracks_visible",
+    "kind": "FunctionDef",
+    "line": 21411,
+    "end_line": 21412
+  },
+  {
+    "name": "Window.show_video_context_menu",
+    "kind": "FunctionDef",
+    "line": 21414,
+    "end_line": 21489
+  },
+  {
+    "name": "Window.minimize_player",
+    "kind": "FunctionDef",
+    "line": 21491,
+    "end_line": 21498
+  },
+  {
+    "name": "Window.eventFilter",
+    "kind": "FunctionDef",
+    "line": 21500,
+    "end_line": 21570
+  },
+  {
+    "name": "Window._restore_windowed_geometry",
+    "kind": "FunctionDef",
+    "line": 21573,
+    "end_line": 21576
+  },
+  {
+    "name": "Window.toggle_video_only_mode",
+    "kind": "FunctionDef",
+    "line": 21578,
+    "end_line": 21674
+  },
+  {
+    "name": "Window._restore_video_only_mode",
+    "kind": "FunctionDef",
+    "line": 21676,
+    "end_line": 21727
+  },
+  {
+    "name": "Window.enter_video_fullscreen",
+    "kind": "FunctionDef",
+    "line": 21729,
+    "end_line": 21745
+  },
+  {
+    "name": "Window.exit_video_fullscreen",
+    "kind": "FunctionDef",
+    "line": 21747,
+    "end_line": 21809
+  },
+  {
+    "name": "Window._restore_video_after_fullscreen",
+    "kind": "FunctionDef",
+    "line": 21811,
+    "end_line": 21852
+  },
+  {
+    "name": "Window.mousePressEvent",
+    "kind": "FunctionDef",
+    "line": 21854,
+    "end_line": 21857
+  },
+  {
+    "name": "Window.contextMenuEvent",
+    "kind": "FunctionDef",
+    "line": 21859,
+    "end_line": 21887
+  },
+  {
+    "name": "Window.closeEvent",
+    "kind": "FunctionDef",
+    "line": 21889,
+    "end_line": 21952
+  },
+  {
+    "name": "Window.save_settings",
+    "kind": "FunctionDef",
+    "line": 21955,
+    "end_line": 22038
+  },
+  {
+    "name": "Window.browse_cookies_file",
+    "kind": "FunctionDef",
+    "line": 22041,
+    "end_line": 22047
+  },
+  {
+    "name": "Window.browse_cookies_file.chosen",
+    "kind": "FunctionDef",
+    "line": 22043,
+    "end_line": 22045
+  },
+  {
+    "name": "Window.apply_channel_text",
+    "kind": "FunctionDef",
+    "line": 22049,
+    "end_line": 22060
+  },
+  {
+    "name": "Window.apply_folder_text",
+    "kind": "FunctionDef",
+    "line": 22062,
+    "end_line": 22064
+  },
+  {
+    "name": "Window.browse_folder",
+    "kind": "FunctionDef",
+    "line": 22066,
+    "end_line": 22069
+  },
+  {
+    "name": "Window.set_folder",
+    "kind": "FunctionDef",
+    "line": 22071,
+    "end_line": 22087
+  },
+  {
+    "name": "Window.rebuild_source_list",
+    "kind": "FunctionDef",
+    "line": 22089,
+    "end_line": 22113
+  },
+  {
+    "name": "Window.on_source_item_changed",
+    "kind": "FunctionDef",
+    "line": 22115,
+    "end_line": 22126
+  },
+  {
+    "name": "Window.discover_source_folders",
+    "kind": "FunctionDef",
+    "line": 22128,
+    "end_line": 22148
+  },
+  {
+    "name": "Window.add_source",
+    "kind": "FunctionDef",
+    "line": 22150,
+    "end_line": 22153
+  },
+  {
+    "name": "Window._add_source_folder",
+    "kind": "FunctionDef",
+    "line": 22155,
+    "end_line": 22184
+  },
+  {
+    "name": "Window.remove_source",
+    "kind": "FunctionDef",
+    "line": 22186,
+    "end_line": 22200
+  },
+  {
+    "name": "Window.refresh_files",
+    "kind": "FunctionDef",
+    "line": 22203,
+    "end_line": 22231
+  },
+  {
+    "name": "Window.on_player_error",
+    "kind": "FunctionDef",
+    "line": 22233,
+    "end_line": 22257
+  },
+  {
+    "name": "Window.on_compatibility_ready",
+    "kind": "FunctionDef",
+    "line": 22259,
+    "end_line": 22273
+  },
+  {
+    "name": "Window._play_file_ready",
+    "kind": "FunctionDef",
+    "line": 22275,
+    "end_line": 22306
+  },
+  {
+    "name": "Window.set_playback_mode",
+    "kind": "FunctionDef",
+    "line": 22308,
+    "end_line": 22321
+  },
+  {
+    "name": "Window.step",
+    "kind": "FunctionDef",
+    "line": 22323,
+    "end_line": 22340
+  },
+  {
+    "name": "Window.toggle_play",
+    "kind": "FunctionDef",
+    "line": 22342,
+    "end_line": 22361
+  },
+  {
+    "name": "Window.on_seek_warning",
+    "kind": "FunctionDef",
+    "line": 22363,
+    "end_line": 22366
+  },
+  {
+    "name": "Window.on_seek_moved",
+    "kind": "FunctionDef",
+    "line": 22368,
+    "end_line": 22370
+  },
+  {
+    "name": "Window.on_position",
+    "kind": "FunctionDef",
+    "line": 22372,
+    "end_line": 22379
+  },
+  {
+    "name": "Window.on_duration",
+    "kind": "FunctionDef",
+    "line": 22381,
+    "end_line": 22385
+  },
+  {
+    "name": "Window.seek_by",
+    "kind": "FunctionDef",
+    "line": 22387,
+    "end_line": 22394
+  },
+  {
+    "name": "Window._track_size_text",
+    "kind": "FunctionDef",
+    "line": 22397,
+    "end_line": 22403
+  },
+  {
+    "name": "Window.rebuild_track_list",
+    "kind": "FunctionDef",
+    "line": 22405,
+    "end_line": 22442
+  },
+  {
+    "name": "Window.sync_track_selection",
+    "kind": "FunctionDef",
+    "line": 22444,
+    "end_line": 22458
+  },
+  {
+    "name": "Window.on_track_activated",
+    "kind": "FunctionDef",
+    "line": 22460,
+    "end_line": 22465
+  },
+  {
+    "name": "Window.on_state",
+    "kind": "FunctionDef",
+    "line": 22467,
+    "end_line": 22474
+  },
+  {
+    "name": "Window.on_media_status",
+    "kind": "FunctionDef",
+    "line": 22476,
+    "end_line": 22479
+  },
+  {
+    "name": "Window._spotify_collection_ready",
+    "kind": "FunctionDef",
+    "line": 22482,
+    "end_line": 22492
+  },
+  {
+    "name": "Window.start_download",
+    "kind": "FunctionDef",
+    "line": 22494,
+    "end_line": 22513
+  },
+  {
+    "name": "Window.start_single",
+    "kind": "FunctionDef",
+    "line": 22515,
+    "end_line": 22527
+  },
+  {
+    "name": "Window.start_job",
+    "kind": "FunctionDef",
+    "line": 22529,
+    "end_line": 22618
+  },
+  {
+    "name": "Window.retry_failed_downloads",
+    "kind": "FunctionDef",
+    "line": 22620,
+    "end_line": 22627
+  },
+  {
+    "name": "Window.toggle_download_pause",
+    "kind": "FunctionDef",
+    "line": 22629,
+    "end_line": 22636
+  },
+  {
+    "name": "Window.on_download_queue",
+    "kind": "FunctionDef",
+    "line": 22638,
+    "end_line": 22658
+  },
+  {
+    "name": "Window.download_item_context_menu",
+    "kind": "FunctionDef",
+    "line": 22660,
+    "end_line": 22676
+  },
+  {
+    "name": "Window.move_download_queue_item",
+    "kind": "FunctionDef",
+    "line": 22678,
+    "end_line": 22699
+  },
+  {
+    "name": "Window.on_download_item_update",
+    "kind": "FunctionDef",
+    "line": 22701,
+    "end_line": 22726
+  },
+  {
+    "name": "Window.on_status",
+    "kind": "FunctionDef",
+    "line": 22728,
+    "end_line": 22729
+  },
+  {
+    "name": "Window.on_stats",
+    "kind": "FunctionDef",
+    "line": 22731,
+    "end_line": 22733
+  },
+  {
+    "name": "Window.on_download_done",
+    "kind": "FunctionDef",
+    "line": 22735,
+    "end_line": 22770
+  },
+  {
+    "name": "Window._poll_shutdown",
+    "kind": "FunctionDef",
+    "line": 22772,
+    "end_line": 22806
+  },
+  {
+    "name": "Window._on_media_probed",
+    "kind": "FunctionDef",
+    "line": 22808,
+    "end_line": 22811
+  },
+  {
+    "name": "Window.play_file",
+    "kind": "FunctionDef",
+    "line": 22813,
+    "end_line": 22833
+  },
+  {
+    "name": "Window.play_file.finished",
+    "kind": "FunctionDef",
+    "line": 22828,
+    "end_line": 22831
+  },
+  {
+    "name": "Window.on_download_detail",
+    "kind": "FunctionDef",
+    "line": 22835,
+    "end_line": 22847
+  },
+  {
+    "name": "Window._refresh_download_activity",
+    "kind": "FunctionDef",
+    "line": 22849,
+    "end_line": 22867
+  },
+  {
+    "name": "Window.cancel_downloads",
+    "kind": "FunctionDef",
+    "line": 22869,
+    "end_line": 22873
+  },
+  {
+    "name": "Window._open_help_link",
+    "kind": "FunctionDef",
+    "line": 22875,
+    "end_line": 22879
+  },
+  {
+    "name": "Window._refresh_security_note",
+    "kind": "FunctionDef",
+    "line": 22881,
+    "end_line": 22887
+  },
+  {
+    "name": "Window._download_display",
+    "kind": "FunctionDef",
+    "line": 22889,
+    "end_line": 22950
+  },
+  {
+    "name": "Window._start_conversion_capabilities",
+    "kind": "FunctionDef",
+    "line": 22952,
+    "end_line": 22963
+  },
+  {
+    "name": "Window._conversion_capabilities_ready",
+    "kind": "FunctionDef",
+    "line": 22966,
+    "end_line": 22974
+  },
+  {
+    "name": "Window._conversion_format_reason",
+    "kind": "FunctionDef",
+    "line": 22977,
+    "end_line": 23009
+  },
+  {
+    "name": "Window._update_conversion_format_availability",
+    "kind": "FunctionDef",
+    "line": 23012,
+    "end_line": 23032
+  },
+  {
+    "name": "Window._start_transcode_probe",
+    "kind": "FunctionDef",
+    "line": 23036,
+    "end_line": 23048
+  },
+  {
+    "name": "Window._transcode_probe_finished",
+    "kind": "FunctionDef",
+    "line": 23052,
+    "end_line": 23060
+  },
+  {
+    "name": "Window._transcode_probe_ready",
+    "kind": "FunctionDef",
+    "line": 23064,
+    "end_line": 23120
+  },
+  {
+    "name": "Window._transcode_audio_row",
+    "kind": "FunctionDef",
+    "line": 23123,
+    "end_line": 23237
+  },
+  {
+    "name": "Window._transcode_audio_row.update",
+    "kind": "FunctionDef",
+    "line": 23188,
+    "end_line": 23230
+  },
+  {
+    "name": "Window._transcode_audio_row.update.incompatibility",
+    "kind": "FunctionDef",
+    "line": 23208,
+    "end_line": 23220
+  },
+  {
+    "name": "Window._transcode_stream_progress",
+    "kind": "FunctionDef",
+    "line": 23239,
+    "end_line": 23256
+  },
+  {
+    "name": "Window._transcode_stream_progress.progress",
+    "kind": "FunctionDef",
+    "line": 23244,
+    "end_line": 23247
+  },
+  {
+    "name": "Window._conversion_prepare_rows",
+    "kind": "FunctionDef",
+    "line": 23261,
+    "end_line": 23265
+  },
+  {
+    "name": "Window._conversion_detail",
+    "kind": "FunctionDef",
+    "line": 23268,
+    "end_line": 23276
+  },
+  {
+    "name": "Window.transcode_on_job_detail",
+    "kind": "FunctionDef",
+    "line": 23279,
+    "end_line": 23280
+  },
+  {
+    "name": "Window.converter_on_job_detail",
+    "kind": "FunctionDef",
+    "line": 23283,
+    "end_line": 23284
+  },
+  {
+    "name": "Window.converter_on_live_progress",
+    "kind": "FunctionDef",
+    "line": 23287,
+    "end_line": 23294
+  },
+  {
+    "name": "Window._conversion_retranslate",
+    "kind": "FunctionDef",
+    "line": 23297,
+    "end_line": 23340
+  },
+  {
+    "name": "Window._layout_transcode_settings",
+    "kind": "FunctionDef",
+    "line": 23343,
+    "end_line": 23351
+  },
+  {
+    "name": "Window._transcode_retranslate",
+    "kind": "FunctionDef",
+    "line": 23354,
+    "end_line": 23376
+  },
+  {
+    "name": "Window._transcode_profile_caption",
+    "kind": "FunctionDef",
+    "line": 23379,
+    "end_line": 23393
+  },
+  {
+    "name": "Window._mark_transcode_profile_manual",
+    "kind": "FunctionDef",
+    "line": 23396,
+    "end_line": 23399
+  },
+  {
+    "name": "Window.apply_transcode_profile",
+    "kind": "FunctionDef",
+    "line": 23402,
+    "end_line": 23423
+  },
+  {
+    "name": "Window._transcode_codec_choices",
+    "kind": "FunctionDef",
+    "line": 23426,
+    "end_line": 23459
+  },
+  {
+    "name": "Window._transcode_codec_changed",
+    "kind": "FunctionDef",
+    "line": 23462,
+    "end_line": 23464
+  },
+  {
+    "name": "Window._transcode_quality_changed",
+    "kind": "FunctionDef",
+    "line": 23467,
+    "end_line": 23471
+  },
+  {
+    "name": "Window._transcode_preview_selection",
+    "kind": "FunctionDef",
+    "line": 23474,
+    "end_line": 23478
+  }
+]

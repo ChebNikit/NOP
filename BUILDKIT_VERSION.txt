@@ -1,0 +1,6 @@
+NOP BuildKit R12.2 Compact — 2026-10-30
+External converter resource pruning, mandatory frozen Windows before/after conversion checks
+Original full SDK caches and R12 workspace retained; automatic per-engine restoration on regression
+Application source, formats, panels, Python/Qt versions and all native converter libraries unchanged
+Linux actual package-data savings: 1379183242 bytes (1.284 GiB uncompressed)
+Windows compilation, native conversions, installation and LTSC 1809 remain UNVERIFIED here

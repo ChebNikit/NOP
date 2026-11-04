@@ -1,0 +1,71 @@
+--- original/NOP_1.0.py
++++ R11/NOP_1.0.py
+@@ -7972,7 +7972,7 @@
+ 
+     # Keep the DLL search handle alive: Windows otherwise may unload the added
+     # search directory while resolving libmpv's dependent DLLs.
+-    _dll_directory_handles = []
++    _dll_directory_handles = {}
+     seekWarning = pyqtSignal(str)
+ 
+     class _Event(ctypes.Structure):
+@@ -8052,14 +8052,21 @@
+         directory, dll = self._find_library()
+         if dll is None:
+             self._load_error = (
+-                "libmpv-2.dll не найден. Запусти setup_mpv.bat рядом с NOP_1.0.py, "
+-                "чтобы установить движок в папку mpv."
++                "Встроенный libmpv-2.dll не найден. Переустановите NOP из NOP_Setup.exe."
++                if FROZEN else
++                "libmpv-2.dll не найден. Поместите полный runtime движка в папку mpv рядом с NOP_1.0.py."
+             )
+             return False
+         try:
+             if os.name == "nt" and hasattr(os, "add_dll_directory"):
+-                MpvPlayer._dll_directory_handles.append(os.add_dll_directory(str(directory)))
++                directory_key = os.path.normcase(str(directory.resolve()))
++                if directory_key not in MpvPlayer._dll_directory_handles:
++                    MpvPlayer._dll_directory_handles[directory_key] = os.add_dll_directory(str(directory))
+             lib = ctypes.CDLL(str(dll))
++            lib.mpv_client_api_version.argtypes = []
++            lib.mpv_client_api_version.restype = ctypes.c_ulong
++            if int(lib.mpv_client_api_version()) >> 16 != 2:
++                raise RuntimeError("Unsupported libmpv client API; reinstall the NOP media runtime")
+             lib.mpv_wait_event.restype = ctypes.POINTER(self._Event)
+             lib.mpv_wait_event.argtypes = [ctypes.c_void_p, ctypes.c_double]
+             lib.mpv_create.restype = ctypes.c_void_p
+@@ -9420,6 +9427,21 @@
+ 
+ def find_converter_tool(*names: str) -> str | None:
+     """Находит внешний конвертер в PATH, рядом с NOP или в типичных папках Windows."""
++    # Private engines must win over unrelated versions in a user's PATH.
++    private_engines = {
++        "soffice": "libreoffice/program", "libreoffice": "libreoffice/program",
++        "blender": "blender", "inkscape": "inkscape/bin",
++        "ebook-convert": "calibre", "calibre-debug": "calibre",
++    }
++    # Resolve every bundled alias before considering any external alias.
++    for name in names:
++        stem = Path(name).stem.lower()
++        candidates = [APP_DIR / name, APP_DIR / "bin" / name]
++        if stem in private_engines:
++            candidates.insert(0, APP_DIR / "converters" / private_engines[stem] / name)
++        for candidate in candidates:
++            if candidate.is_file():
++                return str(candidate)
+     for name in names:
+         found = shutil.which(name)
+         if found:
+@@ -23479,6 +23501,12 @@
+         except (AttributeError, OSError):
+             pass
+     app = QApplication(sys.argv)
++    if len(sys.argv) == 4 and sys.argv[1] == "--nop-youtube-check":
++        from youtube_stage_test import run_frozen_smoke
++        sys.exit(run_frozen_smoke(globals(), sys.argv[2], sys.argv[3]))
++    if len(sys.argv) == 3 and sys.argv[1] == "--nop-functional-check":
++        from nop_validation import run_app_checks
++        sys.exit(run_app_checks(globals(), Path(sys.argv[2])))
+     app.setWindowIcon(make_application_icon())
+     app.setApplicationName(APP_NAME)
+     app.setApplicationDisplayName(APP_NAME)

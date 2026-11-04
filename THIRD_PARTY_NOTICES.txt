@@ -1,0 +1,61 @@
+﻿NOP — NikOmniPlayer 1.0: bundled third-party components
+=====================================================
+
+Preserve the notices and licenses shipped with each upstream distribution.
+This file records the sources; it does not relicense the application.
+
+Python — Python Software Foundation
+  https://www.python.org/ ; https://www.nuget.org/packages/python
+PyQt6 / Qt — upstream licensing terms and notices
+  https://riverbankcomputing.com/software/pyqt/license
+  https://www.qt.io/licensing/
+NumPy — BSD-style
+  https://github.com/numpy/numpy
+yt-dlp / yt-dlp-ejs
+  https://github.com/yt-dlp/yt-dlp ; https://github.com/yt-dlp/ejs
+Pillow — MIT-CMU / bundled codec notices
+  https://github.com/python-pillow/Pillow
+Mutagen — GPL-2.0-or-later
+  https://github.com/quodlibet/mutagen
+PyMuPDF / MuPDF — upstream AGPL/commercial terms
+  https://pymupdf.readthedocs.io/en/latest/about.html
+PyInstaller — GPL with bootloader exception
+  https://github.com/pyinstaller/pyinstaller
+
+FFmpeg / FFprobe: Gyan release full Windows static GPL build.
+  https://www.gyan.dev/ffmpeg/builds/ ; https://ffmpeg.org/
+  Its -L output and build source notice are copied into licenses/.
+Deno: MIT and bundled third-party notices.
+  https://github.com/denoland/deno
+libmpv: upstream Windows x64 LGPL CI distribution, pinned in native_sources.lock.json.
+  https://github.com/mpv-player/mpv/releases/tag/git-release
+  Available upstream licenses are preserved in mpv/licenses/.
+
+Equalizer APO 1.4.2, official x64 installer and upstream license:
+  https://sourceforge.net/projects/equalizerapo/
+Its original installer starts automatically if Equalizer APO is missing.
+It retains its own license and audio-device selection workflow.
+
+Microsoft Visual C++ v14 Redistributable, original Microsoft-signed installer:
+  https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist
+Its own distribution and license terms apply.
+
+Build-only tool: Inno Setup 7.1.1.
+  https://jrsoftware.org/
+It is not installed as an application on the target PC.
+
+Actual versions are recorded in DEPENDENCIES_RU.txt, bundle-manifest.json and
+BUILD_REQUIREMENTS_LOCK.txt after the Windows build finishes.
+
+
+pip 26.2.2 bootstrap wheel — MIT; original license is included in the wheel dist-info folder.
+
+R11 private conversion engines: LibreOffice (MPL/LGPL licenses in vendor tree), Blender (GPL), Inkscape (GPL), calibre (GPL). Original vendor license files are retained in each converter folder. Source URLs, versions and archive hashes are recorded in converters-manifest.json. FFmpeg uses the Gyan full GPL build, not the essentials build.
+
+
+Build-time helper added in R11.3: 7-Zip Extra 26.05 x64, Copyright (C) 1999-2026 Igor Pavlov.
+Unmodified official standalone 7za.exe; LGPL-2.1-or-later and BSD licenses.
+Licenses, source package and upstream provenance: .build-tools/7zip-26.05/.
+Used for archive preparation only; not a system installation or part of the player runtime.
+
+R12 build-only full 7-Zip 26.05: unmodified 7z.exe/7z.dll and upstream notices are in .build-tools/7zip-full-26.05. The same-version source archive and LGPL notices are in .build-tools/7zip-26.05. Official vendor MSI/ZIP packages are preserved in .build-tools/converter-downloads; their application files and licenses are preserved in the final converters directories.

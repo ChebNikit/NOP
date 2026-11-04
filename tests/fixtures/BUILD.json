@@ -1,0 +1,52 @@
+{
+  "generator": "wixl/msitools 0.101, Debian bookworm package 0.101+repack-1",
+  "build_command": "wixl -a x64 -v -o msi-quote-test.msi msi-quote-test.wxs",
+  "msi_sha256": "2b54e73dfa035755c1ec30b54fd383e3f6901ba7ae94b16b7bc535c23758cd47",
+  "payload_sha256": "6b0559efc8ee6372ce4162d254dec51e0c9f741547a2b1e1cb48ffdaf3b2e808",
+  "contents": "one plain-text file; no CustomAction, Registry, ServiceInstall, ServiceControl or Shortcut rows",
+  "validation": "MSI tables inspected and text extracted with native Linux msitools; Windows msiexec not run here",
+  "package_provenance": [
+    {
+      "package": "libgcab-1.0-0",
+      "version": "1.5-1",
+      "bytes": 31348,
+      "sha256": "978e62f9949ae7e13c0a11431c1329f382a31c4d7f9fdb86e6d9ba06f8f9d4e4"
+    },
+    {
+      "package": "libgsf-1-114",
+      "version": "1.14.50-1+deb12u1",
+      "bytes": 153880,
+      "sha256": "0de6d39d7c57af4c6f597f788f167e815b0b542ebf816c495c370d40bed00ab5"
+    },
+    {
+      "package": "libgsf-1-common",
+      "version": "1.14.50-1+deb12u1",
+      "bytes": 154028,
+      "sha256": "2ab89838a9237a6666a2f53351db6b1406cb36a54643fbfa2393d4c0ffcd3592"
+    },
+    {
+      "package": "libmsi0",
+      "version": "0.101+repack-1",
+      "bytes": 66908,
+      "sha256": "f79a27acb18bea16d2cde51a2952d897320988adab97b71d06d0978327dc41f9"
+    },
+    {
+      "package": "msitools",
+      "version": "0.101+repack-1",
+      "bytes": 45700,
+      "sha256": "d6f2be83710ab1a64a799b6b41d093f592e0ae45d8e29ab0bfc231d01265b4d6"
+    },
+    {
+      "package": "wixl",
+      "version": "0.101+repack-1",
+      "bytes": 104168,
+      "sha256": "14fd04cb55e75cc6a42440a0171fdd5130f7ea8db1d167f13ea563e471a9ad2f"
+    },
+    {
+      "package": "wixl-data",
+      "version": "0.101+repack-1",
+      "bytes": 397048,
+      "sha256": "109fac869449e712f88d7593ab3b8d349927ed7fbc2613002435fe532a20fef2"
+    }
+  ]
+}

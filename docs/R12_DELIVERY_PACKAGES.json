@@ -1,0 +1,32 @@
+{
+  "main": "NOP_BuildKit_R12.zip",
+  "optional_cache_packages": [
+    {
+      "file": "NOP_R12_CACHE_LibreOffice.zip",
+      "bytes": 372949278,
+      "sha256": "c6d722fc2a4e3e4ec2c27f1486bde44577c00103ed6722c7caa1cacc6569a47c",
+      "components": [
+        "libreoffice"
+      ]
+    },
+    {
+      "file": "NOP_R12_CACHE_Blender.zip",
+      "bytes": 383193283,
+      "sha256": "a85ce97d3a7071c0b4b44da7f6ec8b1ab14c9027fd21158361271bc8d219844b",
+      "components": [
+        "blender"
+      ]
+    },
+    {
+      "file": "NOP_R12_CACHE_Vector_Ebook.zip",
+      "bytes": 376250938,
+      "sha256": "148172dd7bbadf143a59ccb98fd9caa7929b454044b0771620d454b324f2d2e4",
+      "components": [
+        "inkscape",
+        "calibre"
+      ]
+    }
+  ],
+  "limit_bytes": 536870912,
+  "note": "Extract all chosen ZIPs into the same destination folder. The main kit automatically downloads missing SDKs or reuses prior caches."
+}

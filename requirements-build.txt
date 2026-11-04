@@ -1,0 +1,19 @@
+# Core versions retained from the successful FULLFIX builder.
+PyInstaller==6.22.3
+PyQt6==6.11.0
+numpy==2.5.4
+yt-dlp[default]==2026.10.26
+# These modules are used by the current file-properties/conversion features.
+Pillow==12.0.0
+mutagen==1.47.0
+PyMuPDF==1.26.5
+
+# Pin the patched CA bundle following the 2026 CA bundle security incident.
+certifi==2026.10.23
+
+PyQt6-Qt6==6.11.2
+PyQt6-sip==13.11.1
+yt-dlp-ejs==0.8.0
+pywin32-ctypes==0.2.3
+pefile==2024.8.26
+py7zr==1.0.0

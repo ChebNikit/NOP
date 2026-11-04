@@ -1,0 +1,44 @@
+[
+  {
+    "errors": [],
+    "file": "build.ps1",
+    "scope": "PowerShell 7.4.13 parser on Linux; Windows PowerShell 5.1 not executed",
+    "syntax_ok": true
+  },
+  {
+    "errors": [],
+    "file": "ensure_build_vc.ps1",
+    "scope": "PowerShell 7.4.13 parser on Linux; Windows PowerShell 5.1 not executed",
+    "syntax_ok": true
+  },
+  {
+    "errors": [],
+    "file": "prepare_build_python.ps1",
+    "scope": "PowerShell 7.4.13 parser on Linux; Windows PowerShell 5.1 not executed",
+    "syntax_ok": true
+  },
+  {
+    "errors": [],
+    "file": "prepare_inno.ps1",
+    "scope": "PowerShell 7.4.13 parser on Linux; Windows PowerShell 5.1 not executed",
+    "syntax_ok": true
+  },
+  {
+    "errors": [],
+    "file": "start_build.ps1",
+    "scope": "PowerShell 7.4.13 parser on Linux; Windows PowerShell 5.1 not executed",
+    "syntax_ok": true
+  },
+  {
+    "errors": [],
+    "file": "verify_microsoft_payload.ps1",
+    "scope": "PowerShell 7.4.13 parser on Linux; Windows PowerShell 5.1 not executed",
+    "syntax_ok": true
+  },
+  {
+    "errors": [],
+    "file": "r12_1_patch.ps1",
+    "scope": "PowerShell 7.4.13 parser on Linux; Windows PowerShell 5.1 not executed",
+    "syntax_ok": true
+  }
+]

@@ -1,0 +1,24 @@
+{
+  "libreoffice": {
+    "kind": "msi", "version": "26.2.5.2",
+    "manifest": "https://raw.githubusercontent.com/microsoft/winget-pkgs/master/manifests/t/TheDocumentFoundation/LibreOffice/26.2.5.2/TheDocumentFoundation.LibreOffice.installer.yaml",
+    "allowed_hosts": ["download.documentfoundation.org", "downloadarchive.documentfoundation.org"],
+    "engine": "soffice.exe", "engine_relative": "program/soffice.exe"
+  },
+  "blender": {
+    "kind": "zip", "directory": "https://download.blender.org/release/Blender4.2/",
+    "engine": "blender.exe", "engine_relative": "blender.exe"
+  },
+  "inkscape": {
+    "kind": "msi", "version": "1.4.4",
+    "manifest": "https://raw.githubusercontent.com/microsoft/winget-pkgs/master/manifests/i/Inkscape/Inkscape/1.4.4/Inkscape.Inkscape.installer.yaml",
+    "allowed_hosts": ["inkscape.org", "media.inkscape.org"],
+    "engine": "inkscape.exe", "engine_relative": "bin/inkscape.exe"
+  },
+  "calibre": {
+    "kind": "msi", "version": "8.16.2",
+    "manifest": "https://raw.githubusercontent.com/microsoft/winget-pkgs/master/manifests/c/calibre/calibre/8.16.2/calibre.calibre.installer.yaml",
+    "allowed_hosts": ["download.calibre-ebook.com"],
+    "engine": "ebook-convert.exe", "engine_relative": "ebook-convert.exe"
+  }
+}

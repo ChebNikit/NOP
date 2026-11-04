@@ -1,0 +1,34 @@
+[
+  {
+    "component": "libreoffice",
+    "file": ".build-tools/converter-downloads/LibreOffice_26.2.5.2_Win_x86-64.msi",
+    "bytes": 372948992,
+    "sha256": "f15ba07bfcb0186986cf3171063506f5d207c11f8cc051ba0d135209e9e915f9",
+    "source": "https://downloadarchive.documentfoundation.org/libreoffice/old/26.2.5.2/win/x86_64/LibreOffice_26.2.5.2_Win_x86-64.msi",
+    "delivery_package": "NOP_R12_CACHE_LibreOffice.zip"
+  },
+  {
+    "component": "inkscape",
+    "file": ".build-tools/converter-downloads/inkscape-1.4.4_2026-05-05_dcaf3e7-x64.signed_xMx7DJV.msi",
+    "bytes": 170323968,
+    "sha256": "2fa033e95113ae83d6430b2479e7e63e4266d0632a5b03f99ee3db9360e3b8b8",
+    "source": "https://media.inkscape.org/dl/resources/file/inkscape-1.4.4_2026-05-05_dcaf3e7-x64.signed_xMx7DJV.msi",
+    "delivery_package": "NOP_R12_CACHE_Vector_Ebook.zip"
+  },
+  {
+    "component": "calibre",
+    "file": ".build-tools/converter-downloads/calibre-64bit-8.16.2.msi",
+    "bytes": 205926400,
+    "sha256": "7f052a6027d2331ce214cd4cbf7d8b12125b39a420309745cc6974cf3a000d50",
+    "source": "https://download.calibre-ebook.com/8.16.2/calibre-64bit-8.16.2.msi",
+    "delivery_package": "NOP_R12_CACHE_Vector_Ebook.zip"
+  },
+  {
+    "component": "blender",
+    "file": ".build-tools/converter-downloads/blender-4.2.23-windows-x64.zip",
+    "bytes": 383193007,
+    "sha256": "82e791475779a7342424a480bdde9a20b43710da9264c60346125aa16cd910cb",
+    "source": "https://download.blender.org/release/Blender4.2/blender-4.2.23-windows-x64.zip",
+    "delivery_package": "NOP_R12_CACHE_Blender.zip"
+  }
+]

@@ -1,0 +1,22 @@
+[
+  {
+    "test": "apply and repeat in Unicode/spaces/parentheses/quote/bracket/dollar path; caches, app, generated-header and prior-release bytes unchanged; backups exact",
+    "result": "pass",
+    "host": "PowerShell 7.4.13 on Linux; not Windows BAT execution"
+  },
+  {
+    "test": "unexpected local file edits rejected before replacing any file",
+    "result": "pass",
+    "host": "PowerShell 7.4.13 on Linux"
+  },
+  {
+    "test": "wrong kit version rejected without source or cache changes",
+    "result": "pass",
+    "host": "PowerShell 7.4.13 on Linux"
+  },
+  {
+    "test": "filesystem failure after earlier replacements restores every original and removes new files",
+    "result": "pass",
+    "host": "PowerShell 7.4.13 on Linux"
+  }
+]
