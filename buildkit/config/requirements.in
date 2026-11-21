@@ -1,0 +1,11 @@
+# Direct requirements of NOP 1.1 (Windows x64, CPython 3.13). requirements.lock is generated from these.
+PyQt6==6.11.0
+PyQt6-Qt6==6.11.2
+numpy
+Pillow
+PyMuPDF==1.26.7
+mutagen
+yt-dlp[default]
+pyinstaller
+pefile
+pywin32-ctypes

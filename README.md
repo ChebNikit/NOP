@@ -62,27 +62,21 @@ For the best video playback NOP uses **libmpv** (the mpv library); if it is not 
 Then start it:
 
 ```bash
-python NOP_1.0.py
+python buildkit/source/NOP_1_1.py
 ```
 
 ## Build the Windows installer
 
-The repository contains the full build kit. You need Windows 10/11 x64, Windows PowerShell 5.1 and at least **18 GiB** of free disk space (25 GiB recommended). No global Python, FFmpeg, mpv or Inno Setup is required: the kit prepares everything itself from pinned, hash-checked archives. Windows may ask for UAC consent to install the Visual C++ runtime.
+The build kit lives in [`buildkit/`](buildkit). You need Windows 10 (1809+) or Windows 11 x64, an internet connection on the first run and about 25 GB of free disk space (about 8 GB without the conversion engines). Nothing has to be installed beforehand: the kit downloads a private Python, the libraries and the runtime components itself, checks every download against pinned SHA-256 hashes and changes nothing in your system.
 
 ```bat
-build_windows.bat
+cd buildkit
+BUILD_NOP_SETUP.bat
 ```
 
-Wait for `CREATED`. The installer is written to `release\NOP_Setup.exe`, next to a `CONVERTER_COMPACTION_REPORT.json` with the final size and the trimmed components.
+The installer is written to `buildkit\dist\NOP_Setup.exe`, next to a `.sha256` file and `BUILD_REPORT.json`. The built application is self-tested before the installer is created; if the self-test fails, no installer is produced. Useful options: `--no-engines` (a lighter installer without the document, vector, e-book and 3D converters), `--offline`, `--clean`, `--from-step N`, `--verify-install` (on a test PC only). See [`buildkit/README.md`](buildkit/README.md) for details and troubleshooting, and [`buildkit/docs/VERIFICATION.md`](buildkit/docs/VERIFICATION.md) for what has and has not been tested.
 
-To use another drive for the work folder (default `%LOCALAPPDATA%\NOPBK\R12`; the path must be local and at most 110 characters):
-
-```bat
-set "NOP_BUILD_WORKSPACE=D:\NOPBK\R12"
-build_windows.bat
-```
-
-The repository contains everything pinned in `kit-manifest.json` (Python wheels, 7-Zip). The large runtime archives (FFmpeg, libmpv, deno, Inno Setup, LibreOffice, Blender, calibre, Inkscape, Equalizer APO, the Visual C++ runtime) are downloaded during the build and checked against pinned SHA-256 hashes. If you change a pinned file on purpose (for example `NOP_1.0.py`), update its hash with `repin_kit_manifest.ps1`. A full offline copy of the kit is attached to the release as `NOP_BuildKit_R12.zip`. Publish the finished installer in **Releases**, not in the repository.
+The application source is `buildkit/source/NOP_1_1.py`. To build from your own modified copy: `BUILD_NOP_SETUP.bat --source "C:\path\to\NOP.py"`. The installer also includes [Equalizer APO](https://sourceforge.net/projects/equalizerapo/) 1.4.2 for the *Whole device* equalizer mode: the build downloads it, checks a pinned SHA-256 and embeds it, and `NOP_Setup.exe` runs it when APO is not already installed (Windows asks for administrator permission and the APO wizard asks you to choose your audio device). Publish the finished installer in **Releases**, not in the repository.
 
 ## Hotkeys
 

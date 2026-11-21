@@ -1,0 +1,73 @@
+{
+  "schema": 1,
+  "comment": "Conversion engines bundled under converters\\<dest>. Installers are fetched with 'winget download' (winget verifies the SHA-256 from the package manifest), then unpacked without installing (MSI administrative image). The SHA-256 that was actually used is recorded in cache\\\\engines\\\\*.sha256.",
+  "engines": {
+    "libreoffice": {
+      "title": "LibreOffice (documents, spreadsheets, presentations)",
+      "winget": "TheDocumentFoundation.LibreOffice",
+      "signer_contains": [
+        "Document Foundation"
+      ],
+      "dest": "libreoffice",
+      "tool": "program/soffice.exe",
+      "installed": [
+        "LibreOffice*"
+      ],
+      "prune": [
+        "help",
+        "readmes",
+        "share/gallery",
+        "share/template"
+      ]
+    },
+    "inkscape": {
+      "title": "Inkscape (vector graphics)",
+      "winget": "Inkscape.Inkscape",
+      "signer_contains": [
+        "Inkscape"
+      ],
+      "dest": "inkscape",
+      "tool": "bin/inkscape.exe",
+      "installed": [
+        "Inkscape"
+      ],
+      "prune": []
+    },
+    "calibre": {
+      "title": "Calibre (e-books)",
+      "winget": "calibre.calibre",
+      "signer_contains": [
+        "Kovid Goyal",
+        "calibre"
+      ],
+      "dest": "calibre",
+      "tool": "ebook-convert.exe",
+      "installed": [
+        "Calibre2",
+        "calibre"
+      ],
+      "prune": []
+    },
+    "blender": {
+      "title": "Blender (3D models)",
+      "winget": "BlenderFoundation.Blender",
+      "signer_contains": [
+        "Blender"
+      ],
+      "dest": "blender",
+      "tool": "blender.exe",
+      "installed": [
+        "Blender Foundation/Blender *"
+      ],
+      "prune": [
+        "*/datafiles/locale"
+      ],
+      "zip_fallback": {
+        "suffix_from": ".msi",
+        "suffix_to": ".zip",
+        "hash_list": "{dir}/blender-{version}.sha256",
+        "version_regex": "blender-(\\d+\\.\\d+(?:\\.\\d+)?)-"
+      }
+    }
+  }
+}

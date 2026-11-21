@@ -1,1 +1,0 @@
-NOP R11.4 MSI extraction fixture. This is plain text, not executable code.

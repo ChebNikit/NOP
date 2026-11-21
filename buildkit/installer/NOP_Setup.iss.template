@@ -1,0 +1,520 @@
+﻿; ============================================================================
+;  NOP 1.1 installer (Inno Setup 6.5+).  Compiled by build\build_kit.py.
+;  Defines passed by the build:  AppVersion, PayloadDir, ArtDir, OutDir, [VcRedist], [ApoInstaller, ApoFile, ApoVersion]
+; ============================================================================
+#ifndef AppVersion
+  #define AppVersion "1.1"
+#endif
+#ifndef PayloadDir
+  #error PayloadDir is not defined - run BUILD_NOP_SETUP.bat instead of compiling this file by hand.
+#endif
+#ifndef ArtDir
+  #error ArtDir is not defined.
+#endif
+#ifndef OutDir
+  #define OutDir "."
+#endif
+#ifndef ApoVersion
+  #define ApoVersion ""
+#endif
+#define AppShort "NOP"
+#define AppLong  "NOP - NikOmniPlayer"
+#define AppExe   "NOP.exe"
+
+[Setup]
+AppId={{6F3D4E1A-8C52-4B7B-A1E0-4D2F9B8C7A31}
+AppName={#AppLong}
+AppVersion={#AppVersion}
+AppVerName={#AppLong} {#AppVersion}
+AppPublisher=CheNik
+AppPublisherURL=https://github.com/ChebNikit/NOP
+AppSupportURL=https://github.com/ChebNikit/NOP/issues
+VersionInfoVersion={#AppVersion}.0.0
+VersionInfoProductName={#AppLong}
+VersionInfoDescription={#AppLong} setup
+DefaultDirName={autopf}\NOP
+DefaultGroupName=NOP
+DisableProgramGroupPage=yes
+DisableWelcomePage=no
+UninstallDisplayIcon={app}\{#AppExe}
+UninstallDisplayName={#AppLong}
+OutputDir={#OutDir}
+OutputBaseFilename=NOP_Setup
+SetupIconFile={#ArtDir}\nop.ico
+#if Ver >= 0x06060000
+WizardStyle=modern dark includetitlebar hidebevels
+#else
+WizardStyle=modern
+#endif
+#if Ver >= 0x06070000
+WizardBackColor=#0D0F14
+#endif
+WizardImageFile={#ArtDir}\wizard_164x314.bmp,{#ArtDir}\wizard_192x386.bmp,{#ArtDir}\wizard_246x459.bmp,{#ArtDir}\wizard_328x628.bmp
+WizardSmallImageFile={#ArtDir}\small_55x58.bmp,{#ArtDir}\small_64x68.bmp,{#ArtDir}\small_83x80.bmp,{#ArtDir}\small_110x106.bmp
+Compression=lzma2/ultra64
+SolidCompression=yes
+ArchitecturesAllowed=x64compatible
+ArchitecturesInstallIn64BitMode=x64compatible
+MinVersion=10.0.17763
+PrivilegesRequired=lowest
+PrivilegesRequiredOverridesAllowed=dialog commandline
+CloseApplications=yes
+RestartApplications=no
+ChangesAssociations=yes
+SetupLogging=yes
+ShowLanguageDialog=auto
+LanguageDetectionMethod=uilanguage
+AllowNoIcons=yes
+DirExistsWarning=no
+UsePreviousTasks=yes
+
+[Languages]
+Name: "russian"; MessagesFile: "compiler:Languages\Russian.isl"
+Name: "english"; MessagesFile: "compiler:Default.isl"
+
+[CustomMessages]
+russian.TypeFull=Полная установка (рекомендуется)
+russian.TypeCompact=Компактная (без конвертации документов, векторов, книг и 3D)
+russian.TypeCustom=Выборочная установка
+russian.CompCore=NOP: плеер, загрузка, видео и аудио, перекодирование, эквалайзер
+russian.CompEngines=Конвертация документов, таблиц, презентаций, векторной графики, электронных книг и 3D-моделей (LibreOffice, Inkscape, Calibre, Blender; около 2 ГБ)
+russian.TaskOpenWith=Добавить NOP в меню «Открыть с помощью» для аудио и видео
+russian.GroupIntegration=Интеграция с Windows:
+russian.StatusRuntime=Установка компонентов среды выполнения Microsoft…
+russian.StatusWarm=Проверка встроенных компонентов (выполняется один раз)…
+russian.StatusSelftest=Проверка установленной копии NOP…
+russian.LaunchNOP=Запустить NOP
+russian.SelftestOk=Проверка установки пройдена: воспроизведение (mpv), FFmpeg, перекодирование и эквалайзер работают.
+russian.SelftestFail=Установка завершена, но проверка нашла проблемы. Подробности: %1
+russian.UninstallAskData=Удалить также настройки, историю и кэш NOP (папка «%1»)?
+russian.PerUserNote=Совет: установка «только для меня» не требует прав администратора.
+russian.WelcomeTitle=Установка NOP
+russian.WelcomeTagline=Видео, музыка и работа с медиафайлами.
+russian.WelcomeDescription=Выберите папку — мастер установит плеер и необходимые компоненты. Python и библиотеки уже в комплекте.
+russian.WelcomeAction=Нажмите «Далее», чтобы продолжить, или «Отмена», чтобы выйти из программы установки.
+russian.PackagesTitle=Состав установки
+russian.PackagesDescription=Ниже перечислены компоненты выбранного варианта установки. Вернитесь назад, чтобы изменить выбор.
+russian.PackagesAlwaysTitle=Основные компоненты NOP — устанавливаются всегда:
+russian.PackagesPythonTitle=Встроенные библиотеки Python и их версии:
+russian.PackagesEnginesTitle=Дополнительные конвертеры — будут установлены:
+russian.PackagesEnginesSkipped=Дополнительные конвертеры не выбраны в текущем варианте установки.
+russian.PackagesEnginesUnavailable=Дополнительные конвертеры (LibreOffice, Inkscape, Calibre и Blender) не включены в эту сборку установщика.
+russian.PackagesVcRuntime=Microsoft Visual C++ 2015–2022 x64 Runtime — будет установлен только при отсутствии совместимой версии в Windows.
+russian.PackagesApoNote=Equalizer APO {#ApoVersion} (системный эквалайзер для звука всех программ) — будет установлен, если его ещё нет в Windows. В его мастере выберите свои наушники или колонки. Для установки потребуется подтверждение прав администратора.
+russian.PackagesApoPresent=Equalizer APO уже установлен в Windows — текущая установка и её настройки сохранятся.
+russian.StatusApo=Equalizer APO: выберите устройство звука в открывшемся мастере...
+russian.ApoOk=Equalizer APO установлен. Если его мастер попросил перезагрузку, выполните её перед использованием режима «Всё устройство».
+russian.ApoFail=NOP установлен, но установка Equalizer APO не завершена. Запустите установщик NOP снова и завершите мастер APO. Эквалайзер внутри NOP при этом работает.
+russian.ApoSilent=Equalizer APO не устанавливался: тихая установка не может выбрать устройство звука. Запустите установщик в обычном режиме, если нужен режим «Всё устройство».
+russian.ApoAlready=Equalizer APO уже установлен. Его настройки сохранены.
+russian.PackagesBuildToolsNote=Inno Setup, PyInstaller, 7-Zip и служебные пакеты сборки используются только при создании установщика и на компьютер пользователя не устанавливаются.
+english.TypeFull=Full installation (recommended)
+english.TypeCompact=Compact (no document, vector, e-book and 3D conversion)
+english.TypeCustom=Custom installation
+english.CompCore=NOP: player, downloads, video and audio, transcoding, equalizer
+english.CompEngines=Document, spreadsheet, presentation, vector, e-book and 3D conversion (LibreOffice, Inkscape, Calibre, Blender; about 2 GB)
+english.TaskOpenWith=Add NOP to the "Open with" menu for audio and video files
+english.GroupIntegration=Windows integration:
+english.StatusRuntime=Installing Microsoft runtime components...
+english.StatusWarm=Checking built-in components (done once)...
+english.StatusSelftest=Verifying the installed copy of NOP...
+english.LaunchNOP=Launch NOP
+english.SelftestOk=Installation check passed: playback (mpv), FFmpeg, transcoding and the equalizer work.
+english.SelftestFail=Setup finished, but the check found problems. Details: %1
+english.UninstallAskData=Also delete NOP settings, history and cache (folder "%1")?
+english.PerUserNote=Tip: installing for the current user does not need administrator rights.
+english.WelcomeTitle=NOP Setup
+english.WelcomeTagline=Video, music and media management.
+english.WelcomeDescription=Choose an installation folder — Setup will install the player and its required components. Python and its libraries are included.
+english.WelcomeAction=Click Next to continue, or Cancel to exit Setup.
+english.PackagesTitle=Installation contents
+english.PackagesDescription=The list below reflects the selected installation type. Go back to change your selection.
+english.PackagesAlwaysTitle=NOP core components — always installed:
+english.PackagesPythonTitle=Bundled Python libraries and versions:
+english.PackagesEnginesTitle=Optional conversion tools — selected for installation:
+english.PackagesEnginesSkipped=Optional conversion tools are not selected for this installation.
+english.PackagesEnginesUnavailable=Optional conversion tools (LibreOffice, Inkscape, Calibre and Blender) are not included in this installer build.
+english.PackagesVcRuntime=Microsoft Visual C++ 2015–2022 x64 Runtime — installed only when a compatible version is not already present in Windows.
+english.PackagesApoNote=Equalizer APO {#ApoVersion} (system-wide equalizer for all programs) — will be installed if it is not already present in Windows. In its wizard, choose your headphones or speakers. Windows will ask for administrator permission.
+english.PackagesApoPresent=Equalizer APO is already installed in Windows — the current installation and its settings are kept.
+english.StatusApo=Equalizer APO: choose your audio device in the wizard that opens...
+english.ApoOk=Equalizer APO is installed. If its wizard asked for a restart, restart before using the Whole device mode.
+english.ApoFail=NOP is installed, but the Equalizer APO setup did not finish. Run the NOP installer again and complete the APO wizard. NOP's built-in equalizer works meanwhile.
+english.ApoSilent=Equalizer APO was not installed: a silent installation cannot pick the audio device. Run the installer normally if you want the Whole device mode.
+english.ApoAlready=Equalizer APO is already installed. Its settings are kept.
+english.PackagesBuildToolsNote=Inno Setup, PyInstaller, 7-Zip and build-only Python packages are used to create the installer and are not installed on the user's PC.
+
+[Types]
+Name: "full"; Description: "{cm:TypeFull}"
+Name: "compact"; Description: "{cm:TypeCompact}"
+Name: "custom"; Description: "{cm:TypeCustom}"; Flags: iscustom
+
+[Components]
+Name: "core"; Description: "{cm:CompCore}"; Types: full compact custom; Flags: fixed
+#ifdef HasEngines
+Name: "engines"; Description: "{cm:CompEngines}"; Types: full custom
+#endif
+
+[Tasks]
+Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
+Name: "openwith"; Description: "{cm:TaskOpenWith}"; GroupDescription: "{cm:GroupIntegration}"
+
+[Files]
+Source: "{#PayloadDir}\*"; DestDir: "{app}"; Excludes: "converters\*"; Flags: ignoreversion recursesubdirs createallsubdirs; Components: core
+#ifdef HasEngines
+Source: "{#PayloadDir}\converters\*"; DestDir: "{app}\converters"; Flags: ignoreversion recursesubdirs createallsubdirs; Components: engines
+#endif
+#ifdef VcRedist
+Source: "{#VcRedist}"; DestDir: "{tmp}"; Flags: deleteafterinstall; Check: NeedsVCRedist
+#endif
+#ifdef ApoInstaller
+; Equalizer APO is embedded and extracted on demand (see CurStepChanged); it is never copied into the NOP folder.
+Source: "{#ApoInstaller}"; Flags: dontcopy
+#endif
+
+[Icons]
+Name: "{autoprograms}\NOP"; Filename: "{app}\{#AppExe}"; WorkingDir: "{app}"; Comment: "{#AppLong}"
+Name: "{autodesktop}\NOP"; Filename: "{app}\{#AppExe}"; WorkingDir: "{app}"; Tasks: desktopicon
+
+[Registry]
+Root: HKA; Subkey: "Software\Classes\Applications\{#AppExe}"; ValueType: string; ValueName: "FriendlyAppName"; ValueData: "{#AppLong}"; Flags: uninsdeletekey; Tasks: openwith
+Root: HKA; Subkey: "Software\Classes\Applications\{#AppExe}\DefaultIcon"; ValueType: string; ValueData: "{app}\{#AppExe},0"; Tasks: openwith
+Root: HKA; Subkey: "Software\Classes\Applications\{#AppExe}\shell\open\command"; ValueType: string; ValueData: """{app}\{#AppExe}"" ""%1"""; Tasks: openwith
+#include "associations.iss.inc"
+
+[Run]
+Filename: "{tmp}\vc_redist.x64.exe"; Parameters: "/install /quiet /norestart"; StatusMsg: "{cm:StatusRuntime}"; Flags: waituntilterminated skipifdoesntexist; Check: NeedsVCRedist
+; The converter check runs ONCE here (after all engines are installed) and is cached by NOP; later launches do not start any tools.
+Filename: "{app}\{#AppExe}"; Parameters: "--nop-warm-capabilities"; StatusMsg: "{cm:StatusWarm}"; Flags: runasoriginaluser runhidden waituntilterminated
+Filename: "{app}\{#AppExe}"; Parameters: "--nop-selftest ""{tmp}\nop-selftest.json"""; StatusMsg: "{cm:StatusSelftest}"; Flags: runasoriginaluser runhidden waituntilterminated
+Filename: "{app}\{#AppExe}"; Description: "{cm:LaunchNOP}"; Flags: nowait postinstall skipifsilent runasoriginaluser
+
+[UninstallDelete]
+Type: files; Name: "{app}\*.log"
+
+[Code]
+#include "package_manifest.iss.inc"
+
+const
+  WM_CHANGEUISTATE = $0127;
+  UIS_SET_HIDEFOCUS = $00010001;  { UIS_SET | (UISF_HIDEFOCUS << 16) }
+
+function SendMessageUI(hWnd: HWND; Msg: Longint; wParam: Longint; lParam: Longint): Longint;
+  external 'SendMessageW@user32.dll stdcall';
+
+procedure HideFocusCues(hWnd: HWND);
+begin
+  if hWnd <> 0 then
+    SendMessageUI(hWnd, WM_CHANGEUISTATE, UIS_SET_HIDEFOCUS, 0);
+end;
+
+{ Click highlight removal only: checkbox, installation-type and radio state are never changed. }
+procedure DropListSelection(Sender: TObject);
+begin
+  WizardForm.ComponentsList.ItemIndex := -1;
+end;
+
+procedure DropControlFocus(Sender: TObject);
+begin
+  if WizardForm.NextButton.Visible and WizardForm.NextButton.Enabled then
+    WizardForm.ActiveControl := WizardForm.NextButton;
+end;
+
+#if Ver < 0x06060000
+const
+  ThemeBg     = $140F0D;
+  ThemeField  = $1E1511;
+  ThemeLine   = $3B2D25;
+  ThemeTitle  = $FAF3F0;
+  ThemeText   = $F5EDE9;
+  ThemeMuted  = $AB988E;
+  ThemeAccent = $6D42FF;
+#endif
+
+var
+  PackageInfoPage: TWizardPage;
+  PackageInfoMemo: TNewMemo;
+
+#if Ver < 0x06060000
+procedure ThemeComponents(Owner: TComponent);
+var
+  I: Integer;
+  C: TComponent;
+begin
+  for I := 0 to Owner.ComponentCount - 1 do
+  begin
+    C := Owner.Components[I];
+    if C is TNewNotebookPage then
+      TNewNotebookPage(C).Color := ThemeBg
+    else if C is TPanel then
+      TPanel(C).Color := ThemeBg
+    else if C is TBevel then
+      TBevel(C).Visible := False
+    else if C is TNewStaticText then
+      TNewStaticText(C).Font.Color := ThemeText
+    else if C is TNewCheckBox then
+      TNewCheckBox(C).Font.Color := ThemeText
+    else if C is TNewRadioButton then
+      TNewRadioButton(C).Font.Color := ThemeText
+    else if C is TEdit then
+    begin
+      TEdit(C).Color := ThemeField;
+      TEdit(C).Font.Color := ThemeText;
+    end
+    else if C is TNewMemo then
+    begin
+      TNewMemo(C).Color := ThemeField;
+      TNewMemo(C).Font.Color := ThemeText;
+    end
+    else if C is TNewComboBox then
+    begin
+      TNewComboBox(C).Color := ThemeField;
+      TNewComboBox(C).Font.Color := ThemeText;
+    end
+    else if C is TNewCheckListBox then
+    begin
+      TNewCheckListBox(C).Color := ThemeField;
+      TNewCheckListBox(C).Font.Color := ThemeText;
+    end;
+  end;
+end;
+
+procedure ReplaceBevel(Src: TBevel);
+var
+  Line: TPanel;
+begin
+  Line := TPanel.Create(WizardForm);
+  Line.Parent := Src.Parent;
+  Line.BevelOuter := bvNone;
+  Line.Caption := '';
+  Line.Color := ThemeLine;
+  Line.Anchors := Src.Anchors;
+  Line.SetBounds(Src.Left, Src.Top, Src.Width, 1);
+end;
+
+procedure InitializeUninstallProgressForm;
+begin
+  UninstallProgressForm.Color := ThemeBg;
+  ThemeComponents(UninstallProgressForm);
+  UninstallProgressForm.PageNameLabel.Font.Color := ThemeTitle;
+  UninstallProgressForm.PageNameLabel.Font.Style := [fsBold];
+  UninstallProgressForm.PageDescriptionLabel.Font.Color := ThemeMuted;
+end;
+#endif
+
+var
+  ApoResult: String;
+
+function EqualizerAPOInstalled: Boolean;
+var
+  Folder: String;
+begin
+  Result := False;
+  if RegQueryStringValue(HKLM64, 'SOFTWARE\EqualizerAPO', 'InstallPath', Folder) then
+    Result := FileExists(AddBackslash(Folder) + 'EqualizerAPO.dll');
+  if not Result then
+    Result := FileExists(ExpandConstant('{commonpf64}\EqualizerAPO\EqualizerAPO.dll'));
+end;
+
+function BuildPackageInfo: String;
+begin
+  if ExpandConstant('{language}') = 'russian' then
+    Result := CustomMessage('PackagesAlwaysTitle') + #13#10 + PackageMediaListRu + #13#10#13#10
+  else
+    Result := CustomMessage('PackagesAlwaysTitle') + #13#10 + PackageMediaListEn + #13#10#13#10;
+  Result := Result + CustomMessage('PackagesPythonTitle') + #13#10 +
+    PackagePythonList + #13#10#13#10;
+#ifdef HasEngines
+  if WizardIsComponentSelected('engines') then
+  begin
+    if ExpandConstant('{language}') = 'russian' then
+      Result := Result + CustomMessage('PackagesEnginesTitle') + #13#10 + PackageEngineListRu + #13#10#13#10
+    else
+      Result := Result + CustomMessage('PackagesEnginesTitle') + #13#10 + PackageEngineListEn + #13#10#13#10;
+  end
+  else
+    Result := Result + CustomMessage('PackagesEnginesSkipped') + #13#10#13#10;
+#else
+  Result := Result + CustomMessage('PackagesEnginesUnavailable') + #13#10#13#10;
+#endif
+#ifdef VcRedist
+  Result := Result + CustomMessage('PackagesVcRuntime') + #13#10#13#10;
+#endif
+#ifdef ApoInstaller
+  if EqualizerAPOInstalled then
+    Result := Result + CustomMessage('PackagesApoPresent') + #13#10#13#10
+  else
+    Result := Result + CustomMessage('PackagesApoNote') + #13#10#13#10;
+#endif
+  Result := Result + CustomMessage('PackagesBuildToolsNote');
+end;
+
+procedure UpdatePackageInfo;
+begin
+  if Assigned(PackageInfoMemo) then
+    PackageInfoMemo.Text := BuildPackageInfo;
+end;
+
+procedure InitializeWizard;
+var
+  Bar: TPanel;
+begin
+#if Ver < 0x06060000
+  WizardForm.Color := ThemeBg;
+  ThemeComponents(WizardForm);
+  WizardForm.MainPanel.Color := ThemeBg;
+  WizardForm.PageNameLabel.Font.Color := ThemeTitle;
+  WizardForm.PageNameLabel.Font.Style := [fsBold];
+  WizardForm.PageDescriptionLabel.Font.Color := ThemeMuted;
+  ReplaceBevel(WizardForm.Bevel);
+  ReplaceBevel(WizardForm.Bevel1);
+  WizardForm.FinishedHeadingLabel.Font.Color := ThemeTitle;
+  WizardForm.DiskSpaceLabel.Font.Color := ThemeMuted;
+  WizardForm.ComponentsDiskSpaceLabel.Font.Color := ThemeMuted;
+  WizardForm.SelectDirBrowseLabel.Font.Color := ThemeMuted;
+  Bar := TPanel.Create(WizardForm);
+  Bar.Parent := WizardForm.WelcomePage;
+  Bar.BevelOuter := bvNone;
+  Bar.Caption := '';
+  Bar.Color := ThemeAccent;
+  Bar.SetBounds(WizardForm.WelcomeLabel1.Left, WizardForm.WelcomeLabel1.Top + WizardForm.WelcomeLabel1.Height + ScaleY(4), ScaleX(40), ScaleY(3));
+#endif
+
+  { Use the built-in Welcome page so the existing type-selection flow stays unchanged. }
+  WizardForm.WelcomeLabel1.Caption := CustomMessage('WelcomeTitle');
+  WizardForm.WelcomeLabel2.Caption := CustomMessage('WelcomeTagline') + #13#10#13#10 +
+    CustomMessage('WelcomeDescription') + #13#10#13#10 + CustomMessage('WelcomeAction');
+
+  { No highlight when clicking installation types, components and close-applications choices. }
+  WizardForm.ComponentsList.OnClick := @DropListSelection;
+  WizardForm.TypesCombo.OnClick := @DropControlFocus;
+  WizardForm.PreparingYesRadio.OnClick := @DropControlFocus;
+  WizardForm.PreparingNoRadio.OnClick := @DropControlFocus;
+
+  { Standalone wizard step after type, folder and task selection; never overlays the selection page. }
+  PackageInfoPage := CreateCustomPage(wpSelectTasks,
+    CustomMessage('PackagesTitle'), CustomMessage('PackagesDescription'));
+  PackageInfoPage.Surface.Color := $140F0D;
+  PackageInfoMemo := TNewMemo.Create(PackageInfoPage);
+  PackageInfoMemo.Parent := PackageInfoPage.Surface;
+  PackageInfoMemo.Left := 0;
+  PackageInfoMemo.Top := 0;
+  PackageInfoMemo.Width := PackageInfoPage.SurfaceWidth;
+  PackageInfoMemo.Height := PackageInfoPage.SurfaceHeight;
+  PackageInfoMemo.Anchors := [akLeft, akTop, akRight, akBottom];
+  PackageInfoMemo.ReadOnly := True;
+  PackageInfoMemo.WordWrap := True;
+  PackageInfoMemo.ScrollBars := ssVertical;
+  PackageInfoMemo.BorderStyle := bsNone;
+  PackageInfoMemo.Color := $140F0D;
+  PackageInfoMemo.Font.Color := $F5EDE9;
+  PackageInfoMemo.Font.Name := 'Segoe UI';
+  PackageInfoMemo.Font.Size := 9;
+  UpdatePackageInfo;
+end;
+
+function NeedsVCRedist: Boolean;
+var
+  Installed, Build: Cardinal;
+begin
+  // Microsoft Visual C++ 2015-2022 x64 runtime, 14.38 (build 33135) or newer. NOP also ships the DLLs privately;
+  // this is only a safety net for unusual systems (for example a stripped LTSC image).
+  Result := True;
+  if RegQueryDWordValue(HKLM64, 'SOFTWARE\Microsoft\VisualStudio\14.0\VC\Runtimes\x64', 'Installed', Installed) and
+     RegQueryDWordValue(HKLM64, 'SOFTWARE\Microsoft\VisualStudio\14.0\VC\Runtimes\x64', 'Bld', Build) then
+    Result := not ((Installed = 1) and (Build >= 33135));
+end;
+
+function ReadAll(const FileName: String): String;
+var
+  Text: AnsiString;
+begin
+  Result := '';
+  if LoadStringFromFile(FileName, Text) then
+    Result := String(Text);
+end;
+
+#ifdef ApoInstaller
+procedure CurStepChanged(CurStep: TSetupStep);
+var
+  ExitCode: Integer;
+  Started: Boolean;
+begin
+  if CurStep <> ssPostInstall then Exit;
+  if EqualizerAPOInstalled then
+  begin
+    ApoResult := CustomMessage('ApoAlready');
+    Exit;
+  end;
+  { The Equalizer APO wizard needs a person to choose the audio device, so a silent install skips it. }
+  if WizardSilent then
+  begin
+    ApoResult := CustomMessage('ApoSilent');
+    Exit;
+  end;
+  WizardForm.StatusLabel.Caption := CustomMessage('StatusApo');
+  ExitCode := 0;
+  ExtractTemporaryFile('{#ApoFile}');
+  if IsAdminInstallMode then
+    Started := Exec(ExpandConstant('{tmp}\{#ApoFile}'), '', '', SW_SHOWNORMAL, ewWaitUntilTerminated, ExitCode)
+  else
+    Started := ShellExec('runas', ExpandConstant('{tmp}\{#ApoFile}'), '', '', SW_SHOWNORMAL, ewWaitUntilTerminated, ExitCode);
+  if Started and ((ExitCode = 0) or (ExitCode = 3010)) and EqualizerAPOInstalled then
+    ApoResult := CustomMessage('ApoOk')
+  else
+    ApoResult := CustomMessage('ApoFail');
+end;
+#endif
+
+procedure CurPageChanged(CurPageID: Integer);
+var
+  Report, Path: String;
+begin
+  if CurPageID = wpSelectComponents then
+  begin
+    { Hide only the keyboard-focus outline; checkbox and installation-type state remain unchanged. }
+    HideFocusCues(WizardForm.SelectComponentsPage.Handle);
+    HideFocusCues(WizardForm.ComponentsList.Handle);
+    HideFocusCues(WizardForm.TypesCombo.Handle);
+    WizardForm.ComponentsList.ItemIndex := -1;
+  end;
+
+  if CurPageID = wpPreparing then
+  begin
+    { Hide focus indicators only within the Preparing page, including its close-applications choices. }
+    if Assigned(WizardForm.PreparingMemo) then
+      HideFocusCues(WizardForm.PreparingMemo.Parent.Handle);
+  end;
+
+  if CurPageID = PackageInfoPage.ID then
+    UpdatePackageInfo;
+
+  if CurPageID = wpFinished then
+  begin
+    if ApoResult <> '' then
+      WizardForm.FinishedLabel.Caption := WizardForm.FinishedLabel.Caption + #13#10#13#10 + ApoResult;
+    Path := ExpandConstant('{tmp}\nop-selftest.json');
+    Report := ReadAll(Path);
+    if Pos('"ok": true', Report) > 0 then
+      WizardForm.FinishedLabel.Caption := WizardForm.FinishedLabel.Caption + #13#10#13#10 + CustomMessage('SelftestOk')
+    else if Report <> '' then
+    begin
+      FileCopy(Path, ExpandConstant('{userdocs}\NOP-install-check.json'), False);
+      WizardForm.FinishedLabel.Caption := WizardForm.FinishedLabel.Caption + #13#10#13#10 +
+        FmtMessage(CustomMessage('SelftestFail'), [ExpandConstant('{userdocs}\NOP-install-check.json')]);
+    end;
+  end;
+end;
+
+procedure CurUninstallStepChanged(CurUninstallStep: TUninstallStep);
+var
+  Data: String;
+begin
+  if CurUninstallStep = usPostUninstall then
+  begin
+    Data := ExpandConstant('{userappdata}\YamiFM');
+    if (not UninstallSilent) and DirExists(Data) then
+      if MsgBox(FmtMessage(CustomMessage('UninstallAskData'), [Data]), mbConfirmation, MB_YESNO or MB_DEFBUTTON2) = IDYES then
+        DelTree(Data, True, True, True);
+  end;
+end;

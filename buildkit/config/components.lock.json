@@ -1,0 +1,94 @@
+{
+  "schema": 1,
+  "comment": "Every download is pinned by SHA-256. A mismatch aborts the build. To update a component change url+sha256+version here.",
+  "components": {
+    "7zr": {
+      "version": "26.06",
+      "license": "LGPL-2.1+ (7-Zip, unRAR restriction)",
+      "source": "https://github.com/ip7z/7zip/releases/tag/26.06",
+      "url": "https://github.com/ip7z/7zip/releases/download/26.06/7zr.exe",
+      "sha256": "e80db2dad715a6c5adabe292d31ed54e11f4e9b99ca349827b50573b175891bc",
+      "size": 600064,
+      "file": "7zr.exe"
+    },
+    "libmpv": {
+      "version": "20261111-git-bcde6b93cc",
+      "license": "GPL-2.0+ (mpv-winbuild-cmake by shinchiro; generic x86-64 build, no AVX2 requirement)",
+      "source": "https://github.com/shinchiro/mpv-winbuild-cmake/releases/tag/20261111",
+      "url": "https://github.com/shinchiro/mpv-winbuild-cmake/releases/download/20261111/mpv-dev-x86_64-20261111-git-bcde6b93cc.7z",
+      "sha256": "273c079b11ea5575822f972756f4c9a71149a5c10130353abeb8586738938452",
+      "size": 31776374,
+      "file": "mpv-dev-x86_64-20261111-git-bcde6b93cc.7z"
+    },
+    "ffmpeg": {
+      "version": "n9.0.2-57-gd838f9f9ae",
+      "license": "GPL-3.0+ (BtbN FFmpeg-Builds, static win64 gpl)",
+      "source": "https://github.com/FFmpeg-Builds/FFmpeg-Builds/releases/tag/autobuild-2026-11-14-12-37",
+      "url": "https://github.com/FFmpeg-Builds/FFmpeg-Builds/releases/download/autobuild-2026-11-14-12-37/ffmpeg-n9.0.2-57-gd838f9f9ae-win64-gpl-9.0.zip",
+      "sha256": "7d41fc8a3f52ad7d1e66804e1b2e79d16e51f0f854c3cc8ae962c5e88603eec8",
+      "size": 194990129,
+      "file": "ffmpeg-n9.0.2-57-gd838f9f9ae-win64-gpl-9.0.zip"
+    },
+    "deno": {
+      "version": "2.9.8",
+      "license": "MIT",
+      "source": "https://github.com/denoland/deno/releases/tag/v2.9.8",
+      "url": "https://github.com/denoland/deno/releases/download/v2.9.8/deno-x86_64-pc-windows-msvc.zip",
+      "sha256": "cba84b26e0df5ae7f74fc66b86a95b866872a86292ebd84fa1e959927edd93bf",
+      "size": 42917472,
+      "file": "deno-x86_64-pc-windows-msvc.zip"
+    }
+  },
+  "signed_downloads": {
+    "comment": "Vendors replace these files, so they cannot be pinned by hash. They are verified by Authenticode signature instead.",
+    "innosetup": {
+      "comment": "The installer is replaced by the vendor for every release, so it is verified by Authenticode signature, not by hash. Several sources are tried in order.",
+      "preferred_versions": [
+        "6.7.4"
+      ],
+      "version_discovery": "https://github.com/jrsoftware/issrc/tags",
+      "url_templates": [
+        "https://github.com/jrsoftware/issrc/releases/download/{tag}/innosetup-{version}.exe"
+      ],
+      "generic_urls": [],
+      "winget_id": "JRSoftware.InnoSetup",
+      "signer_contains": [
+        "Jordan Russell",
+        "JRSoftware",
+        "Pyrsys B.V."
+      ],
+      "min_version": "6.5.0",
+      "file": "innosetup-setup.exe"
+    },
+    "vc_redist": {
+      "url": "https://aka.ms/vs/17/release/vc_redist.x64.exe",
+      "signer_contains": [
+        "Microsoft Corporation"
+      ],
+      "file": "vc_redist.x64.exe"
+    },
+    "python_nuget": {
+      "index": "https://api.nuget.org/v3-flatcontainer/python/index.json",
+      "package": "https://api.nuget.org/v3-flatcontainer/python/{v}/python.{v}.nupkg",
+      "series": "3.13.",
+      "signer_contains": [
+        "Python Software Foundation"
+      ]
+    }
+  },
+  "installers": {
+    "comment": "Third-party installers that are embedded in NOP_Setup.exe and run by it. Pinned by SHA-256; a mismatch aborts the build.",
+    "equalizer_apo": {
+      "version": "1.4.2",
+      "license": "GPL-2.0+ (Equalizer APO; installed as a separate program, NOP only reads and writes its config)",
+      "source": "https://sourceforge.net/projects/equalizerapo/files/1.4.2/EqualizerAPO-x64-1.4.2.exe/download",
+      "url": "https://downloads.sourceforge.net/project/equalizerapo/1.4.2/EqualizerAPO-x64-1.4.2.exe",
+      "sha256": "7403be7427bbe1936a40dded082829b6e217fc4f5990fee5cba501f0ae055afa",
+      "file": "EqualizerAPO-x64-1.4.2.exe",
+      "mirror_urls": [
+        "https://netcologne.dl.sourceforge.net/project/equalizerapo/1.4.2/EqualizerAPO-x64-1.4.2.exe",
+        "https://master.dl.sourceforge.net/project/equalizerapo/1.4.2/EqualizerAPO-x64-1.4.2.exe"
+      ]
+    }
+  }
+}
