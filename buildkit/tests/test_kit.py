@@ -192,7 +192,7 @@ class LockTests(unittest.TestCase):
         self.assertEqual(len(pins), len(entries), "every requirement must carry a hash")
 
     def test_application_third_party_imports_are_locked(self):
-        tree = ast.parse((KIT / "source" / "NOP_1_1.py").read_text(encoding="utf-8"))
+        tree = ast.parse((KIT / "source" / "NOP_1_2.py").read_text(encoding="utf-8"))
         used = set()
         for node in ast.walk(tree):
             if isinstance(node, ast.Import):
@@ -247,15 +247,15 @@ class GeneratedFilesTests(unittest.TestCase):
         self.assertEqual(document.getElementsByTagName("requestedExecutionLevel")[0].getAttribute("level"), "asInvoker")
 
     def test_version_info_and_spec_compile(self):
-        text = build_kit.version_info_text("1.1")
-        self.assertIn("filevers=(1, 1, 0, 0)", text)
-        spec = build_kit.spec_text(Path("C:/kit/source/NOP_1_1.py"), Path("C:/a/nop.ico"), Path("C:/a/v.txt"), Path("C:/a/m.xml"), None)
+        text = build_kit.version_info_text("1.2")
+        self.assertIn("filevers=(1, 2, 0, 0)", text)
+        spec = build_kit.spec_text(Path("C:/kit/source/NOP_1_2.py"), Path("C:/a/nop.ico"), Path("C:/a/v.txt"), Path("C:/a/m.xml"), None)
         compile(spec, "NOP.spec", "exec")                           # must be valid Python
         self.assertIn('name="NOP"', spec)
         self.assertIn("console=False", spec)
 
     def test_associations(self):
-        exts = build_kit.media_extensions(KIT / "source" / "NOP_1_1.py")
+        exts = build_kit.media_extensions(KIT / "source" / "NOP_1_2.py")
         self.assertIn(".mp3", exts)
         self.assertIn(".mkv", exts)
         include = build_kit.associations_inc(exts)
@@ -340,8 +340,8 @@ class GeneratedFilesTests(unittest.TestCase):
         self.assertNotIn("TypesCombo.ItemIndex :=", text)
 
     def test_application_has_installer_hooks(self):
-        source = (KIT / "source" / "NOP_1_1.py").read_text(encoding="utf-8")
-        self.assertIn('APP_VERSION = "1.1"', source)
+        source = (KIT / "source" / "NOP_1_2.py").read_text(encoding="utf-8")
+        self.assertIn('APP_VERSION = "1.2"', source)
         for flag in ("--nop-warm-capabilities", "--nop-selftest"):
             self.assertIn(flag, source)
 
@@ -350,7 +350,7 @@ class GeneratedFilesTests(unittest.TestCase):
         art_source = (KIT / "build" / "make_art.py").read_text(encoding="utf-8")
         self.assertIn('f"{version}  /  Windows x64"', art_source)
         with tempfile.TemporaryDirectory() as folder:
-            result = make_art.build_all(KIT / "source" / "NOP_1_1.py", Path(folder), "1.1")
+            result = make_art.build_all(KIT / "source" / "NOP_1_2.py", Path(folder), "1.2")
             from PIL import Image
             with Image.open(Path(folder) / "wizard_preview.png") as preview:
                 self.assertEqual(preview.size, (656, 1256))
@@ -456,7 +456,7 @@ class ZstdGuardTests(unittest.TestCase):
     def test_broken_backports_zstd_is_hidden(self):
         """Regression: 'module backports.zstd has no attribute ZstdError' aborted start-up of the frozen app."""
         import subprocess
-        tree = ast.parse((KIT / "source" / "NOP_1_1.py").read_text(encoding="utf-8"))
+        tree = ast.parse((KIT / "source" / "NOP_1_2.py").read_text(encoding="utf-8"))
         guard = next(n for n in tree.body if isinstance(n, ast.FunctionDef) and n.name == "_guard_optional_zstd")
         with tempfile.TemporaryDirectory() as folder:
             (Path(folder) / "backports" / "zstd").mkdir(parents=True)
@@ -479,7 +479,7 @@ class EngineTests(unittest.TestCase):
 
     def test_layout_matches_what_nop_looks_for(self):
         """NOP searches converters/<libreoffice/program | inkscape/bin | calibre | blender>/ - keep the kit in sync."""
-        source = (KIT / "source" / "NOP_1_1.py").read_text(encoding="utf-8")
+        source = (KIT / "source" / "NOP_1_2.py").read_text(encoding="utf-8")
         for fragment in ('"libreoffice/program"', '"inkscape/bin"', '"calibre"', '"blender"'):
             self.assertIn(fragment, source)
 
@@ -508,7 +508,7 @@ class EngineTests(unittest.TestCase):
         self.assertNotIn("winget", text)
 
     def test_selftest_checks_engines(self):
-        source = (KIT / "source" / "NOP_1_1.py").read_text(encoding="utf-8")
+        source = (KIT / "source" / "NOP_1_2.py").read_text(encoding="utf-8")
         for needle in ("NOP_SELFTEST_REQUIRE_ENGINES", "LibreOffice", "Inkscape", "Calibre", "Blender"):
             self.assertIn(needle, source)
 
@@ -535,7 +535,7 @@ class BlenderProbeTests(unittest.TestCase):
         """Blender 5.x can raise KeyError for a missing exporter; the probe must still print the format list."""
         import subprocess
         import tempfile as tf
-        source = (KIT / "source" / "NOP_1_1.py").read_text(encoding="utf-8")
+        source = (KIT / "source" / "NOP_1_2.py").read_text(encoding="utf-8")
         start = source.index('code = "import bpy,json')
         line = source[start:source.index("\n", start)]
         namespace = {}
@@ -576,7 +576,7 @@ class RmtreeTests(unittest.TestCase):
 
 class CustomSourceTests(unittest.TestCase):
     def test_kit_source_is_valid_and_version_read(self):
-        self.assertEqual(build_kit.validate_source(KIT / "source" / "NOP_1_1.py"), "1.1")
+        self.assertEqual(build_kit.validate_source(KIT / "source" / "NOP_1_2.py"), "1.2")
 
     def test_modified_source_without_hooks_is_rejected_with_explanation(self):
         with tempfile.TemporaryDirectory() as folder:
@@ -593,5 +593,5 @@ class CustomSourceTests(unittest.TestCase):
     def test_modified_copy_with_new_version_is_accepted(self):
         with tempfile.TemporaryDirectory() as folder:
             mine = Path(folder) / "NOP_mine.py"
-            mine.write_text((KIT / "source" / "NOP_1_1.py").read_text(encoding="utf-8").replace('APP_VERSION = "1.1"', 'APP_VERSION = "1.2"'), encoding="utf-8")
-            self.assertEqual(build_kit.validate_source(mine), "1.2")
+            mine.write_text((KIT / "source" / "NOP_1_2.py").read_text(encoding="utf-8").replace('APP_VERSION = "1.2"', 'APP_VERSION = "1.3"'), encoding="utf-8")
+            self.assertEqual(build_kit.validate_source(mine), "1.3")

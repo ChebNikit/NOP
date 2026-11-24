@@ -1,15 +1,15 @@
-# Verification status (NOP 1.1 build kit)
+# Verification status (NOP 1.2 build kit)
 
-Honest labels: **verified (Linux sandbox)**, **verified statically**, **not verified**. Nothing below was run on Windows.
+Honest labels: **verified (Linux sandbox)**, **verified statically**, **not verified**. The evidence column below was gathered on Linux or by static checks. **Update for 1.2:** the author reports that on Windows the kit built the installer, the installer installed, and the application runs and works. Items that were not individually confirmed (Windows 10 LTSC 1809, upgrade over an older version, per-machine install, uninstall, each conversion engine) keep their *not verified* label.
 
 | Area | Status | Evidence |
 |---|---|---|
-| Application 1.1: cache of converter check (0 processes on 2nd start, invalidation when a tool changes) | verified (Linux sandbox) | process spy: 1st start 2 FFmpeg calls, 2nd start 0; cache load ≈1 ms |
+| Application: cache of converter check (0 processes on 2nd start, invalidation when a tool changes) | verified (Linux sandbox) | process spy: 1st start 2 FFmpeg calls, 2nd start 0; cache load ≈1 ms |
 | `--nop-warm-capabilities`, `--nop-selftest` | verified (Linux sandbox, also in a frozen build) | exit codes and JSON report; correct failure when libmpv is absent |
 | PyInstaller freeze of the app with the generated spec (hidden imports, yt-dlp extractors, EJS, certifi, PyMuPDF, PyQt6 multimedia) | verified (Linux sandbox, PyQt6 6.11.0) | frozen binary imports every package and runs FFmpeg checks |
 | Python lock (24 wheels, win_amd64 cp313, SHA-256) | verified statically | hashes computed from the real PyPI files; unit test checks every entry and that each import of the app is covered |
 | mpv, FFmpeg, ffprobe, deno, 7zr pins | verified statically | files downloaded, SHA-256 recorded; deno hash equals the vendor's `.sha256sum`; DLL/EXE are x64 PE; libmpv-2.dll imports only Windows system DLLs |
-| Kit unit tests (downloads, hash mismatch, retries, zip-slip, lock, spec, manifest, template messages, package info page and manifest, art, Inno detection and download URL regression) | verified (Linux sandbox) | 43 tests passed |
+| Kit unit tests (downloads, hash mismatch, retries, zip-slip, lock, spec, manifest, template messages, package info page and manifest, art, Inno detection and download URL regression) | verified (Linux sandbox) | 51 tests passed (kit 1.2, source NOP_1_2.py) |
 | `stage0.ps1` | verified statically | parses with PowerShell 7.7; version selection logic exercised; NuGet/python.org are not reachable from the sandbox, so the download itself is **not verified** |
 | Equalizer APO 1.4.2 embedded in the installer (pin, build stops on failure, `[Files]`/`[Code]` wiring, finish-page message, silent-install skip) | verified statically (unit tests: lock pin, template wiring, offline failure mode); **real download, Inno compile and APO installation not verified** | The SHA-256 and URL were taken from the earlier kit's `component_config.json`; SourceForge is not reachable from the sandbox, so the first Windows build is the first real check of the pin. A mismatch stops the build and prints the expected and actual hash. |
 | Conversion engines (LibreOffice, Inkscape, Calibre, Blender): fetching with `winget download`, MSI unpacking, folder layout, real conversions in the self-test | **not verified on Windows** | Layout matches NOP's own search paths (unit test); the self-test conversion code ran on Linux only for LibreOffice (txt→pdf passed); MSI administrative unpacking and the winget route were not run here; the other three engines were not available in the sandbox |
@@ -32,4 +32,4 @@ Honest labels: **verified (Linux sandbox)**, **verified statically**, **not veri
 Картинки мастера генерируются `build/make_art.py` (проверено на Linux: файлы создаются, размеры верные). На Inno Setup 6.6+ мастер использует встроенную тёмную тему (кнопки, чек-листы, выбор типа установки, заголовок, граница окна и стандартные диалоги); начиная с 6.7+ цвет страницы задаётся `WizardBackColor`. Для более ранних совместимых 6.x сохранено прежнее оформление через `InitializeWizard`. Сам установщик на Windows ещё не компилировался и визуально не проверялся.
 
 
-Порядок страниц: приветствие NOP 1.1 → штатные страницы выбора типа/компонентов, папки и задач → отдельная страница «Состав установки» → штатное подтверждение и установка. Страница состава создаётся после `wpSelectTasks` как самостоятельная страница мастера, а не как элемент/панель страницы выбора компонентов.
+Порядок страниц: приветствие NOP 1.2 → штатные страницы выбора типа/компонентов, папки и задач → отдельная страница «Состав установки» → штатное подтверждение и установка. Страница состава создаётся после `wpSelectTasks` как самостоятельная страница мастера, а не как элемент/панель страницы выбора компонентов.

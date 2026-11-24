@@ -1,8 +1,8 @@
 @echo off
 setlocal
-rem NOP 1.1 - builds dist\NOP_Setup.exe. Needs Windows 10/11 x64 and an internet connection for the first run.
+rem NOP 1.2 - builds dist\NOP_Setup.exe. Needs Windows 10/11 x64 and an internet connection for the first run.
 rem Options are passed through:  BUILD_NOP_SETUP.bat --offline | --skip-verify | --verify-install | --clean
-title NOP 1.1 - building the installer
+title NOP 1.2 - building the installer
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%~dp0build\stage0.ps1" %*
 set CODE=%ERRORLEVEL%
 echo.

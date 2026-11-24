@@ -1,9 +1,9 @@
 ﻿; ============================================================================
-;  NOP 1.1 installer (Inno Setup 6.5+).  Compiled by build\build_kit.py.
+;  NOP 1.2 installer (Inno Setup 6.5+).  Compiled by build\build_kit.py.
 ;  Defines passed by the build:  AppVersion, PayloadDir, ArtDir, OutDir, [VcRedist], [ApoInstaller, ApoFile, ApoVersion]
 ; ============================================================================
 #ifndef AppVersion
-  #define AppVersion "1.1"
+  #define AppVersion "1.2"
 #endif
 #ifndef PayloadDir
   #error PayloadDir is not defined - run BUILD_NOP_SETUP.bat instead of compiling this file by hand.

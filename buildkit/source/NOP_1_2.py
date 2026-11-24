@@ -1,11 +1,11 @@
 """
-NOP - NikOmniPlayer  (1.0)
+NOP - NikOmniPlayer  (1.2)
 Видео — исходные потоки по разрешению и профилю, аудио — отдельное качество.
 
 Запуск из исходников:
     pip install -U PyQt6 "yt-dlp[default]"
     + ffmpeg и deno (Windows: winget install ffmpeg ; winget install DenoLand.Deno)
-    python NOP_1.1.py
+    python NOP_1_2.py
 Установщик для Windows: см. build_windows.bat и installer.iss
 
 Управление:
@@ -484,7 +484,7 @@ class NopApoBridge:
                             candidate.settimeout(15); self.socket = candidate
                             return
                     except (OSError, ValueError, ConnectionError):
-                        pass
+                        log.debug("подавленная ошибка", exc_info=True)
                     candidate.close()
                 raise TimeoutError("APO helper handshake timeout")
             finally:
@@ -516,7 +516,7 @@ class NopApoBridge:
                 try:
                     nop_apo_send(self.socket, {"operation": "close"})
                 except OSError:
-                    pass
+                    log.debug("подавленная ошибка", exc_info=True)
                 self.socket.close(); self.socket = None
 
 
@@ -812,6 +812,86 @@ def redact_diagnostic(value):
     return re.sub(r"https?://[^\s<>\"']+", clean_url, text)[:5000]
 
 
+# ---------- журнал работы: nop.log рядом с настройками ----------
+import logging
+import logging.handlers
+
+LOG_PATH = DATA_DIR / "nop.log"
+log = logging.getLogger("nop")
+log.addHandler(logging.NullHandler())  # пока журнал не включён, записи просто отбрасываются
+log.propagate = False
+
+
+class _NopLogFormatter(logging.Formatter):
+    """Каждая строка журнала, включая трассировки, проходит через redact_diagnostic."""
+
+    def format(self, record):
+        return "\n".join(redact_diagnostic(line) for line in super().format(record).splitlines())
+
+
+class _NopLogFilter(logging.Filter):
+    """Одна и та же ошибка из цикла или таймера не должна забивать журнал."""
+    LIMIT = 3
+    EVERY = 500
+
+    def __init__(self):
+        super().__init__()
+        self._counts = {}
+        self._lock = threading.Lock()
+
+    def filter(self, record):
+        key = (record.pathname, record.lineno, record.getMessage())
+        with self._lock:
+            if len(self._counts) > 2000:
+                self._counts.clear()
+            count = self._counts[key] = self._counts.get(key, 0) + 1
+        if count <= self.LIMIT:
+            return True
+        if count % self.EVERY == 0:
+            record.msg = record.getMessage() + f" (повторилось {count} раз)"
+            record.args = ()
+            return True
+        return False
+
+
+class _NopRotatingHandler(logging.handlers.RotatingFileHandler):
+    """Несколько окон NOP пишут в один файл; сбой ротации не должен ронять запись."""
+
+    def doRollover(self):
+        try:
+            super().doRollover()
+        except OSError:
+            # файл удерживает другой экземпляр: продолжаем писать в текущий
+            if self.stream is None:
+                try:
+                    self.stream = self._open()
+                except OSError:
+                    pass
+
+    def handleError(self, record):
+        pass
+
+
+def setup_logging():
+    """Включает запись в nop.log (512 КБ x 3 файла). NOP_DEBUG=1 добавляет подробные записи."""
+    debug = os.environ.get("NOP_DEBUG", "").strip() not in ("", "0")
+    logging.raiseExceptions = False
+    try:
+        handler = _NopRotatingHandler(LOG_PATH, maxBytes=512 * 1024, backupCount=2,
+                                      encoding="utf-8", errors="replace", delay=True)
+    except OSError:
+        return
+    handler.setLevel(logging.DEBUG if debug else logging.INFO)
+    handler.setFormatter(_NopLogFormatter(
+        "%(asctime)s %(process)d %(levelname)-8s %(threadName)s %(funcName)s:%(lineno)d  %(message)s",
+        "%Y-%m-%d %H:%M:%S"))
+    handler.addFilter(_NopLogFilter())
+    log.setLevel(logging.DEBUG)
+    log.addHandler(handler)
+    log.info("NOP %s | Python %s | %s | frozen=%s | debug=%s", APP_VERSION,
+             sys.version.split()[0], sys.platform, FROZEN, debug)
+
+
 def _private_write(path: Path, data: bytes):
     """Atomic replacement; temporary and resulting files are owner-readable only."""
     path.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
@@ -896,7 +976,7 @@ def stop_owned_process(proc):
             try:
                 os.killpg(proc.pid, signal.SIGKILL)
             except ProcessLookupError:
-                pass
+                log.debug("подавленная ошибка", exc_info=True)
         else:
             proc.kill()
         proc.wait(timeout=3)
@@ -1026,7 +1106,7 @@ def _guard_optional_zstd():
             try:
                 delattr(package, "zstd")
             except AttributeError:
-                pass
+                log.debug("подавленная ошибка", exc_info=True)
 
 
 _guard_optional_zstd()
@@ -1037,14 +1117,15 @@ import yt_dlp.postprocessor.ffmpeg as _ytdlp_ffmpeg  # noqa: E402
 import yt_dlp.downloader.external as _ytdlp_external  # noqa: E402
 from PyQt6.QtCore import QDateTime, QEvent, QFileInfo, QItemSelectionModel, QLibraryInfo, QLocale, QLockFile, QModelIndex, QObject, QPoint, QPointF, QRect, QRectF, QSize, QSortFilterProxyModel, Qt, QThread, QTimer, QTranslator, QUrl, pyqtSignal  # noqa: E402
 from PyQt6.QtGui import (  # noqa: E402
-    QColor, QCursor, QDesktopServices, QFont, QIcon, QImage, QKeySequence, QPainter, QPainterPath, QPalette, QPen, QPixmap, QImageReader, QPolygonF, QRegion, QShortcut, QTextOption,
+    QBrush, QColor, QCursor, QDesktopServices, QFont, QIcon, QImage, QKeySequence, QPainter, QPainterPath, QPalette, QPen, QPixmap, QImageReader, QPolygonF, QRegion, QShortcut, QTextOption,
 )
 from PyQt6.QtNetwork import QLocalServer, QLocalSocket  # noqa: E402
 from PyQt6.QtMultimedia import QAudioFormat, QAudioOutput, QAudioSink, QMediaDevices, QMediaPlayer, QVideoFrame, QVideoSink  # noqa: E402
 from PyQt6.QtWidgets import (  # noqa: E402
     QAbstractSpinBox, QApplication, QStyledItemDelegate, QComboBox, QCompleter, QDoubleSpinBox, QFileDialog, QFrame, QGridLayout, QHBoxLayout, QLabel, QDialog, QDialogButtonBox, QFormLayout,
-    QFileIconProvider, QLayout, QLineEdit, QListWidget, QListWidgetItem, QMenu, QProgressBar, QPushButton, QSizePolicy, QSizeGrip, QStackedLayout, QTabWidget, QTextBrowser, QTreeView,
-    QSlider, QSpinBox, QStyle, QStyleOptionComboBox, QStyleOptionViewItem, QVBoxLayout, QWidget, QTableWidget, QTableWidgetItem, QHeaderView, QScrollArea, QGraphicsColorizeEffect, QGraphicsOpacityEffect, QMessageBox, QCheckBox,
+    QFileIconProvider, QLayout, QLineEdit, QListWidget, QListWidgetItem, QMenu, QProgressBar, QPushButton, QSizePolicy, QSizeGrip, QTabWidget, QTextBrowser, QTreeView,
+    QSlider, QSpinBox, QStyle, QStyleOptionComboBox, QStyleOptionViewItem, QVBoxLayout, QWidget, QTableWidget, QTableWidgetItem, QHeaderView, QScrollArea, QGraphicsOpacityEffect, QMessageBox, QCheckBox,
+    QButtonGroup, QStackedWidget, QStackedLayout, QInputDialog,
 )
 
 # Only the video and its necessary ancestors need native windows. Keep sibling
@@ -1065,6 +1146,7 @@ DEFAULT_CONFIG = {
     "panel_profile_restore": {},
     "side_block_order": ["playback", "downloads", "view", "tools"],
     "playback_rate": 1.0,
+    "video_mode": "auto",
     "resume_positions": {},
     "download_rate_limit": "0",
     "download_parallel_videos": 2,
@@ -1347,7 +1429,7 @@ def resample_eq_values(values, target_frequencies, source_frequencies=None):
             try:
                 source.append(max(20, min(20000, int(value))))
             except (TypeError, ValueError):
-                pass
+                log.debug("подавленная ошибка", exc_info=True)
     if len(source) != len(clean_values):
         if len(clean_values) == len(EQ_PRESET_FREQUENCIES):
             source = list(EQ_PRESET_FREQUENCIES)
@@ -1438,6 +1520,8 @@ QLabel#title { color:#f0f3fa; font-size:13px; font-weight:600; }
 QPushButton#chip { padding:5px 9px; font-size:12px; }
 QPushButton#chip:hover { border-color:#3a465d; }
 QPushButton#chip:checked { background:#ff426d; color:%ONACC%; border-color:#ff426d; }
+QPushButton#tab { padding:5px 2px; }
+QPushButton#tab:checked { background:#3a2431; color:#f0f3fa; border:1px solid %ACCENT%; font-weight:600; }
 QSpinBox, QLineEdit, QDoubleSpinBox#totalBitrateAmount {
     background:#11151e; color:#e9edf5; border:1px solid #2a3242;
     border-radius:7px; padding:6px 9px; selection-background-color:#ff426d;
@@ -1576,10 +1660,11 @@ def load_config() -> dict:
         if isinstance(loaded, dict):
             cfg.update(loaded)
     except FileNotFoundError:
-        pass
+        log.debug("подавленная ошибка", exc_info=True)
     except (OSError, ValueError, TypeError) as exc:
         _CONFIG_READ_FAILED = True
         CONFIG_WARNING = "Settings could not be read; the original file will not be overwritten: " + redact_diagnostic(exc)
+        log.warning("%s", CONFIG_WARNING)
     if _CREDENTIALS_PATH.is_file():
         try:
             if _CREDENTIALS_PATH.stat().st_size > 128 * 1024:
@@ -1590,6 +1675,7 @@ def load_config() -> dict:
                     cfg[key] = str(tokens.get(key, ""))
         except (OSError, ValueError, TypeError) as exc:
             CONFIG_WARNING = "Spotify credentials could not be opened: " + redact_diagnostic(exc)
+            log.warning("%s", CONFIG_WARNING)
     cfg.pop("show_modes", None)
     _remember_shared_baseline(cfg)
     return cfg
@@ -1632,15 +1718,18 @@ def save_config(cfg: dict):
                     except (OSError, ValueError) as exc:
                         protected = False
                         CONFIG_WARNING = "Spotify tokens remain session-only: " + redact_diagnostic(exc)
+                        log.warning("%s", CONFIG_WARNING)
                         _CREDENTIALS_PATH.unlink(missing_ok=True)
                 else:
                     CONFIG_WARNING = "Spotify tokens are session-only on this OS; persistent protection requires Windows DPAPI."
+                    log.warning("%s", CONFIG_WARNING)
             else:
                 _CREDENTIALS_PATH.unlink(missing_ok=True)
             _private_write(CONFIG_PATH, json.dumps(plain, ensure_ascii=False, indent=2).encode("utf-8"))
             return protected
         except (OSError, ValueError, TypeError) as exc:
             CONFIG_WARNING = "Settings could not be saved safely: " + redact_diagnostic(exc)
+            log.warning("%s", CONFIG_WARNING)
             return False
 
 
@@ -1701,7 +1790,7 @@ def canonical_youtube_url(value: str, kind: str = "single") -> str:
         if re.fullmatch(r"[A-Za-z0-9_-]{11}", video):
             return "https://www.youtube.com/watch?" + urllib.parse.urlencode({"v": video})
     except ValueError:
-        pass  # Validation remains the responsibility of download_url().
+        log.debug("подавленная ошибка", exc_info=True)  # Validation remains the responsibility of download_url().
     return value
 
 
@@ -1736,7 +1825,7 @@ def scan_folder(folder: Path, recursive: bool) -> list[Path]:
                 if len(files) >= MAX_SCAN_FILES:
                     break
     except OSError:
-        pass
+        log.debug("подавленная ошибка", exc_info=True)
 
     def mtime(p: Path) -> float:
         try:
@@ -2045,7 +2134,7 @@ def ensure_arrow_png() -> str:
 # ---------- версия, автор, поддержка ----------
 APP_NAME = "NOP - NikOmniPlayer"
 APP_SHORT_NAME = "NOP"
-APP_VERSION = "1.1"
+APP_VERSION = "1.2"
 APP_AUTHOR = "CheNik"
 
 # ---------- встроенная иконка приложения NOP ----------
@@ -2879,7 +2968,6 @@ def set_theme(name: str, light: bool = False) -> None:
         name = "classic"
     th = THEMES[name]
     classic = name == "classic"
-    light = False  # безопасно игнорируем старое сохранённое theme_light=True
     bg = th["dark"]
     tone = _ORIG_FG if classic else th["light"]
     accent = "#ff426d" if classic else tone
@@ -3370,7 +3458,7 @@ def downloaded_ids(folder: Path, clip_tag: str = "") -> set[str]:
                     if m:
                         ids.add(m.group(1))
     except OSError:
-        pass
+        log.debug("подавленная ошибка", exc_info=True)
     return ids
 
 
@@ -3734,7 +3822,7 @@ class SpotifyAuthThread(QThread):
                     try:
                         handler_self.wfile.write(body)
                     except OSError:
-                        pass
+                        log.debug("подавленная ошибка", exc_info=True)
 
                 def log_message(handler_self, format_string, *args):
                     return
@@ -3804,7 +3892,7 @@ class SpotifyAuthThread(QThread):
                 try:
                     server.server_close()
                 except OSError:
-                    pass
+                    log.debug("подавленная ошибка", exc_info=True)
 
     def request_stop(self):
         self._stop_event.set()
@@ -3856,7 +3944,7 @@ class AudioSampleRatePP(PostProcessor):
                 if probe.returncode == 0 and probe.stdout.strip() == self.sample_rate:
                     return [], info
             except (OSError, subprocess.SubprocessError):
-                pass
+                log.debug("подавленная ошибка", exc_info=True)
 
         temp_path = source_path.with_name(f"{source_path.stem}.sample-rate.tmp{source_path.suffix}")
         try:
@@ -3887,13 +3975,40 @@ class AudioSampleRatePP(PostProcessor):
             try:
                 temp_path.unlink(missing_ok=True)
             except OSError:
-                pass
+                log.debug("подавленная ошибка", exc_info=True)
         info["filepath"] = str(source_path)
         return [], info
 
 
-DOWNLOAD_SOURCE_NAMES = {"youtube": "YouTube", "tiktok": "TikTok", "instagram": "Instagram",
-                         "spotify": "Spotify", "direct": "Загрузка видео"}
+DOWNLOAD_SOURCE_NAMES = {"youtube": "YouTube", "rutube": "Rutube", "vk": "VK Video", "tiktok": "TikTok",
+                         "instagram": "Instagram", "spotify": "Spotify", "direct": "Прямая ссылка",
+                         "other": "Другие ссылки"}
+
+
+DOWNLOAD_SOURCE_DOMAINS = {
+    "youtube": ("youtube.com", "youtu.be", "youtube-nocookie.com"),
+    "rutube": ("rutube.ru",),
+    "vk": ("vk.com", "vk.ru", "vkvideo.ru"),
+    "tiktok": ("tiktok.com",),
+    "instagram": ("instagram.com",),
+    "spotify": ("open.spotify.com", "spotify.com"),
+}
+
+
+def detect_video_site(text: str) -> str:
+    """Для общего пункта списка «YouTube \\ Rutube \\ VK Video»: площадка определяется по ссылке."""
+    try:
+        host = (urllib.parse.urlsplit(str(text or "").strip()).hostname or "").lower().rstrip(".")
+    except ValueError:
+        return "youtube"
+    for site in ("rutube", "vk"):
+        if any(host == d or host.endswith("." + d) for d in DOWNLOAD_SOURCE_DOMAINS[site]):
+            return site
+    return "youtube"
+
+
+class DownloadSourceMismatch(ValueError):
+    """Ссылка не с той площадки, которая выбрана в списке."""
 
 
 def download_url(text: str, source: str, kind: str = "single") -> str:
@@ -3920,12 +4035,10 @@ def download_url(text: str, source: str, kind: str = "single") -> str:
     except (ValueError, UnicodeError):
         raise ValueError(ui_text("Вставьте корректный адрес http:// или https:// без логина и пароля.",
                                 "Enter a valid http:// or https:// URL without a username or password.")) from None
-    domains = {"youtube": ("youtube.com", "youtu.be", "youtube-nocookie.com"),
-               "tiktok": ("tiktok.com",), "instagram": ("instagram.com",),
-               "spotify": ("open.spotify.com", "spotify.com")}
-    if source != "direct" and not any(host == d or host.endswith("." + d) for d in domains[source]):
+    domains = DOWNLOAD_SOURCE_DOMAINS
+    if source not in ("direct", "other") and not any(host == d or host.endswith("." + d) for d in domains[source]):
         name = DOWNLOAD_SOURCE_NAMES[source]
-        raise ValueError(ui_text(f"Выбран {name}: нужна ссылка именно с {name}. Другая площадка не будет использована.",
+        raise DownloadSourceMismatch(ui_text(f"Выбран {name}: нужна ссылка именно с {name}. Другая площадка не будет использована.",
                                 f"{name} is selected: enter a {name} URL. Another platform will not be used."))
     if source == "spotify" and not spotify_url_kind(value)[0]:
         raise ValueError(ui_text("Нужна полная ссылка open.spotify.com на трек, альбом или плейлист.",
@@ -4645,7 +4758,7 @@ class VideoBitrateInput(QWidget):
             if unit != self.units.currentData():
                 self.set_kbps(kbps, unit)
         except ValueError:
-            pass
+            log.debug("подавленная ошибка", exc_info=True)
         self.changed.emit()
 
     def _unit_changed(self, _index):
@@ -4859,7 +4972,7 @@ def _warm_capabilities_main() -> int:
         errors = {key: str(getattr(value, "en", value)) for key, value in ((results[0].get("errors") or {}) if results else {}).items()}
         CAPABILITY_CACHE_PATH.with_name("capabilities-error.json").write_text(json.dumps(errors, ensure_ascii=False, indent=1), encoding="utf-8")
     except OSError:
-        pass
+        log.debug("подавленная ошибка", exc_info=True)
     return 1
 
 
@@ -4979,7 +5092,7 @@ def _selftest_main(report_path: str) -> int:
         Path(report_path).write_text(json.dumps({"app": APP_VERSION, "ok": ok, "frozen": FROZEN, "checks": checks},
                                                 ensure_ascii=False, indent=1), encoding="utf-8")
     except OSError:
-        pass
+        log.debug("подавленная ошибка", exc_info=True)
     return 0 if ok else 1
 
 
@@ -5386,7 +5499,7 @@ class Downloader(QThread):
         self.count = count
         self.folder = Path(folder)
         self.single_url = single_url  # если задан - качаем один элемент
-        self.source = source if source in {"youtube", "tiktok", "instagram", "spotify", "direct"} else "youtube"
+        self.source = source if source in set(DOWNLOAD_SOURCE_NAMES) else "youtube"
         self.spotify_client_id = str(spotify_client_id or "").strip()
         self.spotify_access_token = str(spotify_access_token or "").strip()
         self.spotify_refresh_token = str(spotify_refresh_token or "").strip()
@@ -5451,6 +5564,7 @@ class Downloader(QThread):
     # ---------- вывод в консоль ----------
     def log(self, msg: str):
         msg = redact_diagnostic(msg)
+        log.info("%s", msg)
         with self.lock:
             sys.stdout.write(msg + "\n")
             sys.stdout.flush()
@@ -5678,7 +5792,8 @@ class Downloader(QThread):
             # Файл cookies.txt читается без обращения к заблокированной базе браузера.
             opts["cookiefile"] = self.cookies_file
         if self.source != "spotify":
-            opts["allowed_extractors"] = [{"direct": "generic"}.get(self.source, self.source + ".*")]
+            if self.source != "other":  # «Другие ссылки»: подходит любой экстрактор yt-dlp
+                opts["allowed_extractors"] = [{"direct": "generic"}.get(self.source, self.source + ".*")]
             opts["default_search"] = "error"
             opts["allow_unplayable_formats"] = False
             opts["match_filter"] = self._check_download_info
@@ -5687,7 +5802,7 @@ class Downloader(QThread):
     def _check_download_info(self, info, *, incomplete=False):
         key = str(info.get("extractor_key") or info.get("extractor") or "").lower()
         expected = "generic" if self.source == "direct" else self.source
-        if key and not key.startswith(expected):
+        if self.source != "other" and key and not key.startswith(expected):
             raise DownloadSourceError(ui_text("Загрузчик попытался сменить выбранную площадку.",
                                              "The downloader attempted to switch the selected platform."))
         page = info.get("webpage_url")
@@ -6118,7 +6233,7 @@ class Downloader(QThread):
                             self.log("Spotify: URL обложки получен через oEmbed.")
                             return candidate
                     except (ValueError, TypeError):
-                        pass
+                        log.debug("подавленная ошибка", exc_info=True)
                 candidate = self._decode_meta_content(raw, "og:image")
                 if not candidate:
                     candidate = self._decode_meta_content(raw, "twitter:image")
@@ -6219,7 +6334,7 @@ class Downloader(QThread):
                     self.log("Spotify: файл обложки повреждён.")
                     return None
             except ImportError:
-                pass
+                log.debug("подавленная ошибка", exc_info=True)
             target.write_bytes(data)
             self.log(f"Spotify: обложка сохранена — {target.name}")
             return target
@@ -6763,7 +6878,7 @@ class Downloader(QThread):
                     with self.lock:
                         self._item_states.setdefault(str(vid), {})["duration"] = duration
             except (ValueError, TypeError):
-                pass
+                log.debug("подавленная ошибка", exc_info=True)
             status = data.get("status")
             if status == "downloading":
                 total = data.get("total_bytes") or data.get("total_bytes_estimate") or 0
@@ -7026,7 +7141,7 @@ class Downloader(QThread):
             with self._control_lock, (directory / "control.jsonl").open("a", encoding="utf-8") as handle:
                 handle.write(json.dumps({"action": action, **fields}) + "\n")
         except OSError:
-            pass
+            log.debug("подавленная ошибка", exc_info=True)
 
     def request_stop(self):
         self._stop_event.set()
@@ -7073,7 +7188,7 @@ class Downloader(QThread):
                 if math.isfinite(speed) and speed > 0 and processed > 0 and elapsed >= .25:
                     eta = max(0, (duration - processed) / speed)
         except (ValueError, TypeError):
-            pass
+            log.debug("подавленная ошибка", exc_info=True)
         if block.get("progress") == "end" or (percent is not None and processed >= duration):
             phase, percent, eta = "finalizing", None, None
         self._set_item_detail(vid, phase, percent=percent, eta=eta,
@@ -7176,6 +7291,8 @@ class Downloader(QThread):
                                 self.total_videos = int(summary.get("total_videos", 0))
                                 self.total_bytes = int(summary.get("total_bytes", 0))
                                 self.error_text = str(summary.get("error_text", ""))
+                                if self.error_text:
+                                    log.warning("загрузка: %s", self.error_text)
                                 self._failed_entries = list(summary.get("failed_entries", []))
                             elif kind == "tokens":
                                 tokens = json.loads(_unpack_private(base64.b64decode(values[0])))
@@ -7199,15 +7316,19 @@ class Downloader(QThread):
                     failure_path = directory / "failure.txt"
                     detail = failure_path.read_text(encoding="utf-8")[:4000] if failure_path.is_file() else str(proc.returncode)
                     self.error_text = ui_text("Процесс загрузки завершился с ошибкой: ", "Download process exited with code: ") + redact_diagnostic(detail)
+                    if self.error_text:
+                        log.warning("загрузка: %s", self.error_text)
         except Exception as exc:
             self.error_text = redact_diagnostic(exc)
+            if self.error_text:
+                log.warning("загрузка: %s", self.error_text)
             self.status.emit(self.error_text)
         finally:
             if proc is not None and proc.poll() is None:
                 try:
                     stop_owned_process(proc)
                 except (OSError, subprocess.SubprocessError):
-                    pass
+                    log.debug("подавленная ошибка", exc_info=True)
             self._child_process = None
             self._ipc_directory = None
             # The process has exited and FFmpeg handles have been released. Read the
@@ -7323,7 +7444,7 @@ class EqualizerAudioThread(QThread):
             try:
                 proc.terminate()
             except OSError:
-                pass
+                log.debug("подавленная ошибка", exc_info=True)
 
     def set_paused(self, paused: bool):
         if paused:
@@ -7384,7 +7505,7 @@ class EqualizerAudioThread(QThread):
                     for chunk in iter(lambda: proc.stderr.read(4096), b""):
                         error_tail.append(chunk)
                 except (OSError, ValueError):
-                    pass
+                    log.debug("подавленная ошибка", exc_info=True)
             stderr_thread = threading.Thread(target=drain_errors, name="NOP EQ stderr", daemon=True)
             stderr_thread.start()
 
@@ -7444,7 +7565,7 @@ class EqualizerAudioThread(QThread):
                 try:
                     sink.stop()
                 except Exception:
-                    pass
+                    log.warning("подавленная ошибка", exc_info=True)
             if proc is not None:
                 try:
                     if proc.poll() is None:
@@ -7454,7 +7575,7 @@ class EqualizerAudioThread(QThread):
                     try:
                         proc.kill()
                     except Exception:
-                        pass
+                        log.warning("подавленная ошибка", exc_info=True)
             self._sink = None
             if sink is not None:
                 sink.deleteLater()
@@ -8185,7 +8306,7 @@ def probe_media(path) -> MediaInfo:
                 output.seek(max(0, output.tell()-256*1024))
                 info = parse_ffmpeg_info(output.read(256*1024).decode("utf-8", "replace"))
         except (OSError, subprocess.SubprocessError):
-            pass
+            log.debug("подавленная ошибка", exc_info=True)
         finally:
             if proc is not None and proc.poll() is None:
                 stop_owned_process(proc)
@@ -8209,7 +8330,7 @@ class MediaProbeThread(QThread):
             try:
                 _PROBE_CACHE[(str(self.path), os.path.getmtime(self.path))] = MediaInfo()
             except OSError:
-                pass
+                log.debug("подавленная ошибка", exc_info=True)
         if not self.isInterruptionRequested():
             self.ready.emit(str(self.path), self.generation)
 
@@ -8297,7 +8418,7 @@ class _VideoPipe:
             for line in iter(self.proc.stderr.readline, b""):
                 self._err.append(line.decode("utf-8", "replace").strip())
         except (OSError, ValueError):
-            pass
+            log.debug("подавленная ошибка", exc_info=True)
 
     def _read_frames(self):
         size = self.width * self.height * 3
@@ -8326,7 +8447,7 @@ class _VideoPipe:
                 idx += 1
                 self.count += 1
         except (OSError, ValueError):
-            pass
+            log.debug("подавленная ошибка", exc_info=True)
         finally:
             self.eof_t = time.monotonic()
             self.eof = True
@@ -8359,7 +8480,7 @@ class _VideoPipe:
                 self.proc.kill()
             self.proc.wait(timeout=2)
         except (OSError, subprocess.TimeoutExpired):
-            pass
+            log.debug("подавленная ошибка", exc_info=True)
         for thread in self._threads:
             thread.join(1)
         for stream in (self.proc.stdout, self.proc.stderr):
@@ -8367,7 +8488,7 @@ class _VideoPipe:
                 try:
                     stream.close()
                 except OSError:
-                    pass
+                    log.debug("подавленная ошибка", exc_info=True)
         with self.lock:
             self.frames.clear()
 
@@ -8615,7 +8736,7 @@ class FFmpegPlayer(QObject):
             try:
                 thread.failed.disconnect(self._on_audio_failed)
             except TypeError:
-                pass
+                log.debug("подавленная ошибка", exc_info=True)
             thread.stop_audio()
             thread.wait(800)
 
@@ -8741,7 +8862,7 @@ class FFmpegPlayer(QObject):
                 try:
                     f.unlink()
                 except OSError:
-                    pass
+                    log.debug("подавленная ошибка", exc_info=True)
 
     def set_widget_size(self, size: QSize):
         self._widget_size = QSize(size)
@@ -8826,6 +8947,20 @@ class FFmpegPlayer(QObject):
         self._kill_all()
         _finish_lut(self)
         shutil.rmtree(self._tmpdir, ignore_errors=True)
+
+
+VIDEO_MODES = ("auto", "quality", "performance", "smooth")
+
+
+def parse_mpv_extra(text: str) -> list:
+    """NOP_MPV_EXTRA="profile=fast;hdr-compute-peak=no" -> [(имя, значение), ...] для экспериментов."""
+    pairs = []
+    for chunk in (text or "").split(";"):
+        name, sep, value = chunk.strip().partition("=")
+        name = name.strip().lstrip("-")
+        if sep and re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_./-]*", name):
+            pairs.append((name, value.strip()))
+    return pairs
 
 
 class MpvPlayer(QObject):
@@ -8927,7 +9062,7 @@ class MpvPlayer(QObject):
             self._load_error = (
                 "Встроенный libmpv-2.dll не найден. Переустановите NOP из NOP_Setup.exe."
                 if FROZEN else
-                "libmpv-2.dll не найден. Поместите полный runtime движка в папку mpv рядом с NOP_1.1.py."
+                "libmpv-2.dll не найден. Поместите полный runtime движка в папку mpv рядом с NOP_1_2.py."
             )
             return False
         try:
@@ -8996,6 +9131,36 @@ class MpvPlayer(QObject):
                 code = lib.mpv_set_option_string(handle, name.encode(), value.encode())
                 if code < 0:
                     raise RuntimeError(f"mpv не принял настройку {name}: {self._error_text(lib, code)}")
+            # Необязательные настройки: большой буфер чтения сглаживает паузы диска/сети на
+            # 4K-файлах с высоким битрейтом. Отказ любой из них не должен отключать mpv.
+            optional = {
+                "cache": "yes",
+                "demuxer-readahead-secs": "20",
+                "demuxer-max-bytes": "300MiB",
+                "demuxer-max-back-bytes": "64MiB",
+                # Встроенные Lua-скрипты mpv (ytdl_hook, stats, console...) NOP не использует:
+                # играются только локальные файлы, экранного интерфейса и консоли нет.
+                "ytdl": "no",
+                "load-scripts": "no",
+                "load-stats-overlay": "no",
+                "load-console": "no",
+                "load-select": "no",
+                "load-auto-profiles": "no",
+            }
+            for name, value in optional.items():
+                code = lib.mpv_set_option_string(handle, name.encode(), value.encode())
+                if code < 0:
+                    log.warning("mpv не принял необязательную настройку %s=%s: %s", name, value,
+                                self._error_text(lib, code))
+            # Экспериментальные настройки без пересборки: set NOP_MPV_EXTRA=profile=fast;vo=gpu
+            extra_pairs = parse_mpv_extra(os.environ.get("NOP_MPV_EXTRA", ""))
+            self._extra_names = {name for name, _value in extra_pairs}
+            for name, value in extra_pairs:
+                code = lib.mpv_set_option_string(handle, name.encode(), value.encode())
+                if code < 0:
+                    log.warning("mpv: NOP_MPV_EXTRA %s=%s не принято: %s", name, value, self._error_text(lib, code))
+                else:
+                    log.info("mpv: NOP_MPV_EXTRA %s=%s применено", name, value)
             code = lib.mpv_initialize(handle)
             if code < 0:
                 raise RuntimeError(f"mpv_initialize: {self._error_text(lib, code)}")
@@ -9010,11 +9175,12 @@ class MpvPlayer(QObject):
                 if 'handle' in locals() and handle and 'lib' in locals():
                     lib.mpv_terminate_destroy(handle)
             except Exception:  # noqa: BLE001
-                pass
+                log.warning("подавленная ошибка", exc_info=True)
             self._available = False
             self._handle = None
             self._lib = None
             self._load_error = f"Не удалось инициализировать libmpv: {exc}"
+            log.warning("mpv: %s", self._load_error)
             return False
 
     @staticmethod
@@ -9141,6 +9307,7 @@ class MpvPlayer(QObject):
         # Load while paused, then allow play() to release playback. This avoids a race
         # in which video starts before the UI switches the native surface on.
         self._set_property("pause", "yes")
+        self._apply_video_mode(info)
         code = self._command("loadfile", self.path, "replace")
         if code < 0:
             self.failed.emit("mpv не смог открыть файл: " + self._error_text(self._lib, code))
@@ -9157,6 +9324,73 @@ class MpvPlayer(QObject):
             self._request_lut_generation()
         self._apply_equalizer()
         return True
+
+    def apply_video_mode(self):
+        """Применяет выбранный режим видео к уже открытому файлу (вызывается из настроек)."""
+        self._apply_video_mode(self.info)
+
+    def _apply_video_mode(self, info):
+        """Режим видео: «Авто» облегчает обработку 4K/HDR, «Качество» всегда оставляет полную,
+        «Производительность» облегчает любое видео, «Плавное движение» выравнивает 24 к/с на
+        экране 60 Гц. Исходные значения mpv запоминаются и возвращаются при смене режима.
+        Настройки, заданные через NOP_MPV_EXTRA, не трогаем."""
+        if not self.available:
+            return
+        mode = getattr(self, "video_mode", "auto")
+        heavy = bool(info is not None and info.has_video
+                     and (info.hdr or info.width * info.height > 2560 * 1440))
+        light = mode == "performance" or (mode == "auto" and heavy)
+        wanted = {
+            "hdr-compute-peak": "no" if light else None,
+            "linear-downscaling": "no" if light else None,
+            "scale": "bilinear" if mode == "performance" else None,
+            "dscale": "bilinear" if mode == "performance" else None,
+            "correct-downscaling": "no" if mode == "performance" else None,
+            "video-sync": "display-resample" if mode == "smooth" else None,
+            "interpolation": "yes" if mode == "smooth" else None,
+            "tscale": "oversample" if mode == "smooth" else None,
+        }
+        originals = self.__dict__.setdefault("_mode_originals", {})
+        skip = getattr(self, "_extra_names", ())
+        for name, value in wanted.items():
+            if name in skip:
+                continue
+            if name not in originals:
+                originals[name] = self._get_string(name)
+            if originals[name] is None:
+                continue  # эта сборка mpv такой настройки не знает
+            code = self._set_option(name, value if value is not None else originals[name])
+            if code < 0:
+                log.debug("mpv: не удалось изменить %s: %s", name, self._error_text(self._lib, code))
+        log.info("mpv: режим видео «%s», облегчённая обработка %s", mode, "включена" if light else "выключена")
+
+    def _log_playback_stats(self, reason: str):
+        """Одна строка в nop.log: чем реально воспроизводится видео (для разбора рывков)."""
+        if not self.available or self.info is None or not self.info.has_video:
+            return
+        try:
+            if not getattr(self, "_cfg_logged", False):
+                self._cfg_logged = True
+                log.info("mpv-рендер: окно=%sx%s | кадр=%sx%s %s/%s | scale=%s dscale=%s tone-mapping=%s "
+                         "hdr-compute-peak=%s | gpu-context=%s",
+                         self._get_int64("osd-dimensions/w"), self._get_int64("osd-dimensions/h"),
+                         self._get_int64("video-params/w"), self._get_int64("video-params/h"),
+                         self._get_string("video-params/primaries") or "?", self._get_string("video-params/gamma") or "?",
+                         self._get_string("scale") or "?", self._get_string("dscale") or "?",
+                         self._get_string("tone-mapping") or "?", self._get_string("hdr-compute-peak") or "?",
+                         self._get_string("current-gpu-context") or "?")
+            def num(name, whole=False):
+                value = self._get_int64(name) if whole else self._get_double(name)
+                return "?" if value is None else (str(value) if whole else f"{value:.3f}")
+            log.info("mpv-статистика (%s): vo=%s hwdec=%s sync=%s | позиция=%s с | кадров: пропущено VO=%s, "
+                     "декодером=%s, опоздавших=%s, задержанных=%s | fps: файл=%s, экран=%s | avsync=%s",
+                     reason, self._get_string("current-vo") or "?", self._get_string("hwdec-current") or "?",
+                     self._get_string("video-sync") or "?", num("time-pos"),
+                     num("frame-drop-count", True), num("decoder-frame-drop-count", True),
+                     num("mistimed-frame-count", True), num("vo-delayed-frame-count", True),
+                     num("container-fps"), num("display-fps"), num("avsync"))
+        except Exception:  # noqa: BLE001
+            log.debug("статистика mpv недоступна", exc_info=True)
 
     def duration(self) -> int:
         value = self._get_double("duration")
@@ -9183,6 +9417,8 @@ class MpvPlayer(QObject):
             self.setPosition(0)
             self._ended = False
         self._set_property("pause", "no")
+        if not getattr(self, "_stats_t", 0):
+            self._stats_t = time.monotonic()
         if self._state != self.Playing:
             self._state = self.Playing
             self.stateChanged.emit(self.Playing)
@@ -9203,6 +9439,10 @@ class MpvPlayer(QObject):
 
     def stop(self):
         was_active = self._state != self.Stopped or self._loaded
+        if self.available and was_active and getattr(self, "_stats_t", 0):
+            self._log_playback_stats("остановка")
+        self._stats_t = 0
+        self._cfg_logged = False
         if self.available and was_active:
             self._command("stop")
             self._set_property("pause", "yes")
@@ -9395,6 +9635,7 @@ class MpvPlayer(QObject):
             self._vignette_shader_path = None
             if code < 0:
                 self._load_error = "Не удалось отключить GPU-виньетку mpv: " + self._error_text(self._lib, code)
+                log.warning("mpv: %s", self._load_error)
                 self.failed.emit(self._load_error)
             return
 
@@ -9429,6 +9670,7 @@ vec4 hook()
             shader_path.write_text(shader, encoding="utf-8")
         except OSError as exc:
             self._load_error = f"Не удалось создать GPU-шейдер виньетки: {exc}"
+            log.warning("mpv: %s", self._load_error)
             self.failed.emit(self._load_error)
             self._vignette_shader_path = None
             return
@@ -9436,6 +9678,7 @@ vec4 hook()
         code = self._set_option("glsl-shaders", str(shader_path.resolve()))
         if code < 0:
             self._load_error = "Не удалось применить GPU-виньетку mpv: " + self._error_text(self._lib, code)
+            log.warning("mpv: %s", self._load_error)
             self.failed.emit(self._load_error)
             self._vignette_shader_path = None
             return
@@ -9484,7 +9727,7 @@ vec4 hook()
             try:
                 old.unlink()
             except OSError:
-                pass
+                log.debug("подавленная ошибка", exc_info=True)
 
     def _apply_video_filters(self):
         """Apply the existing SDR grade after mpv's source-to-display conversion.
@@ -9505,9 +9748,11 @@ vec4 hook()
             code_prim = self._set_option("target-prim", "auto")
             if code < 0:
                 self._load_error = "Не удалось сбросить GPU LUT mpv: " + self._error_text(self._lib, code)
+                log.warning("mpv: %s", self._load_error)
             elif code_trc < 0 or code_prim < 0:
                 bad = code_trc if code_trc < 0 else code_prim
                 self._load_error = "Не удалось вернуть автоматическую HDR-обработку mpv: " + self._error_text(self._lib, bad)
+                log.warning("mpv: %s", self._load_error)
             else:
                 self._load_error = ""
             return
@@ -9521,6 +9766,7 @@ vec4 hook()
             code = code_trc if code_trc < 0 else code_prim if code_prim < 0 else code_lut
             message = "Не удалось применить GPU LUT mpv: " + self._error_text(self._lib, code)
             self._load_error = message
+            log.warning("mpv: %s", self._load_error)
             self.failed.emit(message)
             return
         self._load_error = ""
@@ -9538,23 +9784,33 @@ vec4 hook()
         position = self._get_double("time-pos")
         if position is not None and position >= 0:
             self._position_ms = int(position * 1000)
-        duration = self._get_double("duration")
-        if duration is not None and duration > 0:
-            dms = int(duration * 1000)
-            if dms != self._duration_ms:
-                self._duration_ms = dms
-                self.durationChanged.emit(dms)
+        # Длительность и размер кадра почти не меняются: каждый запрос к mpv идёт через его
+        # общий замок, поэтому спрашиваем их раз в 10 тиков (400 мс), а не каждые 40 мс.
+        self._poll_n = getattr(self, "_poll_n", 0) + 1
+        slow = self._poll_n % 10 == 1 or (self._last_size == (0, 0) and self.info is not None and self.info.has_video)
+        if slow:
+            duration = self._get_double("duration")
+            if duration is not None and duration > 0:
+                dms = int(duration * 1000)
+                if dms != self._duration_ms:
+                    self._duration_ms = dms
+                    self.durationChanged.emit(dms)
         now = time.monotonic()
         if self._state == self.Playing and now - self._last_position_emit >= 0.05:
             self._last_position_emit = now
             self.positionChanged.emit(self._position_ms)
-        width = self._get_int64("video-params/dw") or self._get_int64("video-params/w")
-        height = self._get_int64("video-params/dh") or self._get_int64("video-params/h")
-        if width and height and (width, height) != self._last_size:
-            self._last_size = (width, height)
-            self.videoSizeChanged.emit(int(width), int(height))
+        if self._state == self.Playing and getattr(self, "_stats_t", 0) and now - self._stats_t >= 60:
+            self._stats_t = now
+            self._log_playback_stats("раз в минуту")
+        if slow:
+            width = self._get_int64("video-params/dw") or self._get_int64("video-params/w")
+            height = self._get_int64("video-params/dh") or self._get_int64("video-params/h")
+            if width and height and (width, height) != self._last_size:
+                self._last_size = (width, height)
+                self.videoSizeChanged.emit(int(width), int(height))
         eof = self._get_flag("eof-reached")
         if eof and self._state == self.Playing and not self._ended:
+            self._log_playback_stats("конец файла")
             self._ended = True
             self._position_ms = self.duration() or self._position_ms
             self._state = self.Stopped
@@ -9569,7 +9825,7 @@ vec4 hook()
             try:
                 self._lib.mpv_terminate_destroy(handle)
             except Exception:  # noqa: BLE001
-                pass
+                log.warning("подавленная ошибка", exc_info=True)
         self._lib = None
         _finish_lut(self)
         shutil.rmtree(self._tmpdir, ignore_errors=True)
@@ -9685,6 +9941,10 @@ class PlayerFacade(QObject):
                 self.ff.set_media(self.path, self.info)
             else:
                 self.qt.setSource(url)
+        if self.info is not None and self.info.has_video:
+            log.info("воспроизведение: backend=%s | %s %dx%d @ %.3f fps | pix=%s hdr=%s | файл %s",
+                     self.active, self.info.v_codec, self.info.width, self.info.height, self.info.fps,
+                     self.info.pix_fmt or "?", self.info.hdr, Path(self.path).suffix.lower())
         self.backendChanged.emit(self.active)
 
     def play(self):
@@ -10320,6 +10580,7 @@ class VideoFullscreenWindow(QWidget):
         self.play_btn.setIcon(make_icon("pause" if playing else "play"))
 
     def activate(self):
+        log.info("полноэкранный режим включён")
         self.showFullScreen()
         self.video.show()
         self.video.sync_mpv_surfaces()
@@ -10359,11 +10620,12 @@ class VideoFullscreenWindow(QWidget):
         event.accept()
 
     def detach(self):
+        log.info("полноэкранный режим выключен")
         self._hide_timer.stop()
         try:
             self.owner.volume.valueChanged.disconnect(self._volume_from_owner)
         except (TypeError, RuntimeError):
-            pass
+            log.debug("подавленная ошибка", exc_info=True)
         app = QApplication.instance()
         if app is not None:
             app.removeEventFilter(self)
@@ -10421,7 +10683,7 @@ def find_converter_tool(*names: str) -> str | None:
                 if candidate.is_file():
                     return str(candidate)
             except OSError:
-                pass
+                log.debug("подавленная ошибка", exc_info=True)
     return None
 
 
@@ -10462,7 +10724,7 @@ def probe_media_info(source: Path) -> dict:
     try:
         result = _bounded_probe_run(
             [ffprobe, "-v", "error", "-protocol_whitelist", "file,pipe,crypto,data", "-show_entries",
-             "format=duration,bit_rate:stream=index,codec_type,codec_name,channels,channel_layout,bit_rate,duration,width,height,r_frame_rate:stream_tags=language,title",
+             "format=duration,bit_rate:stream=index,codec_type,codec_name,channels,channel_layout,bit_rate,duration,width,height,r_frame_rate,pix_fmt:stream_tags=language,title:stream_disposition=default,forced:chapter=id",
              "-of", "json", str(source)],
             capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=15,
             creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0),
@@ -10493,7 +10755,7 @@ def probe_media_info(source: Path) -> dict:
                 duration = float(value)
                 break
         except (TypeError, ValueError):
-            pass
+            log.debug("подавленная ошибка", exc_info=True)
 
     audio_tracks = []
     for audio_index, st in enumerate(audios):
@@ -10507,6 +10769,7 @@ def probe_media_info(source: Path) -> dict:
             "bitrate_kbps": kbps(st.get("bit_rate")) or kbps(tags.get("BPS") or tags.get("BPS-eng")),
             "language": str(tags.get("language") or ""),
             "title": str(tags.get("title") or ""),
+            "default": bool((st.get("disposition") or {}).get("default")),
         })
 
     def frame_rate(value):
@@ -10525,7 +10788,14 @@ def probe_media_info(source: Path) -> dict:
         "video_codec": str(video.get("codec_name") or "неизвестно"),
         "width": video.get("width"), "height": video.get("height"),
         "fps": frame_rate(video.get("r_frame_rate")),
-        "subtitle_tracks": [{"subtitle_index": i, "codec": st.get("codec_name", "unknown")} for i, st in enumerate(st for st in streams if st.get("codec_type") == "subtitle")],
+        "subtitle_tracks": [{"subtitle_index": i, "codec": st.get("codec_name", "unknown"),
+                             "language": str((st.get("tags") or {}).get("language") or ""),
+                             "title": str((st.get("tags") or {}).get("title") or ""),
+                             "forced": bool((st.get("disposition") or {}).get("forced")),
+                             "default": bool((st.get("disposition") or {}).get("default"))}
+                            for i, st in enumerate(st for st in streams if st.get("codec_type") == "subtitle")],
+        "chapters": len(data.get("chapters") or []),
+        "pix_fmt": str(video.get("pix_fmt") or ""),
         "video_bitrate_kbps": video_bitrate,
         "format_bitrate_kbps": format_bitrate,
         "audio_codecs": audio_codecs,
@@ -10814,10 +11084,10 @@ def collect_file_properties(path: Path) -> dict:
                     image_items.append((f"Метаданные изображения: {key}", value))
             result["sections"].append(("Изображение", image_items))
     except ImportError:
-        pass
+        log.debug("подавленная ошибка", exc_info=True)
     except Exception:
         # Не каждый файл является изображением; не считать это ошибкой чтения файла.
-        pass
+        log.warning("подавленная ошибка", exc_info=True)
 
     # Документы PDF: свойства документа и количество страниц.
     if path.suffix.casefold() == ".pdf":
@@ -10871,7 +11141,7 @@ def collect_file_properties(path: Path) -> dict:
                             if value:
                                 archive_items.append((f"Свойство документа: {child.tag.split('}')[-1]}", value))
                     except Exception:
-                        pass
+                        log.warning("подавленная ошибка", exc_info=True)
                 result["sections"].append(("Документ / архив", archive_items))
         except (OSError, zipfile.BadZipFile, RuntimeError) as exc:
             result["warnings"].append(f"Не удалось прочитать структуру архива: {exc}")
@@ -10958,7 +11228,7 @@ class ConversionOutputTransaction:
             if cls._identity(path) == identity:
                 path.unlink()
         except OSError:
-            pass
+            log.debug("подавленная ошибка", exc_info=True)
 
     def _publish_file(self, source, destination):
         self.checkpoint()
@@ -10969,7 +11239,7 @@ class ConversionOutputTransaction:
         except FileExistsError:
             raise
         except NotImplementedError:
-            pass  # Some Windows/Python/filesystem combinations lack link options.
+            log.debug("подавленная ошибка", exc_info=True)  # Some Windows/Python/filesystem combinations lack link options.
         except OSError as exc:
             import errno
             if exc.errno not in (errno.EXDEV, errno.EPERM, errno.EACCES,
@@ -11055,7 +11325,7 @@ class ConversionOutputTransaction:
                 try:
                     directory.rmdir()  # Never recursively remove a public directory.
                 except OSError:
-                    pass
+                    log.debug("подавленная ошибка", exc_info=True)
             raise
 
     def close(self):
@@ -11167,7 +11437,7 @@ def conversion_stop_process(process, job=None):
         try:
             os.killpg(process.pid, signal.SIGTERM)
         except ProcessLookupError:
-            pass
+            log.debug("подавленная ошибка", exc_info=True)
     elif process.poll() is None:
         process.kill()  # Only used if assignment to the job failed while suspended.
     try:
@@ -11177,7 +11447,7 @@ def conversion_stop_process(process, job=None):
             try:
                 os.killpg(process.pid, signal.SIGKILL)
             except ProcessLookupError:
-                pass
+                log.debug("подавленная ошибка", exc_info=True)
         else:
             process.kill()
         process.wait(timeout=2)
@@ -11187,7 +11457,7 @@ def conversion_stop_process(process, job=None):
             try:
                 os.killpg(process.pid, signal.SIGKILL)
             except ProcessLookupError:
-                pass
+                log.debug("подавленная ошибка", exc_info=True)
     if job_error is not None:
         raise job_error
 
@@ -11298,7 +11568,7 @@ class ConversionMediaProbe(QThread):
             if not self.isInterruptionRequested():
                 self.ready.emit(self.generation, str(self.source), info)
         except DownloadCancelled:
-            pass
+            log.debug("подавленная ошибка", exc_info=True)
         except Exception as exc:
             if not self.isInterruptionRequested():
                 self.ready.emit(self.generation, str(self.source), {"error": redact_diagnostic(exc), "audio_tracks": []})
@@ -11837,6 +12107,61 @@ class ConverterWorker(QThread):
 
 
 
+    def _transcode_inputs(self, args, source, info, opts):
+        """Range, hardware decoding and external subtitle inputs. Mutates args (which ends with -i source)."""
+        self._range_out, self._two_pass = [], False
+        duration = info.get("duration")
+        start, end = (opts.get("range") or (None, None))
+        head = []
+        if opts.get("hwdecode"):
+            head += ["-hwaccel", "auto"]
+        if start:
+            head += ["-ss", f"{float(start):.3f}"]
+        args[-2:-2] = head
+        if end:
+            total = float(end) - float(start or 0)
+            if total <= 0:
+                raise RuntimeError(conversion_text("Конец диапазона должен быть позже начала.", "The range end must be later than its start."))
+            self._range_out = ["-t", f"{total:.3f}"]
+            duration = total
+        elif start and duration:
+            duration = max(0.1, float(duration) - float(start))
+        ext = []
+        for item in (opts.get("external_subs") or {}).get(str(source), []):
+            path = Path(item["path"])
+            if not path.is_file():
+                raise RuntimeError(conversion_text(f"Внешний субтитр не найден: {path.name}", f"External subtitle not found: {path.name}"))
+            if path.suffix.casefold() not in {".srt", ".ass", ".ssa", ".vtt"}:
+                raise RuntimeError(conversion_text("Внешние субтитры: допустимы .srt, .ass, .ssa, .vtt.", "External subtitles: .srt, .ass, .ssa and .vtt are supported."))
+            if start:
+                args += ["-ss", f"{float(start):.3f}"]
+            delay = int(item.get("delay_ms") or 0)
+            if delay:
+                args += ["-itsoffset", f"{delay/1000:.3f}"]
+            charenc = str(item.get("charenc") or "")
+            if charenc:
+                if charenc not in TRANSCODE_SUB_ENCODINGS:
+                    raise RuntimeError(conversion_text("Недопустимая кодировка субтитров.", "Invalid subtitle encoding."))
+                args += ["-sub_charenc", charenc]
+            args += ["-i", str(path)]
+            ext.append(item)
+        return ext, duration
+
+    def _transcode_detect_crop(self, caps, source, info):
+        duration = float(info.get("duration") or 0)
+        position = max(0.0, duration / 2 - 5) if duration > 20 else 0.0
+        text = self._run_command([caps["tool"], "-hide_banner", "-nostdin", "-loglevel", "info",
+            "-protocol_whitelist", "file,pipe,crypto,data", "-ss", f"{position:.1f}", "-i", str(source), "-t", "10",
+            "-map", "0:v:0", "-vf", "cropdetect=limit=24:round=2:reset=0", "-an", "-sn", "-f", "null", os.devnull],
+            capture_limit=2 * 1024 * 1024)
+        found = re.findall(r"crop=(\d+):(\d+):(\d+):(\d+)", text)
+        if not found:
+            return None
+        w, h, x, y = map(int, found[-1])
+        if (w, h) == (info.get("width"), info.get("height")) or w < 16 or h < 16:
+            return None
+        return f"crop={w}:{h}:{x}:{y}"
+
     def _convert_ffmpeg(self, source: Path, dest: Path) -> None:
         caps = conversion_ffmpeg_capabilities(self._run_command)
         profile = CONVERSION_FFMPEG_PROFILES.get(self.category, {}).get(self.target_ext)
@@ -11850,6 +12175,7 @@ class ConverterWorker(QThread):
             raise RuntimeError(conversion_text("Не удалось прочитать исходник: " + redact_diagnostic(getattr(message, "ru", message)),
                                        "Could not read input: " + redact_diagnostic(getattr(message, "en", message))))
         muxer = profile[0]
+        progress_duration = info.get("duration")
         args = [caps["tool"], "-hide_banner", "-loglevel", "error", "-nostdin", "-y",
                 "-progress", "pipe:1", "-stats_period", "0.5", "-nostats",
                 "-protocol_whitelist", "file,pipe,crypto,data", "-i", str(source)]
@@ -11857,6 +12183,7 @@ class ConverterWorker(QThread):
             if info.get("video_codec", "неизвестно") == "неизвестно":
                 raise RuntimeError(conversion_text("В исходном файле нет читаемого видеопотока.", "The input has no readable video stream."))
             opts = dict(self.video_options)
+            ext_subs, progress_duration = self._transcode_inputs(args, source, info, opts)
             encoder = str(opts.get("encoder", "CPU"))
             vcodec = profile[1] if encoder == "CPU" else {
                 "NVIDIA NVENC": "h264_nvenc", "Intel Quick Sync": "h264_qsv", "AMD AMF": "h264_amf"}.get(encoder)
@@ -11882,11 +12209,17 @@ class ConverterWorker(QThread):
                 tracks = tracks[:1]
             acodec = str(opts.get("audio_codec", profile[2]))
             per_file = opts.get("audio_track_options", {}).get(str(source), {})
+            audio_rule = (opts.get("track_rules") or {}).get("audio")
+            if audio_rule and not per_file:
+                mode, lang = audio_rule
+                tracks = [t for t in tracks if mode == "all" or (mode == "lang" and t.get("language") == lang)]
             tracks = [track for track in tracks if per_file.get(str(track["audio_index"]), {}).get("enabled", True)]
             audio_settings = []
             for track in tracks:
                 setting = per_file.get(str(track["audio_index"]), {})
-                audio_settings.append((str(setting.get("codec", acodec)), int(setting.get("bitrate", opts.get("audio_bitrate", 192)))))
+                fallback = "copy" if (opts.get("default_audio_copy") and transcode_audio_compatible(
+                    self.target_ext, "copy", track.get("codec", "неизвестно"))) else acodec
+                audio_settings.append((str(setting.get("codec", fallback)), int(setting.get("bitrate", opts.get("audio_bitrate", 192)))))
             if "audio_track_options" in opts:
                 for track, (codec, rate) in zip(tracks, audio_settings):
                     if not transcode_audio_compatible(self.target_ext, codec, track.get("codec", "неизвестно")):
@@ -11909,19 +12242,56 @@ class ConverterWorker(QThread):
                 elif acodec not in {"libopus", "libvorbis"}:
                     self._conversion_notice("Для WebM аудио будет перекодировано в Opus.", "Audio will be encoded as Opus for WebM.")
                     acodec = "libopus"
-            args += ["-map", "0:v:0"]
+            # Video filter chain (crop, deinterlace, denoise, rotate, scale, burned subtitles).
+            crop_value = None
+            if opts.get("auto_crop"):
+                crop_value = self._transcode_detect_crop(caps, source, info)
+                if crop_value is None:
+                    self._conversion_notice("Чёрные поля не найдены; обрезка не применялась.", "No black bars found; cropping was not applied.")
+            vchain = transcode_video_filters(opts, info, crop_value) if "no_upscale" in opts else []
+            sub_opts = (opts.get("subtitle_options") or {}).get(str(source))
+            all_subtitles = list(info.get("subtitle_tracks") or [])
+            burn_track = None
+            if sub_opts is not None:
+                for track in all_subtitles:
+                    if sub_opts.get(str(track["subtitle_index"]), {}).get("burn"):
+                        burn_track = track
+                        break
+            burn_complex = None
+            if burn_track is not None:
+                start = float((opts.get("range") or (0, 0))[0] or 0)
+                if burn_track["codec"] in TRANSCODE_BITMAP_SUBS:
+                    burn_complex = (f"[0:v:0]{','.join(vchain) if vchain else 'null'}[bv];"
+                                    f"[bv][0:s:{burn_track['subtitle_index']}]overlay[vout]")
+                else:
+                    piece = f"subtitles=filename={transcode_filter_path(source)}:si={burn_track['subtitle_index']}"
+                    vchain += ([f"setpts=PTS+{start:.3f}/TB", piece, "setpts=PTS-STARTPTS"] if start else [piece])
+            if burn_complex:
+                args += ["-filter_complex", burn_complex, "-map", "[vout]"]
+            else:
+                args += ["-map", "0:v:0"]
             if tracks:
                 for track in tracks:
                     args += ["-map", f"0:a:{track['audio_index']}"]
             else:
                 args += ["-an"]
-            subtitle_mode = opts.get("subtitle_mode", "Все дорожки")
-            subtitles = list(info.get("subtitle_tracks") or [])
-            if subtitle_mode == "Без субтитров":
-                subtitles = []
-            elif subtitle_mode == "Только первые":
-                subtitles = subtitles[:1]
-            if not profile[2] and subtitles:
+            if sub_opts is not None:
+                subtitles = [(t, bool(sub_opts.get(str(t["subtitle_index"]), {}).get("default")))
+                             for t in all_subtitles if sub_opts.get(str(t["subtitle_index"]), {}).get("enabled")]
+            elif (opts.get("track_rules") or {}).get("sub"):
+                mode, lang = opts["track_rules"]["sub"]
+                subtitles = [(t, False) for t in all_subtitles
+                             if (mode == "all" or (mode == "lang" and t.get("language") == lang))
+                             and not (t["codec"] in TRANSCODE_BITMAP_SUBS and self.target_ext in {"mp4", "mov", "webm", "avi"})]
+            else:
+                subtitle_mode = opts.get("subtitle_mode", "Все дорожки")
+                chosen = list(all_subtitles)
+                if subtitle_mode == "Без субтитров":
+                    chosen = []
+                elif subtitle_mode == "Только первые":
+                    chosen = chosen[:1]
+                subtitles = [(t, False) for t in chosen]
+            if not profile[2] and (subtitles or ext_subs):
                 if opts:
                     raise RuntimeError(conversion_text("Этот формат не хранит дорожки субтитров; отключите их явно.",
                                                "This format cannot store subtitle tracks; disable them explicitly."))
@@ -11929,30 +12299,46 @@ class ConverterWorker(QThread):
                                         "The animated format cannot contain subtitle tracks.")
                 subtitles = []
             sub_codecs = []
-            for output_index, track in enumerate(subtitles):
+            output_index = 0
+            for track, is_default in subtitles:
                 codec = conversion_subtitle_codec(self.target_ext, track["codec"])
                 sub_codecs.append(codec)
                 args += ["-map", f"0:s:{track['subtitle_index']}", f"-c:s:{output_index}", codec]
+                if sub_opts is not None:
+                    args += [f"-disposition:s:{output_index}", "+default" if is_default else "-default"]
                 if codec != "copy" and track["codec"] != codec:
                     self._conversion_notice("Субтитры преобразуются в формат контейнера; оформление может измениться.",
                                             "Subtitles are converted for this container; styling may change.")
-            if not subtitles:
+                output_index += 1
+            for input_number, item in enumerate(ext_subs, start=1):
+                kind = {".srt": "subrip", ".ass": "ass", ".ssa": "ass", ".vtt": "webvtt"}[Path(item["path"]).suffix.casefold()]
+                codec = conversion_subtitle_codec(self.target_ext, kind) if self.target_ext != "mkv" else "copy"
+                sub_codecs.append(codec)
+                args += ["-map", f"{input_number}:0", f"-c:s:{output_index}", codec,
+                         f"-disposition:s:{output_index}", "+default" if item.get("default") else "-default"]
+                if item.get("language"):
+                    args += [f"-metadata:s:s:{output_index}", "language=" + re.sub(r"[^a-z]", "", str(item["language"]).casefold())[:3]]
+                if codec != "copy" and kind != "webvtt":
+                    self._conversion_notice("Субтитры преобразуются в формат контейнера; оформление может измениться.",
+                                            "Subtitles are converted for this container; styling may change.")
+                output_index += 1
+            if not output_index:
                 args += ["-sn"]
             conversion_require_codecs(caps, muxer, vcodec, acodec if tracks and "audio_track_options" not in opts else "", *sub_codecs)
             resolution = str(opts.get("resolution", "Как в оригинале"))
             dimensions = {"4320p": "7680:4320", "2160p (4K)": "3840:2160", "1440p": "2560:1440",
                           "1080p": "1920:1080", "720p": "1280:720", "480p": "854:480", "360p": "640:360"}
-            if "no_upscale" in opts:
-                scale_filter = transcode_scale_filter(resolution, bool(opts["no_upscale"]))
-                if scale_filter:
-                    args += ["-vf", scale_filter]
-            elif resolution in dimensions:
-                args += ["-vf", f"scale={dimensions[resolution]}:force_original_aspect_ratio=decrease:force_divisible_by=2"]
+            if "no_upscale" not in opts and resolution in dimensions:
+                vchain.append(f"scale={dimensions[resolution]}:force_original_aspect_ratio=decrease:force_divisible_by=2")
+            if vchain and not burn_complex:
+                args += ["-vf", ",".join(vchain)]
             fps = str(opts.get("fps", "Как в оригинале"))
             if fps != "Как в оригинале":
-                if fps not in {"24", "25", "30", "50", "60", "120"}:
+                if fps not in {"23.976", "24", "25", "29.97", "30", "50", "59.94", "60", "120"}:
                     raise ValueError(conversion_text("Недопустимое значение FPS.", "Invalid FPS value."))
                 args += ["-r", fps]
+            if opts.get("fps_mode") in ("cfr", "vfr"):
+                args += ["-fps_mode", opts["fps_mode"]]
             elif vcodec == "mpeg2video" and (info.get("fps") or 0) not in {23.976, 24, 25, 29.97, 30, 50, 59.94, 60}:
                 args += ["-r", "25"]
                 self._conversion_notice("Для MPEG-2 используется 25 FPS.", "MPEG-2 output uses 25 FPS.")
@@ -11982,23 +12368,60 @@ class ConverterWorker(QThread):
             if "quality_value" in opts:
                 value = int(opts["quality_value"])
                 minimum = 1 if vcodec.endswith(("_qsv", "_nvenc")) else 0
-                if not minimum <= value <= (63 if vcodec == "libvpx-vp9" else 51):
+                if not minimum <= value <= (63 if vcodec in ("libvpx-vp9", "libsvtav1") else 51):
                     raise ValueError(conversion_text("CRF/CQ/QP вне диапазона кодировщика.", "CRF/CQ/QP is outside this encoder's range."))
                 args += transcode_rate_options(vcodec, opts.get("quality", "Высокое"), bitrate, opts.get("preset", "medium"), value)
             else:
                 args += conversion_video_rate_options(vcodec, opts.get("quality", "Высокое"), bitrate, opts.get("preset", "medium"))
+            args += transcode_video_extra_args(vcodec, opts)
+            if opts.get("two_pass"):
+                if not int(bitrate or 0):
+                    raise RuntimeError(conversion_text("Двухпроходное кодирование требует целевого битрейта видео или общего битрейта.",
+                                               "Two-pass encoding needs a target video or total bitrate."))
+                if vcodec not in ("libx264", "libx265", "libvpx-vp9"):
+                    raise RuntimeError(conversion_text("Двухпроходный режим доступен для x264, x265 и VP9 на CPU.",
+                                               "Two-pass mode is available for x264, x265 and VP9 on CPU."))
+                self._two_pass = True
             if tracks and "audio_track_options" in opts:
                 for output_index, (codec, rate) in enumerate(audio_settings):
                     args += [f"-c:a:{output_index}", codec]
                     if codec not in {"copy", "flac", "pcm_s16le", "pcm_s16be"}:
                         args += [f"-b:a:{output_index}", f"{rate}k"]
+                    extras = per_file.get(str(tracks[output_index]["audio_index"]), {})
+                    if codec != "copy":
+                        mix = {"mono": "1", "stereo": "2", "5.1": "6"}.get(str(extras.get("mixdown") or ""))
+                        if mix:
+                            args += [f"-ac:a:{output_index}", mix]
+                        sample_rate = int(extras.get("samplerate") or 0)
+                        if sample_rate:
+                            if sample_rate not in (22050, 32000, 44100, 48000, 96000):
+                                raise ValueError(conversion_text("Недопустимая частота звука.", "Invalid audio sample rate."))
+                            args += [f"-ar:a:{output_index}", str(sample_rate)]
+                        gain = float(extras.get("gain") or 0)
+                        if gain:
+                            if not -30 <= gain <= 30:
+                                raise ValueError(conversion_text("Усиление звука вне диапазона ±30 дБ.", "Audio gain is outside ±30 dB."))
+                            args += [f"-filter:a:{output_index}", f"volume={gain:g}dB"]
+                    name = re.sub(r"[\x00-\x1f]", "", str(extras.get("name") or "")).strip()[:120]
+                    if name:
+                        args += [f"-metadata:s:a:{output_index}", "title=" + name]
+                    if "default" in extras:
+                        args += [f"-disposition:a:{output_index}", "+default" if extras.get("default") else "-default"]
             elif tracks:
                 args += ["-c:a", acodec]
                 if acodec not in {"copy", "flac", "pcm_s16le", "pcm_s16be"} and opts:
                     validate_audio_bitrate(acodec, audio_rate)
                     args += ["-b:a", f"{audio_rate}k"]
-            if self.target_ext == "mp4":
+            if self.target_ext == "mp4" and opts.get("faststart", True):
                 args += ["-movflags", "+faststart"]
+            if opts.get("keep_chapters") is False:
+                args += ["-map_chapters", "-1"]
+            if opts.get("keep_metadata") is False:
+                args += ["-map_metadata", "-1"]
+            title = re.sub(r"[\x00-\x1f]", "", str(opts.get("title") or "")).strip()[:200]
+            if title:
+                args += ["-metadata", "title=" + title]
+            args += self._range_out
         elif self.category == "Аудио":
             if not info.get("audio_tracks"):
                 raise RuntimeError(conversion_text("В исходнике нет аудиодорожек.", "The input has no audio tracks."))
@@ -12028,9 +12451,17 @@ class ConverterWorker(QThread):
                 raise RuntimeError(conversion_text("В исходнике нет субтитров.", "The input has no subtitle tracks."))
             conversion_require_codecs(caps, muxer, profile[1])
             args += ["-vn", "-an", "-map", "0:s:0", "-c:s", profile[1]]
-        args += ["-f", muxer, str(dest)]
+        shown_duration = progress_duration if self.category == "Видео" else info.get("duration")
         self._last_speed = ""
-        self._run_command(args, progress_duration=info.get("duration"), progress_name=source.name)
+        if self.category == "Видео" and getattr(self, "_two_pass", False):
+            prefix = str(Path(self._work_root) / "nop-pass")
+            first = args + ["-pass", "1", "-passlogfile", prefix, "-an", "-sn", "-f", "null", os.devnull]
+            self._conversion_notice("Двухпроходное кодирование: проход 1 из 2.", "Two-pass encoding: pass 1 of 2.")
+            self._run_command(first, progress_duration=shown_duration, progress_name=source.name)
+            self._conversion_notice("Двухпроходное кодирование: проход 2 из 2.", "Two-pass encoding: pass 2 of 2.")
+            args += ["-pass", "2", "-passlogfile", prefix]
+        args += ["-f", muxer, str(dest)]
+        self._run_command(args, progress_duration=shown_duration, progress_name=source.name)
         if not dest.is_file() or not dest.stat().st_size:
             raise RuntimeError(conversion_text("FFmpeg не создал непустой результат.", "FFmpeg did not create a nonempty result."))
 
@@ -12307,7 +12738,7 @@ else:
                 finished_rows.add(index)
                 self.progress_changed.emit(index+1, total, conversion_text(f"Обработано {index+1} из {total}", f"Processed {index+1} of {total}"))
         except DownloadCancelled:
-            pass
+            log.debug("подавленная ошибка", exc_info=True)
         except Exception as exc:
             self.fail_count += 1
             if total:
@@ -12478,7 +12909,7 @@ class ConversionCapabilityProbe(ConverterWorker):
                 except Exception as exc:
                     result["errors"]["model"] = redact_diagnostic(exc)
             except DownloadCancelled:
-                pass
+                log.debug("подавленная ошибка", exc_info=True)
             except Exception as exc:
                 result["errors"]["discovery"] = redact_diagnostic(exc)
             finally:
@@ -12496,31 +12927,34 @@ TRANSCODE_PROFILES = {
     '2k': ('2K (QHD)', '1440p', 2560, 1440),
     '4k': ('4K', '2160p (4K)', 3840, 2160),
 }
-TRANSCODE_CODECS = {'h264': 'H.264 / AVC', 'hevc': 'H.265 / HEVC', 'vp9': 'VP9'}
+TRANSCODE_CODECS = {'h264': 'H.264 / AVC', 'hevc': 'H.265 / HEVC', 'vp9': 'VP9', 'av1': 'AV1 (SVT-AV1)'}
 
 
 def transcode_codec(container, encoder, family):
-    allowed = {'mp4': {'h264', 'hevc'}, 'mov': {'h264', 'hevc'},
-               'mkv': {'h264', 'hevc', 'vp9'}, 'webm': {'vp9'}, 'avi': {'h264'}}
+    allowed = {'mp4': {'h264', 'hevc', 'av1'}, 'mov': {'h264', 'hevc'},
+               'mkv': {'h264', 'hevc', 'vp9', 'av1'}, 'webm': {'vp9', 'av1'}, 'avi': {'h264'}}
     suffix = {'CPU': None, 'NVIDIA NVENC': 'nvenc', 'Intel Quick Sync': 'qsv', 'AMD AMF': 'amf'}
     if container not in allowed or family not in allowed[container] or encoder not in suffix:
         raise ValueError(conversion_text('Видеокодек несовместим с контейнером/кодировщиком.',
                                          'The video codec is incompatible with the container/encoder.'))
     if encoder == 'CPU':
-        return {'h264': 'libx264', 'hevc': 'libx265', 'vp9': 'libvpx-vp9'}[family]
-    if family == 'vp9':
-        raise ValueError(conversion_text('VP9 в NOP кодируется на CPU; выберите CPU или H.264/H.265 в другом контейнере.',
-                                         'NOP encodes VP9 on CPU; choose CPU, or H.264/H.265 in another container.'))
+        return {'h264': 'libx264', 'hevc': 'libx265', 'vp9': 'libvpx-vp9', 'av1': 'libsvtav1'}[family]
+    if family in ('vp9', 'av1'):
+        raise ValueError(conversion_text('VP9 и AV1 в NOP кодируются на CPU; выберите CPU или H.264/H.265 в другом контейнере.',
+                                         'NOP encodes VP9 and AV1 on CPU; choose CPU, or H.264/H.265 in another container.'))
     return family + '_' + suffix[encoder]
 
 
 def transcode_profile_quality(family, balanced):
-    return {'h264': (18, 23), 'hevc': (20, 26), 'vp9': (26, 32)}[family][bool(balanced)]
+    return {'h264': (18, 23), 'hevc': (20, 26), 'vp9': (26, 32), 'av1': (28, 34)}[family][bool(balanced)]
 
 
 def transcode_rate_options(codec, quality, bitrate, preset, value):
     # The audited general converter retains its original rate-control function.
     rate = int(bitrate or 0)
+    if codec == 'libsvtav1':
+        speed = {'ultrafast': 12, 'fast': 10, 'medium': 8, 'slow': 5, 'veryslow': 2}.get(preset, 8)
+        return ['-preset', str(speed)] + (['-b:v', f'{rate}k'] if rate else ['-crf', str(int(value))])
     if codec == 'libx265':
         args = ['-preset', preset]
         return args + (['-b:v', f'{rate}k', '-maxrate', f'{rate*2}k', '-bufsize', f'{rate*4}k'] if rate
@@ -12555,7 +12989,125 @@ def transcode_scale_filter(resolution, no_upscale):
     return 'scale=' + size + ':force_original_aspect_ratio=decrease:force_divisible_by=2'
 
 
+TRANSCODE_SIZES = {'4320p': (7680,4320), '2160p (4K)': (3840,2160), '1440p': (2560,1440), '1080p': (1920,1080),
+                   '720p': (1280,720), '480p': (854,480), '360p': (640,360)}
+TRANSCODE_BITMAP_SUBS = {"hdmv_pgs_subtitle", "dvd_subtitle", "dvb_subtitle", "xsub", "dvb_teletext"}
+TRANSCODE_TUNES = {'libx264': ('film','animation','grain','stillimage','psnr','ssim','fastdecode','zerolatency'),
+                   'libx265': ('psnr','ssim','grain','zerolatency','fastdecode','animation')}
+TRANSCODE_PROFILES_BY_CODEC = {'libx264': ('baseline','main','high','high10'), 'libx265': ('main','main10')}
+TRANSCODE_SUB_NAMES = {'subrip': 'SRT', 'ass': 'ASS', 'ssa': 'SSA', 'mov_text': 'MOV_TEXT', 'webvtt': 'WebVTT',
+                       'hdmv_pgs_subtitle': 'PGS', 'dvd_subtitle': 'VobSub', 'dvb_subtitle': 'DVB', 'text': 'TEXT'}
+TRANSCODE_PARAM_KEYS = {'libx264': '-x264-params', 'libx265': '-x265-params', 'libsvtav1': '-svtav1-params'}
+TRANSCODE_PARAMS_RE = re.compile(r'^[A-Za-z0-9_=:.,\-]{0,400}$')
+TRANSCODE_SUB_ENCODINGS = ('', 'cp1251', 'koi8-r', 'cp1252', 'utf-16')
+
+
+def transcode_filter_path(path):
+    """Escape a path for the value of an FFmpeg filter option (two parsing levels)."""
+    out = []
+    for ch in str(path).replace('\\', '/'):
+        if ch == ':':
+            out.append('\\\\:')
+        elif ch == "'":
+            out.append("\\\\\\'")
+        elif ch in '[],;=':
+            out.append('\\' + ch)
+        else:
+            out.append(ch)
+    return ''.join(out)
+
+
+def transcode_video_filters(opts, info=None, crop=None):
+    """Ordered -vf pieces for the transcoder (crop, deinterlace, denoise, rotate, scale...)."""
+    f = opts.get('filters') or {}
+    chain = []
+    if crop:
+        chain.append(crop)
+    elif opts.get('crop'):
+        top, bottom, left, right = [max(0, int(v)) for v in opts['crop']]
+        if top or bottom or left or right:
+            chain.append(f'crop=trunc((iw-{left}-{right})/2)*2:trunc((ih-{top}-{bottom})/2)*2:{left}:{top}')
+    if f.get('detelecine'):
+        chain.append('fieldmatch,yadif=deint=interlaced,decimate')
+    deint = f.get('deinterlace') or ''
+    if deint:
+        kind, _, bob = deint.partition('_')
+        if kind not in ('yadif', 'bwdif'):
+            raise ValueError(conversion_text('Неизвестный деинтерлейсер.', 'Unknown deinterlacer.'))
+        only = 'interlaced' if f.get('deinterlace_only') else 'all'
+        mode = ('send_field' if kind == 'bwdif' else '1') if bob else ('send_frame' if kind == 'bwdif' else '0')
+        chain.append(f'{kind}=mode={mode}:deint={only}')
+    denoise = {'light': 'hqdn3d=1.5:1.5:3:3', 'medium': 'hqdn3d=3:2.5:5:4.5', 'strong': 'hqdn3d=6:5:9:7'}
+    if f.get('denoise') in denoise:
+        chain.append(denoise[f['denoise']])
+    if f.get('deblock') in ('weak', 'strong'):
+        chain.append(f"deblock=filter={f['deblock']}:block=8")
+    sharpen = {'light': 'unsharp=5:5:0.5:5:5:0.0', 'medium': 'unsharp=5:5:0.8:5:5:0.4', 'strong': 'unsharp=7:7:1.5:7:7:0.8'}
+    if f.get('sharpen') in sharpen:
+        chain.append(sharpen[f['sharpen']])
+    rotate = int(opts.get('rotate') or 0)
+    if rotate not in (0, 90, 180, 270):
+        raise ValueError(conversion_text('Недопустимый угол поворота.', 'Invalid rotation angle.'))
+    chain += {0: [], 90: ['transpose=1'], 180: ['hflip', 'vflip'], 270: ['transpose=2']}[rotate]
+    if opts.get('flip_h'):
+        chain.append('hflip')
+    if opts.get('flip_v'):
+        chain.append('vflip')
+    custom = opts.get('custom_size')
+    if custom:
+        width, height = int(custom[0]), int(custom[1])
+        if not (16 <= width <= 16384 and 16 <= height <= 16384):
+            raise ValueError(conversion_text('Размер кадра вне допустимых границ.', 'Frame size is out of range.'))
+        keep = bool(opts.get('keep_aspect', True))
+        if opts.get('no_upscale', True):
+            size = f"w='min(iw,{width})':h='min(ih,{height})'"
+        else:
+            size = f'{width}:{height}'
+        chain.append('scale=' + size + (':force_original_aspect_ratio=decrease:force_divisible_by=2' if keep else ''))
+    elif 'no_upscale' in opts:
+        scale = transcode_scale_filter(str(opts.get('resolution', 'Как в оригинале')), bool(opts['no_upscale']))
+        if scale:
+            chain.append(scale)
+    if f.get('grayscale'):
+        chain.append('hue=s=0')
+    return chain
+
+
+def transcode_video_extra_args(vcodec, opts):
+    """Encoder tuning options with strict validation (tune, profile, level, bit depth, params)."""
+    args = []
+    tune = str(opts.get('tune') or '')
+    if tune:
+        if tune not in TRANSCODE_TUNES.get(vcodec, ()):
+            raise ValueError(conversion_text('Этот tune недоступен для выбранного кодировщика.', 'This tune is unavailable for the selected encoder.'))
+        args += ['-tune', tune]
+    profile = str(opts.get('profile') or '')
+    if profile:
+        if profile not in TRANSCODE_PROFILES_BY_CODEC.get(vcodec, ()):
+            raise ValueError(conversion_text('Этот профиль недоступен для выбранного кодировщика.', 'This profile is unavailable for the selected encoder.'))
+        args += ['-profile:v', profile]
+    level = str(opts.get('level') or '')
+    if level:
+        if vcodec not in ('libx264', 'libx265') or not re.fullmatch(r'\d(\.\d)?', level):
+            raise ValueError(conversion_text('Недопустимый уровень (level).', 'Invalid level.'))
+        args += ['-level', level]
+    bits = str(opts.get('bit_depth') or '')
+    if bits:
+        if bits not in ('8', '10'):
+            raise ValueError(conversion_text('Недопустимая разрядность.', 'Invalid bit depth.'))
+        args += ['-pix_fmt', 'yuv420p' if bits == '8' else 'yuv420p10le']
+    extra = str(opts.get('extra_params') or '').strip()
+    if extra:
+        key = TRANSCODE_PARAM_KEYS.get(vcodec)
+        if key is None or not TRANSCODE_PARAMS_RE.match(extra):
+            raise ValueError(conversion_text('Дополнительные параметры допустимы только для x264/x265/SVT-AV1 и только вида ключ=значение:ключ=значение.',
+                                             'Extra parameters are allowed only for x264/x265/SVT-AV1 as key=value:key=value.'))
+        args += [key, extra]
+    return args
+
+
 EN_TEXT.update({"Информация": "Information", "Видеокодек": "Video codec", "Не увеличивать исходник": "Do not upscale input"})
+EN_TEXT.update({'Автоматически убрать чёрные поля': 'Automatically remove black bars', 'Аппаратное декодирование источника (если доступно)': 'Hardware decoding of the source (if available)', 'Двухпроходное кодирование (точнее попадает в битрейт)': 'Two-pass encoding (hits the bitrate more accurately)', 'Детелесин (убрать 3:2 pulldown)': 'Detelecine (remove 3:2 pulldown)', 'Оптимизировать для веб (MP4: moov в начале)': 'Optimize for web (MP4: moov at the start)', 'Отразить по вертикали': 'Flip vertically', 'Отразить по горизонтали': 'Flip horizontally', 'Применять выбор ко всем файлам очереди': 'Apply the choice to all files in the queue', 'Сохранять главы': 'Keep chapters', 'Сохранять метаданные исходника': 'Keep source metadata', 'Сохранять пропорции': 'Keep aspect ratio', 'Только кадры с «гребёнкой» (интерлейс)': 'Only frames with combing (interlaced)', 'Чёрно-белое изображение': 'Black-and-white picture', 'Внешние субтитры (.srt, .ass, .ssa, .vtt) для выбранного файла': 'External subtitles (.srt, .ass, .ssa, .vtt) for the selected file', 'Время: секунды, ММ:СС или ЧЧ:ММ:СС. Пустые поля — файл целиком.': 'Time: seconds, MM:SS or HH:MM:SS. Empty fields mean the whole file.', 'Деблокинг': 'Deblocking', 'Деинтерлейс': 'Deinterlace', 'Для файлов, которые ещё не открывались в очереди': 'For files not yet opened in the queue', 'Доп. параметры кодировщика': 'Extra encoder parameters', 'Кодировка': 'Encoding', 'Кодировщик': 'Encoder', 'Конец фрагмента': 'Range end', 'Название (title)': 'Title', 'Начало фрагмента': 'Range start', 'Обрезка краёв': 'Edge cropping', 'Отметьте дорожки, которые попадут в файл. У каждой — свои кодек, битрейт, каналы, частота и усиление.': 'Select the tracks to keep. Each has its own codec, bitrate, channels, sample rate and gain.', 'Поворот': 'Rotation', 'Пресет скорости (CPU)': 'Speed preset (CPU)', 'Резкость': 'Sharpness', 'Сверху': 'Top', 'Свой размер, px': 'Custom size, px', 'Сдвиг по времени': 'Time offset', 'Слева': 'Left', 'Снизу': 'Bottom', 'Справа': 'Right', 'Уровень (level)': 'Level', 'Фильтры работают только при перекодировании видео; для режима «копировать» они недоступны.': 'Filters work only when the video is re-encoded.', 'Шумоподавление': 'Denoise', 'Язык (3 буквы)': 'Language (3 letters)', 'до конца': 'to the end', 'ключ=значение:ключ=значение': 'key=value:key=value', 'оставить как есть': 'leave as is', 'Все': 'All', 'Готовые': 'Done', 'Добавить видеофайлы (можно перетащить файлы и папки в список)': 'Add video files (you can drop files and folders on the list)', 'Добавить внешние…': 'Add external…', 'Добавить все видео из папки': 'Add all videos from a folder', 'Ещё': 'More', 'Ни одной': 'None', 'Опустить выбранный файл ниже': 'Move the selected file down', 'Поднять выбранный файл выше': 'Move the selected file up', 'Убрать выбранные (Delete)': 'Remove selected (Delete)', 'Убрать из списка уже обработанные файлы': 'Remove already processed files from the list', 'Файлы': 'Files', 'Фильтры': 'Filters', 'Папка': 'Folder', 'Видео': 'Video', 'Размер': 'Size', 'Звук': 'Audio', 'Субтитры': 'Subtitles', '10 бит': '10-bit', '8 бит': '8-bit', '90° по часовой': '90° clockwise', '90° против часовой': '90° counter-clockwise', 'Bwdif Bob (вдвое больше кадров)': 'Bwdif Bob (double frame rate)', 'Yadif Bob (вдвое больше кадров)': 'Yadif Bob (double frame rate)', 'UTF-8 / авто': 'UTF-8 / auto', 'Windows-1251 (кириллица)': 'Windows-1251 (Cyrillic)', 'Без поворота': 'No rotation', 'Выкл': 'Off', 'Как в источнике': 'As in source', 'Переменная (VFR)': 'Variable (VFR)', 'Постоянная (CFR)': 'Constant (CFR)', 'Свой размер…': 'Custom size…', 'Сильная': 'Strong', 'Сильное': 'Strong', 'Сильный': 'Strong', 'Слабая': 'Weak', 'Слабое': 'Weak', 'Слабый': 'Weak', 'Средняя': 'Medium', 'Среднее': 'Medium', 'Только язык…': 'Only language…', 'Формат результата': 'Output format', 'Видеокодек': 'Video codec', 'Качество': 'Quality', 'Разрешение': 'Resolution', 'Частота кадров': 'Frame rate', 'Разрядность цвета': 'Color depth', 'Профиль': 'Profile', 'Нет': 'None', 'Авто': 'Auto', 'Очередь пуста — перетащите видео сюда или нажмите «Файлы».': 'The queue is empty — drop videos here or press “Files”.', 'Выбрать папку с видео': 'Choose a folder with videos', 'Выбрать внешние субтитры': 'Choose external subtitles', 'Субтитры (*.srt *.ass *.ssa *.vtt);;Все файлы (*.*)': 'Subtitles (*.srt *.ass *.ssa *.vtt);;All files (*.*)', 'Сохранить': 'Keep', 'Ключ': 'Key', 'Сводка': 'Summary', 'Папка результата': 'Output folder', 'Двухпроходное кодирование': 'Two-pass encoding', 'Аппаратное декодирование': 'Hardware decoding', 'Основные': 'Main', 'Дополнительные': 'Advanced', 'CRF / CQ / QP': 'CRF / CQ / QP', 'Режим частоты кадров': 'Frame rate mode', 'Использовать видеокарту для чтения исходника, если она это умеет.': 'Use the graphics card to read the source, if it supports this.', 'Файл cookies.txt в формате Netscape, экспортированный из браузера. Файл можно перетащить сюда из проводника': 'cookies.txt file (Netscape format) exported from your browser. You can drop the file here from the file manager', 'Отметьте папки, треки из которых нужно добавить в список. Папку можно перетащить сюда из проводника': 'Check the folders whose tracks should be added to the list. You can drop a folder here from the file manager'})
 
 
 class TranscodePreviewCanvas(QWidget):
@@ -12954,7 +13506,7 @@ def ui_text(ru, en):
 # ---------- documentation for the capabilities present in this file ----------
 NOP_HELP = {
     "ru": {
-        "main": """<h2>NOP — NikOmniPlayer 1.1</h2>
+        "main": """<h2>NOP — NikOmniPlayer 1.2</h2>
 <p>Локальный аудио- и видеоплеер с загрузками, эквалайзером, цветокоррекцией и инструментами преобразования файлов.</p>
 <h3>Начните за минуту</h3><ol>
 <li>Откройте «Список треков» (Ctrl+T), добавьте папку и отметьте её как источник. Запустите файл двойным щелчком или Enter.</li>
@@ -12970,7 +13522,7 @@ NOP_HELP = {
 <h3>Перемотка, громкость и видеорежимы</h3><p>Ползунок перемещает позицию, громкость регулируется отдельно. «Размер видео» задаёт размер, а F11 включает и выключает раскладку «Весь экран». Двойной щелчок по видео открывает отдельное полноэкранное видео с автоматически скрывающимися контролами. Нажатие колёсика непосредственно по видео включает компактный режим «Только видео» 256×144 поверх окон; повторное нажатие возвращает прежние панели и размеры. В отдельном полноэкранном окне этот компактный режим не включается. Esc сначала возвращает из активного видеорежима; в обычном режиме закрывает NOP.</p>
 <h3>Контекстное меню видео</h3><p>Нажмите правой кнопкой непосредственно на видео. Доступны пауза/продолжение, следующий и предыдущий трек, свойства, копирование пути, «Свернуть» и «Закрыть». Переход по трекам использует текущий список и существующий режим воспроизведения; без треков команды недоступны. При воспроизведении через libmpv здесь также выбираются реальные видео-, аудиодорожки и субтитры. «Свернуть» сохраняет воспроизведение, «Закрыть» завершает приложение с освобождением ресурсов.</p>
 <h3>Список треков</h3><p>Поиск и фильтры действуют на добавленные файлы. Отмечайте папки в «Воспроизведение также из». Контекстное меню: свойства, открыть папку, переименовать, удалить, скопировать ссылку, если она известна из имени файла. Порядок воспроизведения использует этот список.</p>
-<h3>Настройки загрузки</h3><p>YouTube, TikTok, Instagram, Spotify и прямой HTTP(S)-URL. Типы ссылок и качество зависят от сервиса. Cookies читаются из cookies.txt. Spotify предлагает отдельные формат, битрейт и авторизацию. Инструкции по cookies, Spotify Client ID и прямым ссылкам открываются тёплыми значками «i» без надписи; наведите курсор для подсказки. После заполнения обязательных полей становится доступна кнопка «Скачать».</p><p><b>Фрагмент:</b> для одного видео и прямой ссылки поля «Начало» и «Конец» (ЧЧ:ММ:СС; 123456 → 12:34:56) скачивают только отрезок через FFmpeg без перекодирования; пустые поля — видео целиком. Начало отреза округляется до ближайшего ключевого кадра. <b>Общий битрейт</b> (видео + звук) выбирает среди потоков, подходящих по разрешению, FPS и кодеку, самый высокий, средний, самый низкий или ближайший к указанному (Кбит/с или Мбит/с); перекодирования нет, а точное значение источник может не предоставлять.</p>
+<h3>Настройки загрузки</h3><p>YouTube \\ Rutube \\ VK Video (один пункт: площадка определяется по ссылке), TikTok, Instagram, Spotify, прямой HTTP(S)-URL и «Другие ссылки» (любой сайт, который поддерживает yt-dlp). Типы ссылок и качество зависят от сервиса. Cookies читаются из cookies.txt. Spotify предлагает отдельные формат, битрейт и авторизацию. Инструкции по cookies, Spotify Client ID и прямым ссылкам открываются тёплыми значками «i» без надписи; наведите курсор для подсказки. После заполнения обязательных полей становится доступна кнопка «Скачать».</p><p><b>Фрагмент:</b> для одного видео и прямой ссылки поля «Начало» и «Конец» (ЧЧ:ММ:СС; 123456 → 12:34:56) скачивают только отрезок через FFmpeg без перекодирования; пустые поля — видео целиком. Начало отреза округляется до ближайшего ключевого кадра. <b>Общий битрейт</b> (видео + звук) выбирает среди потоков, подходящих по разрешению, FPS и кодеку, самый высокий, средний, самый низкий или ближайший к указанному (Кбит/с или Мбит/с); перекодирования нет, а точное значение источник может не предоставлять.</p>
 <h3>Загрузки</h3><p>Видны три целые карточки: название, скачанный/общий объём в МБ или ГБ, текущий статус и полоса прогресса. Статус рядом с объёмом показывает «Загружается», «Обработка», «Готово», «Пауза», «Ошибка» или другой текущий этап. Наведение раскрывает подробности: источник, этап, скорость, оставшееся время и сообщения, если они известны. Один полный шаг колёсика прокручивает три карточки; у границы списка прокрутка ограничивается оставшимися строками.</p><p>После 100% передачи могут продолжаться объединение и обработка — дождитесь «Готово». Шкала без процента означает активную операцию неизвестной длительности. Правой кнопкой можно отменить элемент или переместить ожидающий. Пауза позволяет продолжить задание; её применение к уже начатой обработке может задержаться. «Остановить загрузки» завершает всё задание.</p>
 <h3>Эквалайзер: в плеере и вне его</h3><p>Откройте Ctrl+E и выберите область обработки. <b>«Только NOP»</b> меняет звук аудио и видео внутри плеера. <b>«Всё устройство»</b> работает через установленный пользователем Equalizer APO в Windows: звук браузера, другого плеера и других приложений обрабатывается на выбранных динамиках или наушниках, если их вывод проходит через APO. Запускать трек в NOP для этого не требуется; NOP не переключает звуковой выход других программ.</p><p>Полосы и пресеты общие для обоих режимов. Можно выбирать готовые пресеты, сохранять и удалять свои, добавлять и удалять частоты, задавать усиление ползунками или числами. Кнопка включения управляет EQ. В системном режиме внутренний EQ NOP выключен, чтобы избежать двойной обработки. Подключение, проверка звука и отключение находятся в «Подключение APO»; значок «i» открывает инструкцию с двумя вкладками.</p>
 <h3>Цветокоррекция</h3><p>Пресеты, сила эффекта и ручные параметры; кнопка сравнения показывает оригинал. На mpv фильтры применяются его видеотрактом, Qt использует обработку кадров.</p>
@@ -12982,7 +13534,7 @@ NOP_HELP = {
         "details": """<h2>Подробная документация</h2>
 <h3>Воспроизведение и форматы</h3><p>Расширения включают MP4, MKV, WebM, AVI, MOV, MP3, FLAC, WAV, M4A, OGG/Opus и другие в списке MEDIA_EXTS. Расширение не гарантирует поддержку кодека. Основные движки: libmpv, Qt Multimedia и резервный FFmpeg. Для проблемного видео предусмотрена совместимая H.264/AAC-копия; метаданные читаются в фоне.</p>
 <p>Скорость поддерживается в пределах 0.5×–2×, но результат зависит от движка. История позиции сохраняется по полному пути. Для аудио можно показать соседнюю обложку JPG/PNG. Смена пути файла меняет ключ позиции.</p>
-<h3>Сервисы и поиск</h3><p>yt-dlp обрабатывает поддерживаемые URL YouTube/TikTok/Instagram; доступ, cookies и ограничения сайтов меняются. Для прямого URL нужен адрес медиа или поддерживаемого потока, а не произвольная HTML-страница.</p>
+<h3>Сервисы и поиск</h3><p>yt-dlp обрабатывает поддерживаемые URL YouTube/Rutube/VK Video/TikTok/Instagram; «Другие ссылки» пробуют любой экстрактор yt-dlp; доступ, cookies и ограничения сайтов меняются. Для прямого URL нужен адрес медиа или поддерживаемого потока, а не произвольная HTML-страница.</p>
 <p>Spotify здесь даёт метаданные. NOP ищет соответствующее аудио через SpotiSaver, YouTube и SoundCloud, сопоставляя исполнителя, название и длительность. Это может не найти точную запись. SpotiSaver — сторонний сервис с недокументированным интерфейсом; ему передаются данные искомого трека. Авторизация Spotify и cookies не открывают доступ к DRM-аудио.</p>
 <p>В этом исходном файле нет самостоятельного торрент-клиента или отдельной универсальной панели интернет-поиска. Справка не приписывает их этой версии.</p>
 <h3>Качество и обработка</h3><p>Контейнер MKV/MP4/WebM/AVI — оболочка для дорожек. Кодек задаёт способ кодирования. Объединение раздельных видео и аудио и последующая обработка могут идти после 100% передачи. Если исходник ограничен по качеству, высокий битрейт или FLAC не восстановят потерянные данные. Пересэмплирование изменяет частоту аудио, а не качество исходной записи.</p>
@@ -12994,7 +13546,7 @@ NOP_HELP = {
 <h3>Если что-то пошло не так</h3><p>Посмотрите этап и ошибку в карточке. «Обновление N с назад» показывает отсутствие новых событий, а не доказательство зависания. 401/403 обычно требуют проверки прав/авторизации; 429 — ожидания и меньшей параллельности. Проверьте свободное место, доступность каталога, FFmpeg, Deno и libmpv. При повреждённом файле попробуйте другое медиа. <a href='spotify-help'>Настройка Spotify и ошибки входа</a>.</p>""",
     },
     "en": {
-        "main": """<h2>NOP — NikOmniPlayer 1.1</h2><p>A local audio/video player with downloads, EQ, color correction and file conversion tools.</p>
+        "main": """<h2>NOP — NikOmniPlayer 1.2</h2><p>A local audio/video player with downloads, EQ, color correction and file conversion tools.</p>
 <h3>Quick start</h3><ol><li>Open Tracks (Ctrl+T), add a folder, check it as a playback source and double-click a file or press Enter.</li><li>Open Download settings (Ctrl+D). Select the service, URL type, destination, quality and cookies.txt where required. The red button becomes available when inputs are valid.</li><li>Open Downloads (Ctrl+Shift+D). Cards show transfer, merging and processing separately, including activity after 100% transfer.</li></ol>
 <h3>Useful tools</h3><ul><li>Listen / Download / All profiles switch the panel layout. Press the same profile again to restore the previous layout.</li><li>0.5×–2× playback, repeat-one, shuffle, sequential order and per-file resume positions.</li><li>Double-click video for fullscreen with auto-hiding controls; Esc returns to the player.</li></ul>
 <h3>Make it yours</h3><p>Settings (Ctrl+,) provides RU/EN, classic/cosmic/lavender/Jet Black–Orchid/Wine Ash–Turquoise themes and playback preferences. Profile and side panels remain independent; video keeps a 256×144 minimum. The download folder is not added to your playback library automatically.</p>""",
@@ -13003,7 +13555,7 @@ NOP_HELP = {
 <h3>Seek, volume and video modes</h3><p>The seek slider changes position; volume is controlled separately. Video size sets dimensions, while F11 toggles the Full screen layout. Double-click video for a separate fullscreen video window with auto-hiding controls. Click the mouse wheel directly on video for the compact 256×144 Video only mode above other windows; click again to restore the previous panels and sizes. Compact mode is unavailable in the separate fullscreen window. Esc leaves the active video mode first; in normal mode it closes NOP.</p>
 <h3>Video context menu</h3><p>Right-click directly on video for pause/resume, next/previous track, properties, copy path, Minimize and Close. Track switching uses the current list and existing playback mode; commands are disabled for an empty list. With libmpv, this menu also selects the file’s actual video/audio tracks and subtitles. Minimize keeps playback running; Close shuts down the application and releases its resources.</p>
 <h3>Tracks</h3><p>Search and filter added files. Check folders under “Play also from”. The context menu offers properties, folder, rename, delete and a source link when recoverable from the filename. Playback order applies to this list.</p>
-<h3>Download settings</h3><p>YouTube, TikTok, Instagram, Spotify and direct HTTP(S) media URLs. Available URL types and quality depend on the source. Cookies come from cookies.txt. Spotify has its own format, bitrate and authorization. Warm-colored icon-only “i” buttons open cookies, Spotify Client ID and direct-URL instructions; hover for their descriptions. Download becomes available after required inputs are valid.</p><p><b>Clip:</b> for a single video or a direct link, the “Start” and “End” fields (HH:MM:SS; 123456 → 12:34:56) download only that segment through FFmpeg without re-encoding; empty fields mean the whole video. The clip start snaps to the nearest keyframe. <b>Video bitrate</b> picks, among the streams matching the profile, resolution and codec, the highest, middle, lowest or closest to the requested bitrate (kbit/s or Mbit/s); audio is untouched, nothing is re-encoded, and the source may not offer the exact value.</p>
+<h3>Download settings</h3><p>YouTube \\ Rutube \\ VK Video (one entry: the site is detected from the link), TikTok, Instagram, Spotify, direct HTTP(S) media URLs and “Other links” (any site supported by yt-dlp). Available URL types and quality depend on the source. Cookies come from cookies.txt. Spotify has its own format, bitrate and authorization. Warm-colored icon-only “i” buttons open cookies, Spotify Client ID and direct-URL instructions; hover for their descriptions. Download becomes available after required inputs are valid.</p><p><b>Clip:</b> for a single video or a direct link, the “Start” and “End” fields (HH:MM:SS; 123456 → 12:34:56) download only that segment through FFmpeg without re-encoding; empty fields mean the whole video. The clip start snaps to the nearest keyframe. <b>Video bitrate</b> picks, among the streams matching the profile, resolution and codec, the highest, middle, lowest or closest to the requested bitrate (kbit/s or Mbit/s); audio is untouched, nothing is re-encoded, and the source may not offer the exact value.</p>
 <h3>Downloads</h3><p>Three complete cards show the title, downloaded/total MB or GB, current status and progress bar. Beside the size, the status reads Downloading, Processing, Done, Paused, Error or another current stage. Hover for available source, detailed stage, speed, time remaining and messages. One full mouse-wheel detent scrolls three cards; at a list boundary movement is limited to the remaining rows.</p><p>Merging and processing may continue after 100% transfer; wait for Done. An indeterminate bar shows an operation without measurable percentage. Right-click to cancel one item or reorder a pending item. Pause allows the task to resume, although processing already underway can delay it. Stop downloads ends the whole job.</p>
 <h3>Equalizer: inside and outside the player</h3><p>Open Ctrl+E and choose the processing scope. <b>NOP only</b> changes audio/video sound inside the player. <b>Entire device</b> uses user-installed Equalizer APO on Windows: browsers, other players and other applications are processed on the selected speakers or headphones when their audio path passes through APO. NOP does not need to play a track for this to work, and it does not change other applications’ output routing.</p><p>Both modes share bands and presets. Select built-in presets, save/delete your own, add/remove frequencies and adjust gains with sliders or numbers. The enable button controls EQ. System mode disables NOP’s internal EQ to avoid double processing. APO connection contains connection, sound-test and disconnection controls; the “i” icon opens the two-tab guide.</p>
 <h3>Color correction</h3><p>Presets, effect strength, manual controls and original/processed comparison. mpv uses its video filters; Qt processes decoded frames.</p>
@@ -13015,7 +13567,7 @@ NOP_HELP = {
         "details": """<h2>Detailed documentation</h2>
 <h3>Playback</h3><p>MEDIA_EXTS includes MP4, MKV, WebM, AVI, MOV, MP3, FLAC, WAV, M4A, OGG/Opus and more. A filename extension does not guarantee codec support. Engines are libmpv, Qt Multimedia and the FFmpeg fallback. Unsupported video can be converted to a compatible H.264/AAC copy; metadata probing runs in the background.</p>
 <p>Playback rate spans 0.5×–2× depending on the engine. Resume positions use the full file path. Audio can show a neighboring JPG/PNG cover; moving the file changes its position key.</p>
-<h3>Sources and matching</h3><p>yt-dlp handles supported YouTube, TikTok and Instagram URLs. Access, cookies and site restrictions can change. Direct download requires a media/stream URL, not an arbitrary HTML page.</p><p>Spotify supplies metadata here. Audio matching uses SpotiSaver, YouTube and SoundCloud, checking artist, title and duration. A matching recording may be unavailable. SpotiSaver is an external undocumented service and receives the requested track data. Spotify authorization and cookies do not unlock DRM audio.</p><p>This source file has no standalone torrent client or universal Internet search panel.</p>
+<h3>Sources and matching</h3><p>yt-dlp handles supported YouTube, Rutube, VK Video, TikTok and Instagram URLs; “Other links” tries any yt-dlp extractor. Access, cookies and site restrictions can change. Direct download requires a media/stream URL, not an arbitrary HTML page.</p><p>Spotify supplies metadata here. Audio matching uses SpotiSaver, YouTube and SoundCloud, checking artist, title and duration. A matching recording may be unavailable. SpotiSaver is an external undocumented service and receives the requested track data. Spotify authorization and cookies do not unlock DRM audio.</p><p>This source file has no standalone torrent client or universal Internet search panel.</p>
 <h3>Quality and processing</h3><p>MKV/MP4/WebM/AVI containers hold tracks; codecs determine how they are encoded. Merging and processing may continue after transfer reaches 100%. Higher target bitrate or FLAC cannot restore missing source detail. Resampling changes sample rate rather than source quality.</p>
 <h3>Conversion</h3><p>FFmpeg/FFprobe are required for media; other categories may need Blender, LibreOffice, Calibre, Inkscape or the tools listed in the panel. CPU+GPU means CPU processing/decoding plus supported GPU encoding. Select audio/subtitles in Transcoding. Archive extraction allows up to 50,000 entries and 8 GiB and rejects escaping paths, links and special files.</p>
 <h3>Performance</h3><p>Defaults are 2 jobs × 4 fragments. Settings allow 1–3 jobs and 1–8 fragments with a combined budget of 16. Three jobs use at most five fragments each. The old 3×32 setting could produce 96 concurrent requests and increase memory use/retries; more threads do not guarantee speed. Changes apply to the next job.</p>
@@ -13146,7 +13698,7 @@ GUIDE_RESOURCES = {
 }
 for _guide_key, _guide in INFORMATION_GUIDES.items():
     for _lang in ("ru", "en"):
-        _guide[_lang] = _guide[_lang].replace("yami_fixed19.py", "NOP_1.1.py") + (
+        _guide[_lang] = _guide[_lang] + (
             "<h2>Исходный код компонентов</h2>" if _lang == "ru" else "<h2>Component source code</h2>") + "<p>" + GUIDE_RESOURCES[_guide_key] + "</p>"
 INFORMATION_GUIDES["windows"] = {
     "title": ("NOP — Основной плеер Windows", "NOP — Windows default player"),
@@ -13400,7 +13952,7 @@ EN_TEXT.update({'Пошагово':'Step by step', 'Подробно':'Details',
     'Переименовать файл':'Rename file', 'Новое имя:':'New name:', 'Заменить файл?':'Replace file?',
     'Удалить файл?':'Delete file?'})
 
-NOP_HELP['ru']['main'] = '<h2>NOP — NikOmniPlayer 1.1</h2><p>Аудио и видео, загрузки, таблица треков, эквалайзер, цветокоррекция, конвертация и перекодирование.</p>' + guide_steps('Начать работу', [
+NOP_HELP['ru']['main'] = '<h2>NOP — NikOmniPlayer 1.2</h2><p>Аудио и видео, загрузки, таблица треков, эквалайзер, цветокоррекция, конвертация и перекодирование.</p>' + guide_steps('Начать работу', [
     'Откройте <b>«Список треков» (Ctrl+T)</b>. Внизу панели, у блока <b>«Воспроизведение также из»</b>, находится кнопка <b>+</b> с подсказкой «Добавить другую папку с треками».',
     'Нажмите <b>+</b>. Во встроенном проводнике откройте папку с медиафайлами; для быстрого поиска нажмите Ctrl+F и введите часть имени папки. Выберите папку кнопкой <b>«Выбрать папку»</b>.',
     'Отметьте добавленную папку в <b>«Воспроизведение также из»</b>. В таблице выше дважды нажмите файл или выделите его и нажмите <b>Enter</b>. Нажатие на «Имя», «Дата», «Размер», «Тип» меняет сортировку.',
@@ -13412,7 +13964,7 @@ NOP_HELP['ru']['main'] = '<h2>NOP — NikOmniPlayer 1.1</h2><p>Аудио и в�
     'Для браузера, другого плеера и остальных приложений Windows выберите <b>«Всё устройство»</b>. Нужен самостоятельно установленный <b>Equalizer APO</b>. Откройте <b>«Подключение APO»</b> или значок «i»: над двумя вкладками инструкции находятся выбор выхода и кнопки подключения.',
     'Укажите нужные динамики или наушники, выполните настройку в <b>Configurator / Device Selector</b> по инструкции и нажмите <b>«Подключить»</b>. Если требуется, разрешите отдельный запрос UAC. До изменения подключения уменьшите громкость. NOP создаёт резервную копию и после подключения предлагает проверку звука из другого приложения.',
     'Другие программы должны выводить звук на выбранное устройство через APO; воспроизведение трека в NOP для этого не нужно. Изменения полос и пресетов синхронизируются при действующем подключении. Внутренний EQ NOP при этом выключен. Для возврата выберите <b>«Только NOP»</b> и подтвердите отключение подключения NOP. Ограничения и ручной экспорт описаны во вкладке «Подробно» и в инструкции EQ.']) + '<h3>Видео и быстрые действия</h3><p>Space — пауза/продолжение; двойной щелчок по видео — отдельный полноэкранный режим; нажатие колёсика по видео — компактное окно «Только видео» 256×144/обратно. F11 переключает раскладку «Весь экран», а Esc возвращает из активного видеорежима; в обычном режиме Esc закрывает NOP. Правый щелчок по видео открывает меню с переходом по трекам, сворачиванием и закрытием.</p><h3>Другие инструменты</h3><p>Профили «Слушать», «Скачивать», «Всё» меняют набор панелей; повторное нажатие возвращает прежнюю раскладку. Ctrl+Shift+C — цветокоррекция, Ctrl+Shift+V — конвертация, Ctrl+Shift+T — перекодирование. В конвертации и перекодировании видны три файла, в списке аудиодорожек перекодирования — две целые карточки; остальные доступны прокруткой. Папка результата выбирается кнопкой со значком папки.</p><h3>Чтение справки и оформление</h3><p>Кнопки «−» и «+» внизу справки меняют масштаб от 75% до 300%; нажатие на процент возвращает 100%. Работают Ctrl+колёсико и Ctrl++/Ctrl+−, когда фокус находится в справке; Ctrl+0 сбрасывает масштаб. Текст переносится по ширине и доступен для выделения и копирования. Темы: Classic, Cosmic, Lavender, Jet Black / Orchid, Wine Ash / Turquoise; язык и тема сохраняются автоматически.</p>'
-NOP_HELP['en']['main'] = '<h2>NOP — NikOmniPlayer 1.1</h2><p>Audio and video, downloads, a track table, equalizer, color grading, conversion and transcoding.</p>' + guide_steps('Get started', [
+NOP_HELP['en']['main'] = '<h2>NOP — NikOmniPlayer 1.2</h2><p>Audio and video, downloads, a track table, equalizer, color grading, conversion and transcoding.</p>' + guide_steps('Get started', [
     'Open <b>Track list (Ctrl+T)</b>. At the bottom, beside <b>Also play from</b>, find the <b>+</b> button (tooltip: Add another folder with tracks).',
     'Click <b>+</b>. In the built-in picker navigate to your media folder; use Ctrl+F and part of its name to find a folder quickly. Confirm with <b>Choose a folder</b>.',
     'Check the added folder under <b>Also play from</b>. Double-click a file in the table, or select it and press <b>Enter</b>. Click Name, Date, Size or Type to sort.',
@@ -14060,7 +14612,13 @@ class CnpFileProxy(QSortFilterProxyModel):
                 return size if size is not None else -1
             return (value(left), self.sourceModel().fileName(left).casefold()) < (value(right), self.sourceModel().fileName(right).casefold())
         if column == 2:
-            return str(self.data(self.mapFromSource(left))).casefold() < str(self.data(self.mapFromSource(right))).casefold()
+            # Текст колонки «Тип» строится из исходных индексов. Раньше здесь вызывались
+            # self.data(self.mapFromSource(...)): mapFromSource запускает сортировку,
+            # та снова вызывает lessThan, и рекурсия заканчивалась переполнением стека.
+            def kind(index):
+                path, directory = self._details(index)[:2]
+                return (T("Папка") if directory else QFileInfo(path).suffix().upper() or T("Файл")).casefold()
+            return kind(left) < kind(right)
         return super().lessThan(left, right)
 
     def change_directory(self, *_args):
@@ -14634,18 +15192,20 @@ INFORMATION_GUIDES['transcode'] = {
     'title': ('Перекодирование: пресеты и предпросмотр', 'Transcoding: presets and preview'),
     'instruction': {
         'ru': guide_steps('Перекодировать видео', [
-            'Нажмите <b>«Добавить файлы»</b>. Выберите видео; нажмите его строку в очереди.',
+            'Добавьте видео кнопками <b>«Файлы»</b> и <b>«Папка»</b> или перетащите файлы и папки в список. Кнопки <b>↑ ↓</b> меняют порядок, <b>Delete</b> убирает выбранные, <b>«Готовые»</b> убирает обработанные. Нажмите строку файла: под списком появятся его параметры (размер, кодек, число дорожек).',
             'Откройте <b>«Пресеты» → разрешение</b> и выберите обычный или сбалансированный вариант. <b>2K (QHD) = 2560×1440</b>. Размеры рядом с профилем — верхний предел; меньший исходник не увеличивается.',
             'Обычный профиль задаёт более высокое качество. <b>Сбалансированный</b> увеличивает CRF/CQ/QP и обычно уменьшает файл. FPS сохраняется. Все параметры после выбора можно изменить.',
-            'Выберите <b>«Формат результата»</b>, <b>«Видеокодек»</b> и <b>«Кодировщик видео»</b>. В каждой строке <b>«Аудиодорожки»</b> выберите выходной кодек и битрейт. <b>«Оригинал / Копировать»</b> не перекодирует звук; битрейт не редактируется. Проверьте <b>«Субтитры»</b>. Для WebM доступны CPU/VP9 и Opus или совместимое copy.',
+            'Настройки собраны во вкладках: <b>Сводка</b> (формат результата, папка, итоговые настройки, прогресс и кнопки «Перекодировать», «Пауза», «Остановить»), <b>Видео</b> (кодек, качество, битрейт, двухпроходный режим, FPS, tune/профиль/уровень, 10 бит), <b>Размер</b> (разрешение, свой размер, обрезка, авто-обрезка полей, поворот, отражение), <b>Фильтры</b> (деинтерлейс, детелесин, шумоподавление, резкость, деблокинг, ч/б), <b>Звук</b>, <b>Субтитры</b>, <b>Ещё</b> (фрагмент, главы, метаданные, название).',
+            'На вкладке <b>«Звук»</b> кнопки <b>«Все»</b> и <b>«Ни одной»</b> меняют отметки сразу у всех дорожек (и у всех файлов очереди, если включён флажок). У каждой дорожки свои кодек, битрейт, каналы, частота, усиление, название и флаг «по умолчанию». На вкладке <b>«Субтитры»</b> показано, какие дорожки есть в файле; можно оставить, сделать «по умолчанию», вшить в видео или добавить внешний .srt/.ass/.vtt со сдвигом и кодировкой. Для WebM доступны CPU/VP9/AV1 и Opus или совместимое copy.',
             'В <b>«Предпросмотре исходника · без звука»</b> нажмите <b>«Воспроизвести»</b> / <b>«Пауза»</b>; перемотайте ползунком. <b>«Во весь экран»</b> открывает тот же просмотр, <b>Esc</b> возвращает обратно. Это оригинал, не результат сжатия.',
             'В поле <b>«Папка результата»</b> выберите папку кнопкой <b>«Обзор»</b>. Нажмите <b>«Перекодировать»</b>. Прогресс текущего файла и очереди находится сразу под списком файлов; неизвестное оставшееся время не подставляется. <b>«Пауза»</b> приостанавливает обработку, <b>«Продолжить»</b> возобновляет, <b>«Остановить»</b> отменяет.',
             'После завершения смотрите имя в строке <b>«Готово: …»</b>. Результат находится в выбранной папке; при совпадении имени добавляется безопасный суффикс. Исходные и ранее созданные файлы не заменяются.']),
         'en': guide_steps('Transcode a video', [
-            'Click <b>Add files</b>, choose videos and select a row in the queue.',
+            'Add videos with <b>Files</b> and <b>Folder</b>, or drop files and folders on the list. <b>↑ ↓</b> reorder, <b>Delete</b> removes the selection, <b>Done</b> removes processed files. Select a file row: its size, codec and track counts appear under the list.',
             'Open <b>Presets → resolution</b>, then choose the regular or balanced variant. <b>2K (QHD) = 2560×1440</b>. The displayed size is a ceiling; smaller input is not upscaled.',
             'The regular profile requests higher quality. <b>Balanced</b> increases CRF/CQ/QP and usually reduces size. Source FPS is kept. All settings remain editable.',
-            'Choose <b>Output format</b>, <b>Video codec</b> and <b>Video encoder</b>. Set the output codec and bitrate in each <b>Audio tracks</b> row. <b>Original / Copy</b> keeps compressed audio; bitrate editing is disabled. Check <b>Subtitles</b>. WebM uses CPU/VP9 and Opus or compatible copy.',
+            'Settings are grouped in tabs: <b>Summary</b> (output format, folder, final settings, progress and the Transcode, Pause and Stop buttons), <b>Video</b> (codec, quality, bitrate, two-pass, FPS, tune/profile/level, 10-bit), <b>Size</b> (resolution, custom size, crop, auto-crop, rotation, flips), <b>Filters</b> (deinterlace, detelecine, denoise, sharpen, deblock, grayscale), <b>Audio</b>, <b>Subtitles</b>, <b>More</b> (range, chapters, metadata, title).',
+            'On <b>Audio</b>, <b>All</b> and <b>None</b> change every track at once (and every queued file when the checkbox is on). Each track has its own codec, bitrate, channels, sample rate, gain, name and Default flag. <b>Subtitles</b> lists the tracks found in the file; keep them, mark Default, burn into the video or add an external .srt/.ass/.vtt with an offset and encoding. WebM uses CPU VP9/AV1 and Opus or compatible copy.',
             'Under <b>Original preview · muted</b>, click <b>Play</b> / <b>Pause</b> and seek with the slider. <b>Full screen</b> opens the same preview; <b>Esc</b> returns. This is the original, not compressed output.',
             'Set <b>Output folder</b> using <b>Browse</b>. Click <b>Transcode</b>. File and queue progress appear directly below the file list; unknown remaining time is stated explicitly. <b>Pause</b> suspends processing, <b>Resume</b> continues, and <b>Stop</b> cancels it.',
             'When finished, read <b>Done: …</b> in the queue. The output is in the selected folder. A safe suffix resolves name conflicts; originals and earlier results are not replaced.'])},
@@ -14668,6 +15228,9 @@ INFORMATION_GUIDES['transcode'] = {
 <p>Full-screen switching retains the same source, decoder and position. Hidden preview pauses. Changing files remembers the last 32 sources within this session. Preview pause/seeking is independent of job pause/cancellation. Closing NOP stops both processing jobs and releases preview resources.</p>
 <p>For permission errors choose a writable folder; for a full disk free space and retry. Corrupt input, missing codecs and incompatible subtitles report an error rather than Done. Temporary data belongs to its job; cancellation does not delete originals or published results.</p>'''
 }
+
+INFORMATION_GUIDES['transcode']['ru'] += """<h3>Новые возможности панели</h3><p><b>Видео:</b> AV1 (SVT-AV1, CPU) для MP4/MKV/WebM; постоянная (CFR) или переменная (VFR) частота кадров; tune, профиль и уровень для x264/x265; разрядность 8/10 бит; двухпроходный режим при заданном битрейте (x264, x265, VP9); дополнительные параметры кодировщика в виде ключ=значение:ключ=значение (только допустимые символы). <b>Размер:</b> свой размер, ручная обрезка и автообрезка чёрных полей (анализ 10 секунд из середины), поворот и отражение. <b>Фильтры:</b> Yadif/Bwdif (в том числе Bob), детелесин, шумоподавление hqdn3d, резкость, деблокинг, чёрно-белое. Фильтры требуют перекодирования видео.</p><p><b>Звук и субтитры:</b> каналы (моно/стерео/5.1), частота, усиление ±30 дБ, название и «по умолчанию» недоступны для режима «Оригинал / Копировать». Графические субтитры (PGS, VobSub) сохраняются только в MKV либо вшиваются в видео; вшить можно одну дорожку. Внешние субтитры в MP4/MOV конвертируются в mov_text, оформление ASS может измениться. <b>Ещё:</b> фрагмент (начало/конец), сохранение глав и метаданных, название файла, «moov в начале» для MP4.</p><p>Файлы очереди, которые вы ещё не открывали в списке, обрабатываются по правилам «Все / Ни одной» (если включён флажок «ко всем файлам») и по правилу субтитров из вкладки «Субтитры». Настройки видео, размера и фильтров общие для всей очереди; дорожки звука и субтитров запоминаются для каждого файла отдельно.</p>"""
+INFORMATION_GUIDES['transcode']['en'] += """<h3>New panel features</h3><p><b>Video:</b> AV1 (SVT-AV1, CPU) for MP4/MKV/WebM; constant (CFR) or variable (VFR) frame rate; tune, profile and level for x264/x265; 8/10-bit depth; two-pass mode when a bitrate is set (x264, x265, VP9); extra encoder parameters as key=value:key=value (only safe characters). <b>Size:</b> custom size, manual crop and automatic black-bar crop (10 seconds sampled from the middle), rotation and flips. <b>Filters:</b> Yadif/Bwdif (including Bob), detelecine, hqdn3d denoise, sharpen, deblock, grayscale. Filters require re-encoding the video.</p><p><b>Audio and subtitles:</b> channels (mono/stereo/5.1), sample rate, ±30 dB gain, name and Default are unavailable in Original / Copy mode. Bitmap subtitles (PGS, VobSub) can only be kept in MKV or burned into the video; one track can be burned. External subtitles in MP4/MOV are converted to mov_text, so ASS styling may change. <b>More:</b> range (start/end), chapters and metadata, title, “moov at start” for MP4.</p><p>Queue files you have not opened in the list follow the All / None rules (when the “all files” checkbox is on) and the subtitle rule from the Subtitles tab. Video, size and filter settings are shared by the whole queue; audio and subtitle choices are remembered per file.</p>"""
 
 
 class HelpTextBrowser(QTextBrowser):
@@ -15328,7 +15891,9 @@ class DownloadTable(QTableWidget):
 
 
 class ExactRowsTable(QTableWidget):
-    """A file queue with three complete rows, including headers and scrollbars."""
+    """A file queue with N complete rows (three by default), including headers and scrollbars."""
+    visible_rows = 3
+
     def __init__(self, columns, parent=None):
         super().__init__(0, columns, parent)
         self._syncing_rows = False
@@ -15352,7 +15917,7 @@ class ExactRowsTable(QTableWidget):
             header_height = 0 if header.isHidden() else header.sizeHint().height()
             bar = self.horizontalScrollBar()
             bar_height = bar.sizeHint().height() if bar.maximum() > bar.minimum() else 0
-            height = 3 * self.row_height + header_height + bar_height + 2 * self.frameWidth()
+            height = self.visible_rows * self.row_height + header_height + bar_height + 2 * self.frameWidth()
             if self.minimumHeight() != height or self.maximumHeight() != height:
                 self.setFixedHeight(height)
         finally:
@@ -15364,10 +15929,153 @@ class ExactRowsTable(QTableWidget):
             self.sync_metrics()
 
 
-class AudioTrackList(QListWidget):
-    """Two whole audio cards; all rows fit the largest current controls/warning."""
+class TranscodeQueueTable(ExactRowsTable):
+    """Transcoding queue: five rows, accepts dropped files/folders, Delete removes the selection."""
+    files_dropped = pyqtSignal(list)
+    delete_pressed = pyqtSignal()
+    visible_rows = 5
+
+    def __init__(self, columns, parent=None):
+        super().__init__(columns, parent)
+        self.setAcceptDrops(True)
+        self.viewport().setAcceptDrops(True)
+
+    def dragEnterEvent(self, event):
+        if event.mimeData().hasUrls():
+            event.acceptProposedAction()
+        else:
+            super().dragEnterEvent(event)
+
+    def dragMoveEvent(self, event):
+        if event.mimeData().hasUrls():
+            event.acceptProposedAction()
+        else:
+            super().dragMoveEvent(event)
+
+    def dropEvent(self, event):
+        urls = event.mimeData().urls() if event.mimeData().hasUrls() else []
+        paths = [u.toLocalFile() for u in urls if u.isLocalFile()]
+        if paths:
+            self.files_dropped.emit(paths)
+            event.acceptProposedAction()
+        else:
+            super().dropEvent(event)
+
+    def keyPressEvent(self, event):
+        if event.key() == Qt.Key.Key_Delete:
+            self.delete_pressed.emit()
+            event.accept()
+            return
+        super().keyPressEvent(event)
+
+
+class FileDropFilter(QObject):
+    """Fast-drop: accepts files/folders dragged from the file manager onto a widget.
+
+    mode: 'any' - files and folders, 'folders' - folders only, 'file' - a single file.
+    Drags without file URLs (for example selected text) keep their normal behaviour."""
+    def __init__(self, widget, handler, mode='any'):
+        super().__init__(widget)
+        self.handler = handler
+        self.mode = mode
+        widget.setAcceptDrops(True)
+        widget.installEventFilter(self)
+
+    def _paths(self, event):
+        data = event.mimeData()
+        paths = [Path(url.toLocalFile()) for url in data.urls() if url.isLocalFile()]
+        try:
+            if self.mode == 'folders':
+                return [p for p in paths if p.is_dir()]
+            if self.mode == 'file':
+                return [p for p in paths if p.is_file()][:1]
+        except OSError:
+            return []
+        return paths
+
+    def eventFilter(self, obj, event):
+        kind = event.type()
+        if kind not in (QEvent.Type.DragEnter, QEvent.Type.DragMove, QEvent.Type.Drop):
+            return False
+        if not event.mimeData().hasUrls():
+            return False
+        paths = self._paths(event)
+        if not paths:
+            event.ignore()
+            return True
+        event.acceptProposedAction()
+        if kind == QEvent.Type.Drop:
+            self.handler([str(p) for p in paths])
+        return True
+
+
+def install_file_drop(widget, handler, mode='any', also=()):
+    """Install fast-drop on a widget (and on the given extra widgets, e.g. a view's viewport)."""
+    filters = [FileDropFilter(widget, handler, mode)]
+    for extra in also:
+        filters.append(FileDropFilter(extra, handler, mode))
+    return filters
+
+
+class CurrentPageStack(QStackedWidget):
+    """Stack whose height always equals the height the visible page needs (not the tallest page)."""
     def __init__(self, parent=None):
         super().__init__(parent)
+        self._syncing = False
+        self.currentChanged.connect(lambda _i: self._sync())
+
+    def addWidget(self, widget):
+        index = super().addWidget(widget)
+        widget.installEventFilter(self)
+        return index
+
+    def eventFilter(self, watched, event):
+        if watched is self.currentWidget() and event.type() in (QEvent.Type.LayoutRequest, QEvent.Type.Resize, QEvent.Type.Show):
+            QTimer.singleShot(0, self._sync)
+        return super().eventFilter(watched, event)
+
+    def _sync(self):
+        page = self.currentWidget()
+        if page is None or self._syncing:
+            return
+        self._syncing = True
+        try:
+            layout = page.layout()
+            width = self.width() if self.width() > 200 else 540
+            height = layout.totalHeightForWidth(width) if layout is not None and layout.hasHeightForWidth() else page.sizeHint().height()
+            height = max(height, page.minimumSizeHint().height())
+            if self.minimumHeight() != height or self.maximumHeight() != height:
+                self.setFixedHeight(height)
+        finally:
+            self._syncing = False
+
+    def resizeEvent(self, event):
+        super().resizeEvent(event)
+        QTimer.singleShot(0, self._sync)
+
+
+def transcode_parse_time(text):
+    """'90', '1:30', '01:02:03.5' → seconds (float). Empty → None. Raises ValueError."""
+    text = str(text or '').strip().replace(',', '.')
+    if not text:
+        return None
+    parts = text.split(':')
+    if len(parts) > 3 or not all(re.fullmatch(r'\d+(\.\d+)?', p or 'x') for p in parts):
+        raise ValueError(text)
+    total = 0.0
+    for part in parts:
+        total = total * 60 + float(part)
+    return total
+
+
+class AudioTrackList(QListWidget):
+    """Whole track cards (two by default; fewer when the list is shorter)."""
+    visible_rows = 2
+
+    def __init__(self, parent=None, visible_rows=None):
+        super().__init__(parent)
+        if visible_rows:
+            self.visible_rows = int(visible_rows)
         self._syncing_rows = False
         self.setUniformItemSizes(True)
         self.setSpacing(0)
@@ -15415,7 +16123,7 @@ class AudioTrackList(QListWidget):
                 hint = QSize(0, height)
                 if item.sizeHint() != hint:
                     item.setSizeHint(hint)
-            target = 2 * height + 2 * self.frameWidth()
+            target = min(self.visible_rows, max(1, self.count())) * height + 2 * self.frameWidth()
             if self.minimumHeight() != target or self.maximumHeight() != target:
                 self.setFixedHeight(target)
             self.doItemsLayout()
@@ -15803,7 +16511,7 @@ EN_TEXT.update({
     'WAV — без сжатия': 'WAV — uncompressed',
     'WebP — растровый экспорт': 'WebP — raster export',
     'glTF — отдельные ресурсы': 'glTF — separate resources',
-    'libmpv-2.dll не найден. Поместите полный runtime движка в папку mpv рядом с NOP_1.1.py.': 'libmpv-2.dll not found. Place the full engine runtime in the mpv folder next to NOP_1.1.py.',
+    'libmpv-2.dll не найден. Поместите полный runtime движка в папку mpv рядом с NOP_1_2.py.': 'libmpv-2.dll not found. Place the full engine runtime in the mpv folder next to NOP_1_2.py.',
     'mpv не смог открыть файл: ': 'mpv could not open the file: ',
     'mpv_create вернул пустой указатель': 'mpv_create returned a null pointer',
     'yt-dlp не вернул ссылку на публикацию': 'yt-dlp did not return a link to the post',
@@ -15871,7 +16579,7 @@ EN_TEXT.update({
     'Готово': 'Done',
     'Готовые пресеты (как в Adobe Lightroom / Premiere)': 'Built-in presets (as in Adobe Lightroom / Premiere)',
     'Двойной клик - сбросить': 'Double-click to reset',
-    'Двойной клик или Enter — играть выбранный трек; правая кнопка — действия с файлом': 'Double-click or Enter plays the selected track; right-click for file actions',
+    'Двойной клик или Enter — играть выбранный трек (или выберите трек и нажмите «Воспроизвести»); правая кнопка — действия с файлом': 'Double-click or Enter plays the selected track (or select a track and press Play); right-click for file actions',
     'Длительность': 'Duration',
     'Для MPEG-2 используется 25 FPS.': 'MPEG-2 uses 25 FPS.',
     'Для WebM аудио будет перекодировано в Opus.': 'For WebM, audio will be re-encoded to Opus.',
@@ -16319,6 +17027,35 @@ def _translate_dynamic(text: str) -> str:
     return result
 
 
+EN_TEXT.update({
+    "Режим видео": "Video mode",
+    "Авто (рекомендуется)": "Auto (recommended)",
+    "Качество": "Quality",
+    "Производительность": "Performance",
+    "Плавное движение": "Smooth motion",
+    "Авто: для видео 4K и HDR включается облегчённая обработка, остальное без изменений. "
+    "Качество: всегда полная обработка. Производительность: облегчённая обработка для любого видео, "
+    "если картинка рвётся. Плавное движение: выравнивает 24 кадра/с на экране 60 Гц, но сильнее "
+    "нагружает видеокарту. Применяется сразу.":
+    "Auto: lighter processing for 4K and HDR video, everything else unchanged. "
+    "Quality: always full processing. Performance: lighter processing for any video if the picture "
+    "stutters. Smooth motion: evens out 24 fps on a 60 Hz screen but loads the GPU more. "
+    "Applies immediately.",
+})
+
+for _ru, _en in {
+    "Другие ссылки": "Other links",
+    "Прямая ссылка на видео": "Direct video link",
+    "Профиль": "Profile",
+    "Альбом": "Album",
+    "Ссылка на видео с любого сайта (https://…)": "Link to a video from any site (https://…)",
+    "Канал / профиль": "Channel / profile",
+    "Ссылка на канал YouTube / Rutube, профиль VK Video или @имя": "YouTube / Rutube channel or VK Video profile link, or @name",
+    "Ссылка на плейлист YouTube / Rutube / VK Video": "YouTube / Rutube / VK Video playlist link",
+    "Ссылка на видео YouTube / Rutube / VK Video или ID": "YouTube / Rutube / VK Video link or ID",
+}.items():
+    EN_TEXT.setdefault(_ru, _en)
+
 _EN_TO_RU_CACHE: dict = {}
 
 
@@ -16387,7 +17124,7 @@ def install_translation_hooks():
         try:
             _wrap_plain_setter(cls, name)
         except AttributeError:
-            pass
+            log.debug("подавленная ошибка", exc_info=True)
     # контекстные меню: addAction("текст") / addMenu("текст")
     for name in ("addAction", "addMenu"):
         original = getattr(QMenu, name)
@@ -16407,7 +17144,6 @@ def install_translation_hooks():
     if not getattr(original_add, "_nop_i18n", False):
         def add_item(self, *args, **kwargs):
             index = self.count()
-            texts = [a for a in args if isinstance(a, str)]
             if args and isinstance(args[0], str) and _CYR_RE.search(args[0]):
                 source = args[0]
                 args = (_dyn(source),) + args[1:]
@@ -16554,7 +17290,7 @@ class NopInstance(QObject):
                         try:
                             ctypes.windll.user32.AllowSetForegroundWindow(int(info.get("pid", 0)))
                         except (OSError, AttributeError, ValueError):
-                            pass
+                            log.debug("подавленная ошибка", exc_info=True)
                 if open_file is None:
                     if any(self._request(info["pipe"], {"cmd": "activate"}) for info in others):
                         return True
@@ -16590,13 +17326,13 @@ class NopInstance(QObject):
             tmp.write_text(json.dumps({"pid": os.getpid(), "pipe": self.pipe, "started": time.time()}), encoding="utf-8")
             os.replace(tmp, self.record)
         except OSError:
-            pass
+            log.debug("подавленная ошибка", exc_info=True)
 
     def stop(self):
         try:
             self.record.unlink(missing_ok=True)
         except OSError:
-            pass
+            log.debug("подавленная ошибка", exc_info=True)
         if self.server is not None:
             self.server.close()
             self.server = None
@@ -16673,15 +17409,16 @@ class Window(QWidget):
 
     # Варианты источника загрузки и подписи для каждой площадки.
     DL_KINDS = ("channel", "playlist", "single")
+    DL_SINGLE_ONLY = ("direct", "other")  # источники без выбора «канал / плейлист»: одна ссылка
     DL_KIND_LABELS = {
-        "youtube": {"channel": "Канал", "playlist": "Плейлист", "single": "Одно видео"},
+        "youtube": {"channel": "Канал / профиль", "playlist": "Плейлист", "single": "Одно видео"},
         "tiktok": {"channel": "Профиль", "playlist": "Подборка", "single": "Одно видео"},
         "instagram": {"channel": "Профиль", "playlist": None, "single": "Одна публикация"},
     }
     DL_PLACEHOLDERS = {
-        ("youtube", "channel"): "Ссылка на канал YouTube или @имя",
-        ("youtube", "playlist"): "Ссылка на плейлист YouTube (…/playlist?list=…)",
-        ("youtube", "single"): "Ссылка на видео YouTube или его ID",
+        ("youtube", "channel"): "Ссылка на канал YouTube / Rutube, профиль VK Video или @имя",
+        ("youtube", "playlist"): "Ссылка на плейлист YouTube / Rutube / VK Video",
+        ("youtube", "single"): "Ссылка на видео YouTube / Rutube / VK Video или ID",
         ("tiktok", "channel"): "Ссылка на профиль TikTok",
         ("tiktok", "playlist"): "Ссылка на подборку TikTok",
         ("tiktok", "single"): "Ссылка на публикацию TikTok",
@@ -16689,6 +17426,7 @@ class Window(QWidget):
         ("instagram", "single"): "Ссылка на публикацию или Reel Instagram",
         ("spotify", "single"): "Ссылка на трек, альбом или плейлист Spotify",
         ("direct", "single"): "Прямой URL видео или потока (https://…)",
+        ("other", "single"): "Ссылка на видео с любого сайта (https://…)",
     }
     DL_COUNT_LABELS = {
         "channel": "Сколько последних видео скачать",
@@ -16898,6 +17636,8 @@ class Window(QWidget):
         self.audio = QAudioOutput()
         self.audio.setVolume(int(self.cfg["volume"]) / 100)
         self.player = PlayerFacade(self)    # Qt для частых форматов, ffmpeg для остального и для 4K
+        _mode = str(self.cfg.get("video_mode", "auto"))
+        self.player.mpv.video_mode = _mode if _mode in VIDEO_MODES else "auto"
         self.eq_audio_thread = None
         self._eq_restart_timer = QTimer(self)
         self._eq_restart_timer.setSingleShot(True)
@@ -17571,6 +18311,22 @@ class Window(QWidget):
         lay.addWidget(self._label("Воспроизведение", "h2"))
         lay.addWidget(check("Автоматически включать следующий трек", "autoplay_next"))
         lay.addWidget(check("Запоминать место остановки в треке", "remember_position"))
+        lay.addWidget(self._label("Режим видео", "h2"))
+        self.cmb_video_mode = WheelSafeComboBox()
+        self.cmb_video_mode.addItem("Авто (рекомендуется)", "auto")
+        self.cmb_video_mode.addItem("Качество", "quality")
+        self.cmb_video_mode.addItem("Производительность", "performance")
+        self.cmb_video_mode.addItem("Плавное движение", "smooth")
+        self.cmb_video_mode.setCurrentIndex(max(0, self.cmb_video_mode.findData(self.player.mpv.video_mode)))
+        self.cmb_video_mode.setSizeAdjustPolicy(QComboBox.SizeAdjustPolicy.AdjustToMinimumContentsLengthWithIcon)
+        self.cmb_video_mode.setMinimumContentsLength(6)
+        self.cmb_video_mode.currentIndexChanged.connect(self.on_video_mode_changed)
+        lay.addWidget(self.cmb_video_mode)
+        lay.addWidget(self._label(
+            "Авто: для видео 4K и HDR включается облегчённая обработка, остальное без изменений. "
+            "Качество: всегда полная обработка. Производительность: облегчённая обработка для любого видео, "
+            "если картинка рвётся. Плавное движение: выравнивает 24 кадра/с на экране 60 Гц, но сильнее "
+            "нагружает видеокарту. Применяется сразу.", "muted"))
 
         lay.addSpacing(4)
         lay.addWidget(self._label("Аудио- и видеоплеер Windows", "h2"))
@@ -17989,6 +18745,7 @@ class Window(QWidget):
         if hasattr(self, 'track_list'):
             self.track_list.horizontalHeader().update_theme()
             self.track_list.schedule_column_minima()
+            self._mark_playing_track()
         dialog = getattr(self, "_system_eq_dialog", None)
         if dialog is not None: dialog.update_theme()
         tool_dialog = getattr(self, "_apo_tool_dialog", None)
@@ -18191,10 +18948,6 @@ class Window(QWidget):
         for dialog in self.findChildren(InformationDialog):
             if dialog.message_title is not None:
                 dialog.update_language()
-        if hasattr(self, "spotify_source_note"):
-            self.spotify_source_note.setText(ui_text(
-                "Spotify: только метаданные. Аудио ищется отдельно в SpotiSaver, YouTube или SoundCloud; это не прямая загрузка из Spotify и версия записи может отличаться.",
-                "Spotify provides metadata only. Audio is matched separately via SpotiSaver, YouTube or SoundCloud; this is not a direct Spotify download and the recording may differ."))
 
         self._conversion_retranslate()
 
@@ -18207,7 +18960,7 @@ class Window(QWidget):
             else:
                 subprocess.Popen(["xdg-open", str(DATA_DIR)])
         except Exception:
-            pass
+            log.warning("подавленная ошибка", exc_info=True)
 
     def _begin_side_separator_drag(self, source_key: str, global_pos):
         """Отсоединяет настоящий блок, оставляя placeholder и включая прозрачное следование за курсором."""
@@ -18487,11 +19240,12 @@ class Window(QWidget):
         # Выбор площадки загрузки. YouTube остаётся значением по умолчанию.
         self.cmb_source = WheelSafeComboBox()
         for key, label in (
-            ("youtube", "YouTube"),
+            ("youtube", "YouTube \\ Rutube \\ VK Video"),
             ("tiktok", "TikTok"),
             ("instagram", "Instagram"),
             ("spotify", "Spotify — трек / альбом / плейлист"),
-            ("direct", "Загрузка видео"),
+            ("direct", "Прямая ссылка на видео"),
+            ("other", "Другие ссылки"),
         ):
             self.cmb_source.addItem(label, key)
         self.cmb_source.setCurrentIndex(max(self.cmb_source.findData(self.cfg.get("dl_source", "youtube")), 0))
@@ -18505,6 +19259,7 @@ class Window(QWidget):
         self._dl_source_urls.setdefault("instagram", "")
         self._dl_source_urls.setdefault("spotify", "")
         self._dl_source_urls.setdefault("direct", "")
+        self._dl_source_urls.setdefault("other", "")
         initial_source = self.cmb_source.currentData() or "youtube"
         self._last_dl_source = initial_source
         self._dl_active = False
@@ -18656,6 +19411,9 @@ class Window(QWidget):
         self.cookies_file_edit.setPlaceholderText("путь к cookies.txt")
         self.cookies_file_edit.setToolTip("Файл cookies.txt в формате Netscape, экспортированный из браузера")
         self.cookies_file_edit.editingFinished.connect(self.on_dl_options_changed)
+        self._drop_filters = getattr(self, '_drop_filters', [])
+        self._drop_filters += install_file_drop(self.cookies_file_edit, self._cookies_dropped, 'file')
+        self.cookies_file_edit.setToolTip("Файл cookies.txt в формате Netscape, экспортированный из браузера. Файл можно перетащить сюда из проводника")
         self.btn_cookies_file = self.icon_button("folder", "Выбрать файл cookies.txt")
         self.btn_cookies_file.clicked.connect(self.browse_cookies_file)
         self.btn_cookies_help = self.instruction_button("Что такое cookies и откуда взять файл cookies.txt")
@@ -18689,7 +19447,7 @@ class Window(QWidget):
         self.btn_spotify_auth.clicked.connect(self.authorize_spotify)
         self.btn_spotify_client_help = self.instruction_button("Как получить Spotify Client ID?")
         self.btn_spotify_client_help.clicked.connect(lambda: self.open_information("spotify"))
-        self.lbl_spotify_auth = ElidedLabel("OAuth нужен для чтения альбомов и плейлистов Spotify")
+        self.lbl_spotify_auth = ElidedLabel("")
         self.lbl_spotify_auth.setObjectName("muted")
         if self.cfg.get("spotify_refresh_token"):
             self.lbl_spotify_auth.setText("Spotify авторизован")
@@ -18961,10 +19719,22 @@ class Window(QWidget):
         self._dl_resolution = resolution_choice(self.cmb_resolution.currentData(), "min")
         self.on_dl_options_changed()
 
+    def _dl_effective_source(self, text: str | None = None) -> str:
+        """Пункт «YouTube \\ Rutube \\ VK Video» хранится как youtube; настоящая площадка по ссылке."""
+        source = self.cmb_source.currentData() or "youtube"
+        if source != "youtube":
+            return source
+        return detect_video_site(self._dl_url_field().text() if text is None else text)
+
+    def _dl_source_error_text(self, exc: Exception) -> str:
+        if isinstance(exc, DownloadSourceMismatch) and (self.cmb_source.currentData() or "youtube") == "youtube":
+            return ui_text("Нужна ссылка YouTube, Rutube или VK Video.", "Enter a YouTube, Rutube or VK Video link.")
+        return str(exc)
+
     def _dl_resolution_context(self):
         if self.cmb_source.currentData()=='spotify' or self.cmb_mode.currentData()=='audio': return None
-        source = self.cmb_source.currentData()
-        if source!='direct' and self.dl_kind!='single': return None
+        source = self._dl_effective_source(self.video_edit.text())
+        if source not in self.DL_SINGLE_ONLY and self.dl_kind!='single': return None
         try:
             url = download_url(self.video_edit.text().strip(), source, 'single')
         except ValueError:
@@ -19038,7 +19808,7 @@ class Window(QWidget):
 
     def _dl_clip_available(self) -> bool:
         source = self.cmb_source.currentData() or "youtube"
-        return source != "spotify" and (source == "direct" or self.dl_kind == "single")
+        return source != "spotify" and (source in self.DL_SINGLE_ONLY or self.dl_kind == "single")
 
     def _clip_text_changed(self, *_args):
         pass
@@ -19057,7 +19827,7 @@ class Window(QWidget):
 
     def _dl_url_field(self) -> QLineEdit:
         source = self.cmb_source.currentData() or "youtube"
-        if source in ("spotify", "direct") or self.dl_kind == "single":
+        if source == "spotify" or source in self.DL_SINGLE_ONLY or self.dl_kind == "single":
             return self.video_edit
         return self.playlist_edit if self.dl_kind == "playlist" else self.channel_edit
 
@@ -19079,7 +19849,7 @@ class Window(QWidget):
         """Показывает только то поле ссылки и те строки, которые нужны выбранному режиму."""
         source = self.cmb_source.currentData() or "youtube"
         spotify = source == "spotify"
-        direct = source == "direct"
+        direct = source in self.DL_SINGLE_ONLY
         kind = "single" if direct else self.dl_kind
         field = self._dl_url_field()
         placeholder = self.DL_PLACEHOLDERS.get(("spotify", "single") if spotify else (source, kind), "Ссылка")
@@ -19094,14 +19864,14 @@ class Window(QWidget):
 
     def dl_missing(self) -> list[tuple[str, str]]:
         """Чего не хватает для загрузки: [(ключ, подсказка «что сделать» в HTML)]."""
-        source = self.cmb_source.currentData() or "youtube"
+        source = self._dl_effective_source()
         kind = self.dl_kind
         text = self._dl_url_field().text().strip()
         missing: list[tuple[str, str]] = []
         try:
-            valid_url = download_url(text, source, "single" if source in ("spotify", "direct") else kind)
+            valid_url = download_url(text, source, "single" if source == "spotify" or source in self.DL_SINGLE_ONLY else kind)
         except ValueError as exc:
-            missing.append(("url", html_lib.escape(str(exc))))
+            missing.append(("url", html_lib.escape(self._dl_source_error_text(exc))))
         else:
             if source == "spotify" and spotify_url_kind(valid_url)[0] in {"album", "playlist"}:
                 if not self.spotify_client_id_edit.text().strip() or not self.cfg.get("spotify_refresh_token"):
@@ -19134,9 +19904,12 @@ class Window(QWidget):
         source = self.cmb_source.currentData() or "youtube"
         if source == "direct":
             return ui_text("Скачать видео или поток по прямому URL", "Download a video or stream from a direct URL")
+        if source == "other":
+            return ui_text("Скачать видео по ссылке с любого сайта (через yt-dlp)", "Download a video from any site (via yt-dlp)")
         if source == "spotify":
             return ui_text("Найти аудио в других источниках по метаданным Spotify", "Match audio from other sources using Spotify metadata")
-        name = {"youtube": "YouTube", "tiktok": "TikTok", "instagram": "Instagram"}.get(source, "")
+        name = {"youtube": "YouTube", "rutube": "Rutube", "vk": "VK Video", "tiktok": "TikTok",
+                "instagram": "Instagram"}.get(self._dl_effective_source() if source == "youtube" else source, "")
         what = {"channel": "последние видео с канала / из профиля", "playlist": "видео из плейлиста / подборки",
                 "single": "одно видео / публикацию"}.get(self.dl_kind, "видео")
         return f"Скачать {what} ({name})"
@@ -19428,6 +20201,8 @@ class Window(QWidget):
         self.converter_stop_btn.clicked.connect(self.converter_stop)
         self.update_converter_formats(CONVERSION_CATEGORIES[0])
         self.update_converter_tools_label()
+        self._drop_filters = getattr(self, '_drop_filters', [])
+        self._drop_filters += install_file_drop(panel, self.converter_dropped, 'any', also=(self.converter_table, self.converter_table.viewport()))
         return panel
 
     def update_converter_tools_label(self):
@@ -19440,6 +20215,7 @@ class Window(QWidget):
         self.converter_tools_label.setToolTip(ui_text(
             "✓ означает найденную программу. Возможности экспорта проверяются отдельно; совместимость входного файла проверяется при запуске.",
             "✓ means the program was found. Export capabilities are checked separately; input compatibility is checked when starting."))
+
 
 
     def build_transcode_panel(self) -> QWidget:
@@ -19474,28 +20250,26 @@ class Window(QWidget):
         profile_row.addWidget(self.transcode_profile_btn)
         profile_row.addWidget(self.transcode_profile_label,1)
 
-        self.transcode_format = WheelSafeComboBox()
-        for ext,label in [('mp4','MP4 — универсальный'),('mkv','MKV — Matroska'),('webm','WebM'),('mov','MOV — QuickTime'),('avi','AVI')]:
-            self.transcode_format.addItem(label,ext)
+        def combo(items, data=True):
+            box = WheelSafeComboBox()
+            for entry in items:
+                label, value = entry if isinstance(entry, tuple) else (entry, entry)
+                box.addItem(label, value)
+            return box
+
+        # ---- video
+        self.transcode_format = combo([('MP4 — универсальный','mp4'),('MKV — Matroska','mkv'),('WebM','webm'),('MOV — QuickTime','mov'),('AVI','avi')])
         self.transcode_codec = WheelSafeComboBox()
         self.transcode_codec.setProperty('i18n_skip',True)
         for key,label in TRANSCODE_CODECS.items():self.transcode_codec.addItem(label,key)
-        self.transcode_resolution = WheelSafeComboBox()
-        for value,label in [('Как в оригинале','Как в оригинале'),('4320p','4320p · 7680×4320'),
-                            ('2160p (4K)','4K · 3840×2160'),('1440p','2K (QHD) · 2560×1440'),
-                            ('1080p','1080p · 1920×1080'),('720p','720p · 1280×720'),
-                            ('480p','480p · 854×480'),('360p','360p · 640×360')]:
-            self.transcode_resolution.addItem(label,value)
-        self.transcode_fps = WheelSafeComboBox()
-        self.transcode_fps.addItems(['Как в оригинале','24','25','30','50','60','120'])
+        self.transcode_encoder = WheelSafeComboBox()
+        self.transcode_encoder.addItems(['CPU','NVIDIA NVENC','Intel Quick Sync','AMD AMF'])
         self.transcode_quality = WheelSafeComboBox()
         self.transcode_quality.addItems(['Максимальное','Высокое','Сбалансированное','Экономия места'])
         self.transcode_quality.setCurrentIndex(1)
         self.transcode_crf = WheelSafeSpinBox()
         self.transcode_crf.setRange(0,51)
         self.transcode_crf.setValue(22)
-        self.transcode_encoder = WheelSafeComboBox()
-        self.transcode_encoder.addItems(['CPU','NVIDIA NVENC','Intel Quick Sync','AMD AMF'])
         self.transcode_preset = WheelSafeComboBox()
         self.transcode_preset.addItems(['ultrafast','fast','medium','slow','veryslow'])
         self.transcode_preset.setCurrentText('medium')
@@ -19503,46 +20277,237 @@ class Window(QWidget):
         self.transcode_video_bitrate.setRange(0,200000)
         self.transcode_video_bitrate.setValue(int(self.cfg.get('transcode_video_bitrate',0) or 0))
         self.transcode_video_bitrate.setSpecialValueText('Авто / CRF')
-        self.transcode_subtitle_mode = WheelSafeComboBox()
-        self.transcode_subtitle_mode.addItems(['Все дорожки','Только первые','Без субтитров'])
         self.transcode_total_bitrate = TotalBitrateControl(self.cfg.get('transcode_total_bitrate_kbps',0),self.cfg.get('transcode_total_bitrate_unit','kbps'))
+        self.transcode_two_pass = QCheckBox('Двухпроходное кодирование (точнее попадает в битрейт)')
+        self.transcode_fps = WheelSafeComboBox()
+        self.transcode_fps.addItems(['Как в оригинале','23.976','24','25','29.97','30','50','59.94','60','120'])
+        self.transcode_fps_mode = combo([('Как в источнике',''),('Постоянная (CFR)','cfr'),('Переменная (VFR)','vfr')])
+        self.transcode_tune = combo([('Нет',''),('film','film'),('animation','animation'),('grain','grain'),('stillimage','stillimage'),
+                                     ('fastdecode','fastdecode'),('zerolatency','zerolatency'),('psnr','psnr'),('ssim','ssim')])
+        self.transcode_tune.setProperty('i18n_skip',False)
+        self.transcode_profile = combo([('Авто',''),('baseline','baseline'),('main','main'),('high','high'),('high10','high10'),('main10','main10')])
+        self.transcode_level = combo([('Авто','')]+[(v,v) for v in ('3.0','3.1','4.0','4.1','4.2','5.0','5.1','5.2','6.0','6.1','6.2')])
+        self.transcode_bitdepth = combo([('Как в оригинале',''),('8 бит','8'),('10 бит','10')])
+        self.transcode_extra = QLineEdit()
+        self.transcode_extra.setMaxLength(400)
+        self.transcode_extra.setPlaceholderText('ключ=значение:ключ=значение')
+        self.transcode_hwdecode = QCheckBox('Аппаратное декодирование источника (если доступно)')
+
+        # ---- size
+        self.transcode_resolution = WheelSafeComboBox()
+        for value,label in [('Как в оригинале','Как в оригинале'),('4320p','4320p · 7680×4320'),
+                            ('2160p (4K)','4K · 3840×2160'),('1440p','2K (QHD) · 2560×1440'),
+                            ('1080p','1080p · 1920×1080'),('720p','720p · 1280×720'),
+                            ('480p','480p · 854×480'),('360p','360p · 640×360'),('custom','Свой размер…')]:
+            self.transcode_resolution.addItem(label,value)
+        self.transcode_width = WheelSafeSpinBox(); self.transcode_width.setRange(16,16384); self.transcode_width.setSingleStep(2); self.transcode_width.setValue(1920)
+        self.transcode_height = WheelSafeSpinBox(); self.transcode_height.setRange(16,16384); self.transcode_height.setSingleStep(2); self.transcode_height.setValue(1080)
+        self.transcode_keep_aspect = QCheckBox('Сохранять пропорции'); self.transcode_keep_aspect.setChecked(True)
         self.transcode_no_upscale = QCheckBox('Не увеличивать исходник')
         self.transcode_no_upscale.setChecked(True)
-        settings = QGridLayout()
-        settings.setHorizontalSpacing(8)
-        settings.setVerticalSpacing(4)
-        self._transcode_setting_boxes = []
-        for text,control in [('Формат результата',self.transcode_format),('Видеокодек',self.transcode_codec),
-                             ('Разрешение видео',self.transcode_resolution),('FPS видео',self.transcode_fps),
-                             ('Качество видео',self.transcode_quality),('CRF / CQ / QP',self.transcode_crf),
-                             ('Кодировщик видео',self.transcode_encoder),('Пресет CPU',self.transcode_preset),
-                             ('Битрейт видео, кбит/с (0 = авто)',self.transcode_video_bitrate),('Общий битрейт',self.transcode_total_bitrate),
-                             ('Субтитры',self.transcode_subtitle_mode)]:
-            box = QWidget()
-            box.setObjectName('clear')
-            box_layout = QVBoxLayout(box)
-            box_layout.setContentsMargins(0,0,0,0)
-            box_layout.setSpacing(2)
-            label = QLabel(text)
-            label.setObjectName('muted')
-            label.setWordWrap(True)
-            control.setMinimumWidth(0)
-            control.setSizePolicy(QSizePolicy.Policy.Expanding,QSizePolicy.Policy.Fixed)
-            box_layout.addWidget(label)
-            box_layout.addWidget(control)
-            self._transcode_setting_boxes.append(box)
-        self.transcode_settings_grid = settings
-        self.transcode_audio_tracks = AudioTrackList(self)
+        self._transcode_upscale_fade = QGraphicsOpacityEffect(self.transcode_no_upscale)
+        self.transcode_no_upscale.setGraphicsEffect(self._transcode_upscale_fade)
+        self.transcode_crop = []
+        for _name in ('Сверху','Снизу','Слева','Справа'):
+            spin = WheelSafeSpinBox(); spin.setRange(0,4000); spin.setSuffix(' px'); self.transcode_crop.append(spin)
+        self.transcode_auto_crop = QCheckBox('Автоматически убрать чёрные поля')
+        self.transcode_rotate = combo([('Без поворота',0),('90° по часовой',90),('180°',180),('90° против часовой',270)])
+        self.transcode_flip_h = QCheckBox('Отразить по горизонтали')
+        self.transcode_flip_v = QCheckBox('Отразить по вертикали')
+
+        # ---- filters
+        self.transcode_deint = combo([('Выкл',''),('Yadif','yadif'),('Yadif Bob (вдвое больше кадров)','yadif_bob'),('Bwdif','bwdif'),('Bwdif Bob (вдвое больше кадров)','bwdif_bob')])
+        self.transcode_deint_only = QCheckBox('Только кадры с «гребёнкой» (интерлейс)')
+        self.transcode_detelecine = QCheckBox('Детелесин (убрать 3:2 pulldown)')
+        self.transcode_denoise = combo([('Выкл',''),('Слабое','light'),('Среднее','medium'),('Сильное','strong')])
+        self.transcode_sharpen = combo([('Выкл',''),('Слабая','light'),('Средняя','medium'),('Сильная','strong')])
+        self.transcode_deblock = combo([('Выкл',''),('Слабый','weak'),('Сильный','strong')])
+        self.transcode_gray = QCheckBox('Чёрно-белое изображение')
+
+        # ---- audio
+        self.transcode_audio_tracks = AudioTrackList(self, 3)
         self._transcode_audio_options = {}
+        self._transcode_sub_options = {}
+        self._transcode_ext_subs = {}
+        self._transcode_rules = {}
         self._transcode_audio_rows = {}
+        self._transcode_sub_rows = {}
         self._transcode_progress_data = None
         self.transcode_audio_tracks.setWordWrap(True)
+        self.transcode_audio_all_btn = QPushButton('Все')
+        self.transcode_audio_none_btn = QPushButton('Ни одной')
+        self.transcode_rule_all = QCheckBox('Применять выбор ко всем файлам очереди')
+        self.transcode_rule_all.setChecked(True)
         self.transcode_original_audio_label = QLabel('Исходный аудиокодек: добавь видеофайл')
         self.transcode_original_video_bitrate_label = QLabel('Битрейт видео в оригинале: добавь видеофайл')
         for label in (self.transcode_original_audio_label,self.transcode_original_video_bitrate_label):
             label.setObjectName('muted')
             label.setWordWrap(True)
             label.setMinimumWidth(0)
+
+        # ---- subtitles
+        self.transcode_sub_summary = QLabel()
+        self.transcode_sub_summary.setProperty('i18n_skip',True)
+        self.transcode_sub_summary.setWordWrap(True)
+        self.transcode_sub_summary.setMinimumWidth(0)
+        self.transcode_sub_tracks = AudioTrackList(self, 3)
+        self.transcode_sub_tracks.setWordWrap(True)
+        self.transcode_sub_all_btn = QPushButton('Все')
+        self.transcode_sub_none_btn = QPushButton('Ни одной')
+        self.transcode_subtitle_mode = WheelSafeComboBox()
+        self.transcode_subtitle_mode.addItems(['Все дорожки','Только первые','Без субтитров'])
+        self.transcode_ext_list = QListWidget()
+        self.transcode_ext_list.setProperty('i18n_skip',True)
+        self.transcode_ext_list.setFixedHeight(64)
+        self.transcode_ext_add_btn = QPushButton('Добавить внешние…')
+        self.transcode_ext_remove_btn = QPushButton('Убрать')
+        self.transcode_ext_delay = WheelSafeSpinBox(); self.transcode_ext_delay.setRange(-600000,600000); self.transcode_ext_delay.setSingleStep(100); self.transcode_ext_delay.setSuffix(' мс')
+        self.transcode_ext_enc = combo([('UTF-8 / авто',''),('Windows-1251 (кириллица)','cp1251'),('KOI8-R','koi8-r'),('Windows-1252','cp1252'),('UTF-16','utf-16')])
+        self.transcode_ext_lang = QLineEdit(); self.transcode_ext_lang.setMaxLength(3); self.transcode_ext_lang.setPlaceholderText('rus')
+        self.transcode_ext_default = QCheckBox('По умолчанию')
+
+        # ---- misc
+        self.transcode_range_start = QLineEdit(); self.transcode_range_start.setPlaceholderText('00:00:00')
+        self.transcode_range_end = QLineEdit(); self.transcode_range_end.setPlaceholderText('до конца')
+        self.transcode_keep_chapters = QCheckBox('Сохранять главы'); self.transcode_keep_chapters.setChecked(True)
+        self.transcode_keep_meta = QCheckBox('Сохранять метаданные исходника'); self.transcode_keep_meta.setChecked(True)
+        self.transcode_title = QLineEdit(); self.transcode_title.setMaxLength(200); self.transcode_title.setPlaceholderText('оставить как есть')
+        self.transcode_faststart = QCheckBox('Оптимизировать для веб (MP4: moov в начале)'); self.transcode_faststart.setChecked(True)
+        self._transcode_faststart_fade = QGraphicsOpacityEffect(self.transcode_faststart)
+        self.transcode_faststart.setGraphicsEffect(self._transcode_faststart_fade)
+
+        def page(*rows):
+            widget = QWidget(); widget.setObjectName('clear')
+            box = QVBoxLayout(widget)
+            box.setContentsMargins(2,6,2,2); box.setSpacing(6)
+            for row in rows:
+                if isinstance(row,tuple):
+                    line = QHBoxLayout(); line.setSpacing(8); line.setContentsMargins(0,0,0,0)
+                    label = QLabel(row[0]); label.setObjectName('muted'); label.setWordWrap(True)
+                    label.setFixedWidth(150)
+                    line.addWidget(label,0,Qt.AlignmentFlag.AlignVCenter)
+                    if isinstance(row[1],QLayout): line.addLayout(row[1],1)
+                    else:
+                        row[1].setMinimumWidth(0)
+                        row[1].setSizePolicy(QSizePolicy.Policy.Expanding,QSizePolicy.Policy.Fixed)
+                        line.addWidget(row[1],1)
+                    box.addLayout(line)
+                elif isinstance(row,QLayout): box.addLayout(row)
+                else:
+                    if isinstance(row,QLabel): row.setMinimumWidth(0)
+                    box.addWidget(row)
+            return widget
+
+        def hbox(*items, stretch_last=False):
+            box = QHBoxLayout(); box.setSpacing(6); box.setContentsMargins(0,0,0,0)
+            for item in items:
+                if isinstance(item,QLayout): box.addLayout(item,1)
+                else: box.addWidget(item,1 if isinstance(item,(QComboBox,QSpinBox,QLineEdit)) else 0)
+            return box
+
+        def small_label(text):
+            label = QLabel(text); label.setObjectName('muted'); label.setWordWrap(len(text) > 32); return label
+
+        def field(caption, control):
+            box = QVBoxLayout(); box.setSpacing(2); box.setContentsMargins(0,0,0,0)
+            label = QLabel(caption); label.setObjectName('muted'); label.setMinimumWidth(0)
+            box.addWidget(label)
+            if isinstance(control,QLayout): box.addLayout(control)
+            else:
+                control.setMinimumWidth(0)
+                control.setSizePolicy(QSizePolicy.Policy.Expanding,QSizePolicy.Policy.Fixed)
+                box.addWidget(control)
+            return box
+
+        def column(title, *items):
+            box = QVBoxLayout(); box.setSpacing(7); box.setContentsMargins(0,0,0,0)
+            head = QLabel(title); head.setObjectName('title'); head.setMinimumWidth(0)
+            box.addWidget(head)
+            for item in items:
+                if isinstance(item,QLayout): box.addLayout(item)
+                else:
+                    item.setMinimumWidth(0); box.addWidget(item)
+            box.addStretch(1)
+            return box
+
+        self.transcode_two_pass.setText('Двухпроходное кодирование')
+        self.transcode_hwdecode.setText('Аппаратное декодирование')
+        self.transcode_hwdecode.setToolTip('Использовать видеокарту для чтения исходника, если она это умеет.')
+        video_page = QWidget(); video_page.setObjectName('clear')
+        video_columns = QHBoxLayout(video_page)
+        video_columns.setContentsMargins(2,6,2,2); video_columns.setSpacing(14)
+        video_columns.addLayout(column('Основные',
+            field('Видеокодек',self.transcode_codec),field('Кодировщик',self.transcode_encoder),
+            field('Качество',self.transcode_quality),field('CRF / CQ / QP',self.transcode_crf),
+            field('Общий битрейт',self.transcode_total_bitrate),
+            field('Частота кадров',self.transcode_fps),field('Режим частоты кадров',self.transcode_fps_mode)),1)
+        video_columns.addLayout(column('Дополнительные',
+            field('Битрейт видео, кбит/с (0 = авто)',self.transcode_video_bitrate),
+            field('Пресет скорости (CPU)',self.transcode_preset),
+            field('Tune',self.transcode_tune),field('Профиль',self.transcode_profile),field('Уровень (level)',self.transcode_level),
+            field('Разрядность цвета',self.transcode_bitdepth),
+            field('Доп. параметры кодировщика',self.transcode_extra),
+            self.transcode_two_pass,self.transcode_hwdecode),1)
+        crop_grid = QGridLayout(); crop_grid.setHorizontalSpacing(6); crop_grid.setVerticalSpacing(3)
+        for i,(name,spin) in enumerate(zip(('Сверху','Снизу','Слева','Справа'),self.transcode_crop)):
+            crop_grid.addWidget(small_label(name),0,i); crop_grid.addWidget(spin,1,i)
+        self._transcode_crop_labels = []
+        self.transcode_custom_block = page(('Свой размер, px',hbox(self.transcode_width,small_label('×'),self.transcode_height)),
+                                           self.transcode_keep_aspect)
+        self.transcode_custom_block.layout().setContentsMargins(0,0,0,0)
+        self._transcode_custom_fade = QGraphicsOpacityEffect(self.transcode_custom_block)
+        self.transcode_custom_block.setGraphicsEffect(self._transcode_custom_fade)
+        size_page = page(('Разрешение',self.transcode_resolution),self.transcode_no_upscale,
+                         self.transcode_custom_block,
+                         small_label('Обрезка краёв'),crop_grid,self.transcode_auto_crop,
+                         ('Поворот',self.transcode_rotate),self.transcode_flip_h,self.transcode_flip_v)
+        filters_page = page(('Деинтерлейс',self.transcode_deint),self.transcode_deint_only,self.transcode_detelecine,
+                            ('Шумоподавление',self.transcode_denoise),('Резкость',self.transcode_sharpen),
+                            ('Деблокинг',self.transcode_deblock),self.transcode_gray,
+                            small_label('Фильтры работают только при перекодировании видео; для режима «копировать» они недоступны.'))
+        audio_tools = hbox(self.transcode_audio_all_btn,self.transcode_audio_none_btn)
+        audio_page = page(small_label('Отметьте дорожки, которые попадут в файл. У каждой — свои кодек, битрейт, каналы, частота и усиление.'),
+                          audio_tools,self.transcode_rule_all,self.transcode_audio_tracks,
+                          self.transcode_original_audio_label,self.transcode_original_video_bitrate_label)
+        ext_buttons = hbox(self.transcode_ext_add_btn,self.transcode_ext_remove_btn)
+        sub_page = page(self.transcode_sub_summary,
+                        hbox(self.transcode_sub_all_btn,self.transcode_sub_none_btn),
+                        self.transcode_sub_tracks,
+                        ('Для файлов, которые ещё не открывались в очереди',self.transcode_subtitle_mode),
+                        small_label('Внешние субтитры (.srt, .ass, .ssa, .vtt) для выбранного файла'),
+                        self.transcode_ext_list,ext_buttons,
+                        ('Сдвиг по времени',self.transcode_ext_delay),('Кодировка',self.transcode_ext_enc),
+                        ('Язык (3 буквы)',self.transcode_ext_lang),self.transcode_ext_default)
+        more_page = page(('Начало фрагмента',self.transcode_range_start),('Конец фрагмента',self.transcode_range_end),
+                         small_label('Время: секунды, ММ:СС или ЧЧ:ММ:СС. Пустые поля — файл целиком.'),
+                         self.transcode_keep_chapters,self.transcode_keep_meta,
+                         ('Название (title)',self.transcode_title),self.transcode_faststart)
+
+        summary_page = QWidget(); summary_page.setObjectName('clear')
+        summary_layout = QVBoxLayout(summary_page)
+        summary_layout.setContentsMargins(2,6,2,2); summary_layout.setSpacing(6)
+        self.transcode_stack = CurrentPageStack()
+        self.transcode_tab_group = QButtonGroup(self)
+        self.transcode_tab_group.setExclusive(True)
+        tab_row = QHBoxLayout(); tab_row.setSpacing(4); tab_row.setContentsMargins(0,0,0,0)
+        self._transcode_tab_buttons = []
+        for index,(name,widget) in enumerate([('Сводка',summary_page),('Видео',video_page),('Размер',size_page),('Фильтры',filters_page),
+                                              ('Звук',audio_page),('Субтитры',sub_page),('Ещё',more_page)]):
+            button = QPushButton(name)
+            button.setObjectName('tab')
+            button.setCheckable(True)
+            button.setMinimumWidth(0)
+            button.setSizePolicy(QSizePolicy.Policy.Expanding,QSizePolicy.Policy.Fixed)
+            self.transcode_tab_group.addButton(button,index)
+            self._transcode_tab_buttons.append(button)
+            tab_row.addWidget(button,1)
+            self.transcode_stack.addWidget(widget)
+        self._transcode_tab_buttons[0].setChecked(True)
+        self.transcode_tab_group.idClicked.connect(self.transcode_stack.setCurrentIndex)
+        self.transcode_settings_grid = QGridLayout()   # kept for _layout_transcode_settings(); pages replace it
+        self._transcode_setting_boxes = []
+
+        # ---- queue
         self.transcode_folder_edit = QLineEdit(str(self.cfg.get('transcode_folder') or self.cfg.get('folder') or DEFAULT_FOLDER))
         self.transcode_folder_edit.setMinimumWidth(0)
         self.transcode_folder_edit.setPlaceholderText('Папка результата')
@@ -19552,18 +20517,29 @@ class Window(QWidget):
         folder_row = QHBoxLayout()
         folder_row.addWidget(self.transcode_folder_edit,1)
         folder_row.addWidget(self.transcode_folder_btn)
-        self.transcode_add_btn = QPushButton('Добавить файлы')
-        self.transcode_remove_btn = QPushButton('Убрать выбранные')
-        self.transcode_clear_btn = QPushButton('Очистить очередь')
-        file_row = QGridLayout()
-        for button,kind in [(self.transcode_add_btn,'plus'),(self.transcode_remove_btn,'minus'),(self.transcode_clear_btn,'trash')]:
+        self.transcode_add_btn = QPushButton('Файлы')
+        self.transcode_add_folder_btn = QPushButton('Папка')
+        self.transcode_up_btn = QPushButton('↑')
+        self.transcode_down_btn = QPushButton('↓')
+        self.transcode_remove_btn = QPushButton('Убрать')
+        self.transcode_remove_done_btn = QPushButton('Готовые')
+        self.transcode_clear_btn = QPushButton('Очистить')
+        queue_tools = QHBoxLayout(); queue_tools.setSpacing(4); queue_tools.setContentsMargins(0,0,0,0)
+        for button,kind,tip in [(self.transcode_add_btn,'plus','Добавить видеофайлы (можно перетащить файлы и папки в список)'),
+                                (self.transcode_add_folder_btn,'folder','Добавить все видео из папки'),
+                                (self.transcode_up_btn,None,'Поднять выбранный файл выше'),
+                                (self.transcode_down_btn,None,'Опустить выбранный файл ниже'),
+                                (self.transcode_remove_btn,'minus','Убрать выбранные (Delete)'),
+                                (self.transcode_remove_done_btn,'stop','Убрать из списка уже обработанные файлы'),
+                                (self.transcode_clear_btn,'trash','Очистить очередь')]:
             button.setMinimumWidth(0)
-            button.setIcon(make_icon(kind))
-            button.setIconSize(QSize(13,13))
-        file_row.addWidget(self.transcode_add_btn,0,0)
-        file_row.addWidget(self.transcode_remove_btn,0,1)
-        file_row.addWidget(self.transcode_clear_btn,1,0,1,2)
-        self.transcode_table = ExactRowsTable(2, self)
+            button.setToolTip(tip)
+            if kind:
+                button.setIcon(make_icon(kind)); button.setIconSize(QSize(13,13))
+            queue_tools.addWidget(button,0 if kind is None else 1)
+        for button in (self.transcode_up_btn,self.transcode_down_btn):
+            button.setFixedWidth(34)
+        self.transcode_table = TranscodeQueueTable(2, self)
         self.transcode_table.setHorizontalHeaderLabels(['Видеофайл','Состояние'])
         self.transcode_table.setSelectionBehavior(QTableWidget.SelectionBehavior.SelectRows)
         self.transcode_table.setSelectionMode(QTableWidget.SelectionMode.ExtendedSelection)
@@ -19574,11 +20550,33 @@ class Window(QWidget):
         self.transcode_table.horizontalHeader().setSectionResizeMode(0,QHeaderView.ResizeMode.Stretch)
         self.transcode_table.horizontalHeader().setSectionResizeMode(1,QHeaderView.ResizeMode.ResizeToContents)
         self.transcode_table.setWordWrap(False)
+        self.transcode_table.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
+        self.transcode_queue_label = QLabel('Очередь пуста — перетащите видео сюда или нажмите «Файлы».')
+        self.transcode_queue_label.setProperty('i18n_skip',True)
+        self.transcode_queue_label.setObjectName('muted')
+        self.transcode_queue_label.setWordWrap(True)
+        self.transcode_queue_label.setMinimumWidth(0)
+        self.transcode_source_label = QLabel()
+        self.transcode_source_label.setProperty('i18n_skip',True)
+        self.transcode_source_label.setObjectName('muted')
+        self.transcode_source_label.setWordWrap(True)
+        self.transcode_source_label.setMinimumWidth(0)
         self.transcode_progress = QProgressBar()
         self.transcode_progress.setRange(0,100)
         self.transcode_progress.setValue(0)
         self.transcode_progress.setFormat(ui_text('Очередь: %p%','Queue: %p%'))
         self.transcode_progress.setStyleSheet('QProgressBar {min-height:20px; max-height:20px; text-align:center;}')
+        self.transcode_file_progress = QProgressBar()
+        self.transcode_file_progress.setRange(0,100)
+        self.transcode_file_progress.setValue(0)
+        self.transcode_file_progress.setFormat(ui_text('Текущий файл: %p%','Current file: %p%'))
+        self.transcode_file_progress.setStyleSheet('QProgressBar {min-height:20px; max-height:20px; text-align:center;}')
+        self.transcode_metrics = QLabel()
+        self.transcode_metrics.setProperty('i18n_skip',True)
+        self.transcode_metrics.setWordWrap(True)
+        self.transcode_metrics.setMinimumWidth(0)
+        self.transcode_metrics.setSizePolicy(QSizePolicy.Policy.Ignored,QSizePolicy.Policy.Minimum)
+        self.transcode_metrics.setTextFormat(Qt.TextFormat.PlainText)
         self.transcode_status = QLabel('Добавь видеофайлы для перекодирования.')
         self.transcode_status.setObjectName('muted')
         self.transcode_status.setWordWrap(True)
@@ -19591,10 +20589,16 @@ class Window(QWidget):
         self.transcode_stop_btn = QPushButton('Остановить')
         self.transcode_pause_btn.setEnabled(False)
         self.transcode_stop_btn.setEnabled(False)
-        action_row = QGridLayout()
-        action_row.addWidget(self.transcode_run_btn,0,0,1,2)
-        action_row.addWidget(self.transcode_pause_btn,1,0)
-        action_row.addWidget(self.transcode_stop_btn,1,1)
+        action_row = QHBoxLayout()
+        action_row.setSpacing(4)
+        action_row.setContentsMargins(0,0,0,0)
+        for button_ in (self.transcode_run_btn,self.transcode_pause_btn,self.transcode_stop_btn):
+            button_.setMinimumWidth(0)
+            button_.setSizePolicy(QSizePolicy.Policy.Expanding,QSizePolicy.Policy.Fixed)
+        action_row.addWidget(self.transcode_run_btn,5)
+        action_row.addWidget(self.transcode_pause_btn,3)
+        action_row.addWidget(self.transcode_stop_btn,4)
+
         content = QWidget()
         content.setObjectName('clear')  # Retain the themed panel background behind the scroll area.
         layout = QVBoxLayout(content)
@@ -19608,33 +20612,32 @@ class Window(QWidget):
         self.transcode_preview = TranscodePreview(self,preview_slot)
         preview_layout.addWidget(self.transcode_preview)
         layout.addWidget(preview_slot)
-        layout.addLayout(file_row)
+        layout.addLayout(queue_tools)
         layout.addWidget(self.transcode_table)
-        layout.addWidget(self.transcode_progress)
-        self.transcode_file_progress = QProgressBar()
-        self.transcode_file_progress.setRange(0,100)
-        self.transcode_file_progress.setValue(0)
-        self.transcode_file_progress.setFormat(ui_text('Текущий файл: %p%','Current file: %p%'))
-        self.transcode_file_progress.setStyleSheet('QProgressBar {min-height:20px; max-height:20px; text-align:center;}')
-        layout.addWidget(self.transcode_file_progress)
-        self.transcode_metrics = QLabel()
-        self.transcode_metrics.setProperty('i18n_skip',True)
-        self.transcode_metrics.setWordWrap(True)
-        self.transcode_metrics.setMinimumWidth(0)
-        self.transcode_metrics.setSizePolicy(QSizePolicy.Policy.Ignored,QSizePolicy.Policy.Minimum)
-        self.transcode_metrics.setTextFormat(Qt.TextFormat.PlainText)
-        layout.addWidget(self.transcode_metrics)
-        layout.addWidget(self.transcode_status)
-        layout.addLayout(settings)
-        layout.addWidget(self.transcode_no_upscale)
-        tracks_label = QLabel('Аудиодорожки (можно отметить несколько)')
-        tracks_label.setWordWrap(True)
-        layout.addWidget(tracks_label)
-        layout.addWidget(self.transcode_audio_tracks)
-        layout.addWidget(self.transcode_original_audio_label)
-        layout.addWidget(self.transcode_original_video_bitrate_label)
-        layout.addLayout(folder_row)
-        layout.addLayout(action_row)
+        layout.addWidget(self.transcode_queue_label)
+        layout.addWidget(self.transcode_source_label)
+        layout.addLayout(tab_row)
+        layout.addWidget(self.transcode_stack)
+        self.transcode_summary = QLabel()
+        self.transcode_summary.setProperty('i18n_skip',True)
+        self.transcode_summary.setTextFormat(Qt.TextFormat.RichText)
+        self.transcode_summary.setWordWrap(True)
+        self.transcode_summary.setMinimumWidth(0)
+        self.transcode_summary.setAlignment(Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
+        format_line = QHBoxLayout(); format_line.setSpacing(8); format_line.setContentsMargins(0,0,0,0)
+        format_caption = QLabel('Формат результата'); format_caption.setObjectName('muted'); format_caption.setFixedWidth(150)
+        self.transcode_format.setSizePolicy(QSizePolicy.Policy.Expanding,QSizePolicy.Policy.Fixed)
+        format_line.addWidget(format_caption); format_line.addWidget(self.transcode_format,1)
+        folder_caption = QLabel('Папка результата'); folder_caption.setObjectName('muted')
+        summary_layout.addLayout(format_line)
+        summary_layout.addWidget(folder_caption)
+        summary_layout.addLayout(folder_row)
+        summary_layout.addWidget(self.transcode_summary)
+        summary_layout.addWidget(self.transcode_progress)
+        summary_layout.addWidget(self.transcode_file_progress)
+        summary_layout.addWidget(self.transcode_metrics)
+        summary_layout.addWidget(self.transcode_status)
+        summary_layout.addLayout(action_row)
         scroll = FitScrollArea(panel)
         scroll.setObjectName('transcodeSettingsScroll')
         scroll.setFrameShape(QFrame.Shape.NoFrame)
@@ -19651,10 +20654,37 @@ class Window(QWidget):
         outer.setSpacing(0)
         outer.addWidget(scroll)
         self.transcode_scroll,self.transcode_content = scroll,content
+
+        # widgets locked while the queue runs (the queue table stays usable for browsing)
+        self._transcode_locked = [self.transcode_total_bitrate,self.transcode_format,self.transcode_resolution,self.transcode_fps,
+            self.transcode_fps_mode,self.transcode_quality,self.transcode_encoder,self.transcode_preset,self.transcode_codec,
+            self.transcode_crf,self.transcode_no_upscale,self.transcode_profile_btn,self.transcode_video_bitrate,
+            self.transcode_audio_tracks,self.transcode_subtitle_mode,self.transcode_sub_tracks,self.transcode_two_pass,
+            self.transcode_tune,self.transcode_profile,self.transcode_level,self.transcode_bitdepth,self.transcode_extra,
+            self.transcode_hwdecode,self.transcode_width,self.transcode_height,self.transcode_keep_aspect,self.transcode_auto_crop,
+            self.transcode_rotate,self.transcode_flip_h,self.transcode_flip_v,self.transcode_deint,self.transcode_deint_only,
+            self.transcode_detelecine,self.transcode_denoise,self.transcode_sharpen,self.transcode_deblock,self.transcode_gray,
+            self.transcode_audio_all_btn,self.transcode_audio_none_btn,self.transcode_rule_all,
+            self.transcode_sub_all_btn,self.transcode_sub_none_btn,
+            self.transcode_ext_list,self.transcode_ext_add_btn,self.transcode_ext_remove_btn,self.transcode_ext_delay,
+            self.transcode_ext_enc,self.transcode_ext_lang,self.transcode_ext_default,
+            self.transcode_range_start,self.transcode_range_end,self.transcode_keep_chapters,self.transcode_keep_meta,
+            self.transcode_title,self.transcode_faststart,
+            self.transcode_add_btn,self.transcode_add_folder_btn,self.transcode_up_btn,self.transcode_down_btn,
+            self.transcode_remove_btn,self.transcode_remove_done_btn,self.transcode_clear_btn,self.transcode_folder_btn,
+            *self.transcode_crop]
+
         self.transcode_format.currentIndexChanged.connect(self.update_transcode_target_column)
         self.transcode_add_btn.clicked.connect(self.transcode_add_files)
+        self.transcode_add_folder_btn.clicked.connect(self.transcode_add_folder)
+        self.transcode_up_btn.clicked.connect(lambda: self.transcode_move(-1))
+        self.transcode_down_btn.clicked.connect(lambda: self.transcode_move(1))
         self.transcode_remove_btn.clicked.connect(self.transcode_remove_selected)
+        self.transcode_remove_done_btn.clicked.connect(self.transcode_remove_done)
         self.transcode_clear_btn.clicked.connect(self.transcode_clear_files)
+        self.transcode_table.files_dropped.connect(self.transcode_dropped)
+        self.transcode_table.delete_pressed.connect(self.transcode_remove_selected)
+        self.transcode_table.customContextMenuRequested.connect(self.transcode_queue_menu)
         self.transcode_folder_btn.clicked.connect(self.transcode_choose_folder)
         self.transcode_run_btn.clicked.connect(self.transcode_start)
         self.transcode_pause_btn.clicked.connect(self.transcode_pause_or_resume)
@@ -19665,16 +20695,51 @@ class Window(QWidget):
         self.transcode_quality.currentIndexChanged.connect(self._transcode_quality_changed)
         self.transcode_video_bitrate.valueChanged.connect(self._refresh_bitrate_controls)
         self.transcode_total_bitrate.changed.connect(self._total_bitrate_changed)
-        for combo in (self.transcode_format,self.transcode_codec,self.transcode_resolution,self.transcode_fps,self.transcode_quality,
-                      self.transcode_encoder,self.transcode_preset,self.transcode_subtitle_mode):
-            combo.currentIndexChanged.connect(self._mark_transcode_profile_manual)
+        self.transcode_audio_all_btn.clicked.connect(lambda: self._transcode_apply_rule('audio','all'))
+        self.transcode_audio_none_btn.clicked.connect(lambda: self._transcode_apply_rule('audio','none'))
+        self.transcode_sub_all_btn.clicked.connect(lambda: self._transcode_apply_rule('sub','all'))
+        self.transcode_sub_none_btn.clicked.connect(lambda: self._transcode_apply_rule('sub','none'))
+        self.transcode_ext_add_btn.clicked.connect(self.transcode_ext_add)
+        self.transcode_ext_remove_btn.clicked.connect(self.transcode_ext_remove)
+        self.transcode_ext_list.currentRowChanged.connect(self._transcode_ext_selected)
+        for widget,signal in ((self.transcode_ext_delay,'valueChanged'),(self.transcode_ext_enc,'currentIndexChanged'),
+                              (self.transcode_ext_lang,'textChanged'),(self.transcode_ext_default,'toggled')):
+            getattr(widget,signal).connect(self._transcode_ext_edited)
+        for widget,signal in ((self.transcode_resolution,'currentIndexChanged'),(self.transcode_auto_crop,'toggled'),
+                              (self.transcode_deint,'currentIndexChanged'),(self.transcode_video_bitrate,'valueChanged'),
+                              (self.transcode_total_bitrate,'changed'),(self.transcode_format,'currentIndexChanged'),
+                              (self.transcode_encoder,'currentIndexChanged'),(self.transcode_codec,'currentIndexChanged')):
+            getattr(widget,signal).connect(self._transcode_dependent_state)
+        for combo_box in (self.transcode_format,self.transcode_codec,self.transcode_resolution,self.transcode_fps,self.transcode_quality,
+                          self.transcode_encoder,self.transcode_preset,self.transcode_subtitle_mode,self.transcode_fps_mode,
+                          self.transcode_tune,self.transcode_profile,self.transcode_level,self.transcode_bitdepth,self.transcode_rotate,
+                          self.transcode_deint,self.transcode_denoise,self.transcode_sharpen,self.transcode_deblock):
+            combo_box.currentIndexChanged.connect(self._mark_transcode_profile_manual)
         for control in (self.transcode_crf,self.transcode_video_bitrate):control.valueChanged.connect(self._mark_transcode_profile_manual)
         self.transcode_total_bitrate.changed.connect(self._mark_transcode_profile_manual)
         self.transcode_no_upscale.toggled.connect(self._mark_transcode_profile_manual)
+        self._transcode_summary_timer = QTimer(self)
+        self._transcode_summary_timer.setSingleShot(True)
+        self._transcode_summary_timer.setInterval(40)
+        self._transcode_summary_timer.timeout.connect(self._transcode_refresh_summary)
+        for widget in [*self._transcode_locked, self.transcode_resolution]:
+            for signal in ('currentIndexChanged','toggled','valueChanged','textChanged','changed'):
+                if isinstance(widget,(QComboBox,QCheckBox,QSpinBox,QLineEdit,TotalBitrateControl)) and hasattr(widget,signal) and not isinstance(widget,QPushButton):
+                    try:
+                        getattr(widget,signal).connect(self._transcode_summary_soon)
+                        break
+                    except TypeError:
+                        continue
+        self.transcode_table.currentCellChanged.connect(self._transcode_summary_soon)
         self._transcode_retranslate()
         self.update_transcode_target_column()
+        self._transcode_dependent_state()
+        self._transcode_refresh_labels()
+        self._transcode_refresh_summary()
         panel.installEventFilter(self)
         self._layout_transcode_settings(560)
+        self._drop_filters = getattr(self, '_drop_filters', [])
+        self._drop_filters += install_file_drop(panel, self.transcode_dropped, 'any')
         return panel
 
 
@@ -19710,13 +20775,36 @@ class Window(QWidget):
         return CnpFileDialog.choose(self, "Выбрать видео для перекодирования", str(Path.home()), video_filter,
                                     mode=QFileDialog.FileMode.ExistingFiles, callback=self._transcode_add_paths)
 
+
+    def _transcode_busy(self):
+        worker = getattr(self, 'transcode_worker', None)
+        return worker is not None and worker.isRunning()
+
+    def _transcode_forget_worker(self):
+        """Drop the finished worker so stale per-row results cannot be re-applied to a changed queue."""
+        worker = getattr(self, 'transcode_worker', None)
+        if worker is not None and not worker.isRunning():
+            worker.deleteLater()
+            self.transcode_worker = None
+
+    def _transcode_set_row(self, row, path):
+        item = QTableWidgetItem(path.name)
+        try:
+            size = fmt_size(path.stat().st_size)
+        except OSError:
+            size = '?'
+        item.setToolTip(f'{path}\n{size}')
+        item.setData(Qt.ItemDataRole.UserRole, str(path))
+        self.transcode_table.setItem(row, 0, item)
+        self.transcode_table.setItem(row, 1, QTableWidgetItem(ui_text('В очереди', 'Queued')))
+
     def _transcode_add_paths(self, paths):
-        if self.transcode_worker is not None and self.transcode_worker.isRunning():
+        if self._transcode_busy() or not paths:
             return
-        if not paths:
-            return
+        self._transcode_forget_worker()
         known = {str(p.resolve(strict=False)).casefold() for p in self.transcode_jobs}
         was_empty = not self.transcode_jobs
+        added = 0
         for raw in paths:
             path = Path(raw)
             key = str(path.resolve(strict=False)).casefold()
@@ -19726,16 +20814,184 @@ class Window(QWidget):
             self.transcode_jobs.append(path)
             row = self.transcode_table.rowCount()
             self.transcode_table.insertRow(row)
-            item = QTableWidgetItem(path.name)
-            item.setToolTip(str(path))
-            item.setData(Qt.ItemDataRole.UserRole, str(path))
-            self.transcode_table.setItem(row, 0, item)
-            self.transcode_table.setItem(row, 1, QTableWidgetItem(ui_text("В очереди", "Queued")))
-        self.transcode_status.setText(ui_text(f"В очереди: {len(self.transcode_jobs)} файл(ов).", f"Queued: {len(self.transcode_jobs)} file(s)."))
+            self._transcode_set_row(row, path)
+            added += 1
+        self.transcode_status.setText(ui_text(f'Добавлено файлов: {added}.', f'Files added: {added}.'))
         self.transcode_progress.setRange(0, max(1, len(self.transcode_jobs)))
         self.transcode_progress.setValue(0)
         if self.transcode_table.rowCount() and (was_empty or self.transcode_table.currentRow() < 0):
             self.transcode_table.setCurrentCell(0, 0)
+        self._transcode_refresh_labels()
+
+    def _transcode_expand(self, raw_paths, limit=500):
+        exts = {'.mp4','.mkv','.mov','.avi','.webm','.m4v','.flv','.ts','.mts','.m2ts','.wmv','.mpg','.mpeg','.3gp'}
+        result = []
+        for raw in raw_paths:
+            path = Path(raw)
+            try:
+                if path.is_dir():
+                    result += sorted((p for p in path.iterdir() if p.is_file() and p.suffix.casefold() in exts), key=lambda p: p.name.casefold())
+                elif path.is_file() and path.suffix.casefold() in exts:
+                    result.append(path)
+            except OSError:
+                continue
+        return result[:limit]
+
+    def transcode_dropped(self, paths):
+        found = self._transcode_expand(paths)
+        if not found:
+            self.transcode_status.setText(ui_text('В перетащенном нет видеофайлов.', 'No video files in the dropped items.'))
+            return
+        self._transcode_add_paths([str(p) for p in found])
+
+    def transcode_add_folder(self):
+        def chosen(paths):
+            if paths:
+                found = self._transcode_expand([paths[0]])
+                if found:
+                    self._transcode_add_paths([str(p) for p in found])
+                else:
+                    self.transcode_status.setText(ui_text('В папке нет видеофайлов.', 'There are no video files in the folder.'))
+        return CnpFileDialog.choose(self, 'Выбрать папку с видео', str(Path.home()), mode=QFileDialog.FileMode.Directory, callback=chosen)
+
+    def _transcode_prune_state(self):
+        keep = {str(p) for p in self.transcode_jobs}
+        for store in (self._transcode_audio_options, self._transcode_sub_options, self._transcode_ext_subs):
+            for key in [k for k in store if k not in keep]:
+                del store[key]
+
+    def _transcode_queue_summary(self):
+        total = 0
+        for path in self.transcode_jobs:
+            try:
+                total += path.stat().st_size
+            except OSError:
+                pass
+        return total
+
+    def _transcode_refresh_labels(self):
+        if not hasattr(self, 'transcode_queue_label'):
+            return
+        count = len(self.transcode_jobs)
+        if not count:
+            self.transcode_queue_label.setText(ui_text('Очередь пуста — перетащите видео сюда или нажмите «Файлы».',
+                                                       'The queue is empty — drop videos here or press “Files”.'))
+        else:
+            self.transcode_queue_label.setText(ui_text(f'В очереди: {count} · общий размер {fmt_size(self._transcode_queue_summary())}',
+                                                       f'Queued: {count} · total size {fmt_size(self._transcode_queue_summary())}'))
+        info = getattr(self, '_transcode_current_info', None)
+        source = getattr(self, '_transcode_info_source', None)
+        if info and source and not info.get('error'):
+            parts = [Path(source).name]
+            if info.get('width') and info.get('height'):
+                parts.append(f"{info['width']}×{info['height']}")
+            if info.get('video_codec') and info['video_codec'] != 'неизвестно':
+                parts.append(str(info['video_codec']).upper())
+            if info.get('fps'):
+                parts.append(f"{info['fps']:g} FPS")
+            if info.get('duration'):
+                parts.append(format_time_seconds(info['duration']))
+            parts.append(ui_text(f"звук: {len(info.get('audio_tracks') or [])}", f"audio: {len(info.get('audio_tracks') or [])}"))
+            parts.append(ui_text(f"субтитры: {len(info.get('subtitle_tracks') or [])}", f"subtitles: {len(info.get('subtitle_tracks') or [])}"))
+            if info.get('chapters'):
+                parts.append(ui_text(f"глав: {info['chapters']}", f"chapters: {info['chapters']}"))
+            self.transcode_source_label.setText(' · '.join(parts))
+        elif source and info and info.get('error'):
+            self.transcode_source_label.setText(ui_text('Метаданные файла недоступны.', 'File metadata unavailable.'))
+        else:
+            self.transcode_source_label.setText('')
+
+    def transcode_move(self, delta):
+        if self._transcode_busy():
+            return
+        row = self.transcode_table.currentRow()
+        target = row + delta
+        if not (0 <= row < len(self.transcode_jobs) and 0 <= target < len(self.transcode_jobs)):
+            return
+        self._transcode_forget_worker()
+        self.transcode_jobs[row], self.transcode_jobs[target] = self.transcode_jobs[target], self.transcode_jobs[row]
+        for column in (0, 1):
+            first, second = self.transcode_table.takeItem(row, column), self.transcode_table.takeItem(target, column)
+            self.transcode_table.setItem(row, column, second)
+            self.transcode_table.setItem(target, column, first)
+        self.transcode_table.setCurrentCell(target, 0)
+
+    def transcode_remove_done(self):
+        if self._transcode_busy():
+            return
+        done_text = (ui_text('Готово', 'Done'), 'Готово', 'Done')
+        rows = [r for r in range(self.transcode_table.rowCount())
+                if (self.transcode_table.item(r, 1) is not None and self.transcode_table.item(r, 1).text().startswith(done_text))]
+        self._transcode_remove_rows(rows)
+
+    def _transcode_remove_rows(self, rows):
+        self._transcode_forget_worker()
+        for row in sorted(set(rows), reverse=True):
+            if 0 <= row < len(self.transcode_jobs):
+                del self.transcode_jobs[row]
+            self.transcode_table.removeRow(row)
+        self._transcode_prune_state()
+        if self.transcode_jobs:
+            self.transcode_table.setCurrentCell(min(max(0, self.transcode_table.currentRow()), len(self.transcode_jobs) - 1), 0)
+        self.transcode_update_source_info()
+        self.transcode_progress.setRange(0, max(1, len(self.transcode_jobs)))
+        self.transcode_progress.setValue(0)
+        self.transcode_status.setText(ui_text(f'В очереди: {len(self.transcode_jobs)} файл(ов).', f'Queued: {len(self.transcode_jobs)} file(s).'))
+        self._transcode_refresh_labels()
+
+    def transcode_queue_menu(self, pos):
+        row = self.transcode_table.rowAt(pos.y())
+        menu = QMenu(self.transcode_table)
+        busy = self._transcode_busy()
+        if row >= 0 and row < len(self.transcode_jobs):
+            source = self.transcode_jobs[row]
+            act_folder = menu.addAction(ui_text('Показать исходник в папке', 'Show source in folder'))
+            act_folder.triggered.connect(lambda: QDesktopServices.openUrl(QUrl.fromLocalFile(str(source.parent))))
+            worker = getattr(self, 'transcode_worker', None)
+            result = getattr(worker, '_row_results', {}).get(row, {}) if worker is not None else {}
+            if result.get('state') == 'done' and result.get('path'):
+                out_path = Path(result['path'])
+                act_out = menu.addAction(ui_text('Показать результат в папке', 'Show result in folder'))
+                act_out.triggered.connect(lambda: QDesktopServices.openUrl(QUrl.fromLocalFile(str(out_path.parent))))
+            act_copy = menu.addAction(ui_text('Копировать путь', 'Copy path'))
+            act_copy.triggered.connect(lambda: QApplication.clipboard().setText(str(source)))
+            menu.addSeparator()
+            act_up = menu.addAction(ui_text('Выше', 'Move up')); act_up.setEnabled(not busy and row > 0)
+            act_up.triggered.connect(lambda: self.transcode_move(-1))
+            act_down = menu.addAction(ui_text('Ниже', 'Move down')); act_down.setEnabled(not busy and row < len(self.transcode_jobs) - 1)
+            act_down.triggered.connect(lambda: self.transcode_move(1))
+            act_remove = menu.addAction(ui_text('Убрать выбранные', 'Remove selected')); act_remove.setEnabled(not busy)
+            act_remove.triggered.connect(self.transcode_remove_selected)
+        act_done = menu.addAction(ui_text('Убрать обработанные', 'Remove processed')); act_done.setEnabled(not busy)
+        act_done.triggered.connect(self.transcode_remove_done)
+        menu.exec(self.transcode_table.viewport().mapToGlobal(pos))
+
+    def transcode_remove_selected(self):
+        if self._transcode_busy():
+            return
+        rows = {idx.row() for idx in self.transcode_table.selectionModel().selectedRows()}
+        if rows:
+            self._transcode_remove_rows(rows)
+
+    def transcode_clear_files(self):
+        if self._transcode_busy():
+            return
+        self._transcode_forget_worker()
+        self.transcode_jobs.clear()
+        for store in (self._transcode_audio_options, self._transcode_sub_options, self._transcode_ext_subs, self._transcode_audio_rows):
+            store.clear()
+        self._transcode_progress_data = None
+        self.transcode_metrics.clear()
+        self.transcode_file_progress.setRange(0, 100)
+        self.transcode_file_progress.setValue(0)
+        self.transcode_table.setRowCount(0)
+        self.transcode_update_source_info()
+        self.transcode_progress.setRange(0, 100)
+        self.transcode_progress.setValue(0)
+        self.transcode_status.setText(ui_text('Очередь очищена.', 'Queue cleared.'))
+        self._transcode_preview_selection()
+        self._transcode_refresh_labels()
+
 
     def transcode_update_source_info(self, *_args):
         if not hasattr(self, "transcode_table") or self._closing:
@@ -19752,7 +21008,13 @@ class Window(QWidget):
         self._transcode_audio_updating = True
         try:
             self.transcode_audio_tracks.clear()
+            self.transcode_sub_tracks.clear()
             self._transcode_audio_rows = {}
+            self._transcode_sub_rows = {}
+            self._transcode_current_info = None
+            self._transcode_info_source = None
+            self._transcode_refresh_labels()
+            self.transcode_ext_list.clear()
             self.transcode_original_audio_label.setText(ui_text("Исходный аудиокодек: чтение…", "Original audio codec: reading…") if source else T("Исходный аудиокодек: добавь видеофайл"))
             self.transcode_original_video_bitrate_label.setText(ui_text("Битрейт видео в оригинале: чтение…", "Original video bitrate: reading…") if source else T("Битрейт видео в оригинале: добавь видеофайл"))
         finally:
@@ -19771,46 +21033,6 @@ class Window(QWidget):
 
 
 
-    def transcode_remove_selected(self):
-        if self.transcode_worker is not None and self.transcode_worker.isRunning():
-            return
-        rows = sorted({idx.row() for idx in self.transcode_table.selectionModel().selectedRows()}, reverse=True)
-        for row in rows:
-            if 0 <= row < len(self.transcode_jobs):
-                del self.transcode_jobs[row]
-            self.transcode_table.removeRow(row)
-        if self.transcode_jobs:
-            self.transcode_table.setCurrentCell(min(max(0, self.transcode_table.currentRow()), len(self.transcode_jobs)-1), 0)
-        self._transcode_audio_options = {str(p): self._transcode_audio_options[str(p)] for p in self.transcode_jobs if str(p) in self._transcode_audio_options}
-        self.transcode_update_source_info()
-        self.transcode_status.setText(ui_text(f"В очереди: {len(self.transcode_jobs)} файл(ов).", f"Queued: {len(self.transcode_jobs)} file(s)."))
-        self.transcode_progress.setRange(0, max(1, len(self.transcode_jobs)))
-        self.transcode_progress.setValue(0)
-
-        self._transcode_preview_selection()
-
-
-
-    def transcode_clear_files(self):
-        if self.transcode_worker is not None and self.transcode_worker.isRunning():
-            return
-        self.transcode_jobs.clear()
-        self._transcode_audio_options.clear()
-        self._transcode_audio_rows.clear()
-        self._transcode_progress_data = None
-        self.transcode_metrics.clear()
-        self.transcode_file_progress.setRange(0,100)
-        self.transcode_file_progress.setValue(0)
-        self.transcode_table.setRowCount(0)
-        self._transcode_audio_options = {str(p): self._transcode_audio_options[str(p)] for p in self.transcode_jobs if str(p) in self._transcode_audio_options}
-        self.transcode_update_source_info()
-        self.transcode_progress.setRange(0, 100)
-        self.transcode_progress.setValue(0)
-        self.transcode_status.setText(ui_text("Очередь очищена.", "Queue cleared."))
-
-        self._transcode_preview_selection()
-
-
     def transcode_choose_folder(self):
         current = self.transcode_folder_edit.text().strip() or str(self.download_dir)
         def chosen(paths):
@@ -19818,8 +21040,16 @@ class Window(QWidget):
                 self.transcode_folder_edit.setText(paths[0]); self.save_settings()
         return CnpFileDialog.choose(self, "Папка для перекодированных файлов", current, mode=QFileDialog.FileMode.Directory, callback=chosen)
 
+
+    def _transcode_set_locked(self, locked):
+        for widget in self._transcode_locked:
+            widget.setEnabled(not locked)
+        if not locked:
+            self._transcode_dependent_state()
+            self._refresh_bitrate_controls()
+
     def transcode_start(self):
-        if self.transcode_worker is not None and self.transcode_worker.isRunning():
+        if self._transcode_busy():
             return
         if not self.transcode_jobs:
             self.show_message("Перекодирование", ui_text("Сначала добавь один или несколько видеофайлов.", "Add one or more video files first."))
@@ -19833,6 +21063,15 @@ class Window(QWidget):
         except (ValueError, RuntimeError) as exc:
             self.show_message("Перекодирование", str(exc))
             return
+        try:
+            range_start = transcode_parse_time(self.transcode_range_start.text())
+            range_end = transcode_parse_time(self.transcode_range_end.text())
+        except ValueError:
+            self.show_message("Перекодирование", ui_text("Время фрагмента: секунды, ММ:СС или ЧЧ:ММ:СС.", "Range time: seconds, MM:SS or HH:MM:SS."))
+            return
+        if range_end is not None and range_end <= (range_start or 0):
+            self.show_message("Перекодирование", ui_text("Конец фрагмента должен быть позже начала.", "The range end must be later than its start."))
+            return
         folder_text = self.transcode_folder_edit.text().strip()
         if not folder_text:
             self.show_message("Папка не выбрана", ui_text("Укажи папку для перекодированных файлов.", "Choose a folder for transcoded files."))
@@ -19843,30 +21082,57 @@ class Window(QWidget):
         except OSError as exc:
             self.show_message("Ошибка папки", ui_text(f"Не удалось создать папку:\n{exc}", f"Could not create folder:\n{exc}"))
             return
+        keep = {str(p) for p in self.transcode_jobs}
+        custom = self.transcode_resolution.currentData() == "custom"
         video_options = {
             "total_bitrate_kbps": self.transcode_total_bitrate.kbps(),
-            "resolution": str(self.transcode_resolution.currentData() or "Как в оригинале"),
+            "resolution": str(self.transcode_resolution.currentData() if not custom else "Как в оригинале"),
             "video_codec": str(self.transcode_codec.currentData()),
             "quality_value": self.transcode_crf.value(),
             "no_upscale": self.transcode_no_upscale.isChecked(),
             "fps": choice_text(self.transcode_fps),
+            "fps_mode": str(self.transcode_fps_mode.currentData() or ""),
             "quality": choice_text(self.transcode_quality),
             "encoder": choice_text(self.transcode_encoder),
             "preset": choice_text(self.transcode_preset),
             "video_bitrate": str(self.transcode_video_bitrate.value()) if self.transcode_video_bitrate.value() > 0 else "",
+            "two_pass": self.transcode_two_pass.isEnabled() and self.transcode_two_pass.isChecked(),
+            "tune": str(self.transcode_tune.currentData() or "") if self.transcode_tune.isEnabled() else "",
+            "profile": str(self.transcode_profile.currentData() or "") if self.transcode_profile.isEnabled() else "",
+            "level": str(self.transcode_level.currentData() or "") if self.transcode_level.isEnabled() else "",
+            "bit_depth": str(self.transcode_bitdepth.currentData() or ""),
+            "extra_params": self.transcode_extra.text().strip() if self.transcode_extra.isEnabled() else "",
+            "hwdecode": self.transcode_hwdecode.isChecked(),
+            "custom_size": (self.transcode_width.value(), self.transcode_height.value()) if custom else None,
+            "keep_aspect": self.transcode_keep_aspect.isChecked(),
+            "crop": None if self.transcode_auto_crop.isChecked() else tuple(spin.value() for spin in self.transcode_crop),
+            "auto_crop": self.transcode_auto_crop.isChecked(),
+            "rotate": int(self.transcode_rotate.currentData() or 0),
+            "flip_h": self.transcode_flip_h.isChecked(),
+            "flip_v": self.transcode_flip_v.isChecked(),
+            "filters": {"deinterlace": str(self.transcode_deint.currentData() or ""),
+                        "deinterlace_only": self.transcode_deint_only.isChecked(),
+                        "detelecine": self.transcode_detelecine.isChecked(),
+                        "denoise": str(self.transcode_denoise.currentData() or ""),
+                        "sharpen": str(self.transcode_sharpen.currentData() or ""),
+                        "deblock": str(self.transcode_deblock.currentData() or ""),
+                        "grayscale": self.transcode_gray.isChecked()},
+            "range": (range_start, range_end) if (range_start or range_end) else None,
+            "keep_chapters": self.transcode_keep_chapters.isChecked(),
+            "keep_metadata": self.transcode_keep_meta.isChecked(),
+            "title": self.transcode_title.text().strip(),
+            "faststart": self.transcode_faststart.isChecked(),
             "audio_streams": None,
-            "audio_track_options": {key: {index: dict(value) for index,value in rows.items()} for key,rows in self._transcode_audio_options.items()},
+            "audio_track_options": {key: {index: dict(value) for index,value in rows.items()} for key,rows in self._transcode_audio_options.items() if key in keep},
+            "subtitle_options": {key: {index: dict(value) for index,value in rows.items()} for key,rows in self._transcode_sub_options.items() if key in keep},
+            "external_subs": {key: [dict(i) for i in items] for key,items in self._transcode_ext_subs.items() if key in keep and items},
             "subtitle_mode": choice_text(self.transcode_subtitle_mode),
+            "track_rules": {kind: tuple(rule) for kind, rule in self._transcode_rules.items()},
+            "default_audio_copy": True,
             "container": ext,
         }
-        for widget in (self.transcode_total_bitrate, self.transcode_format, self.transcode_resolution, self.transcode_fps,
-                       self.transcode_quality, self.transcode_encoder, self.transcode_preset,
-                       self.transcode_codec, self.transcode_crf, self.transcode_no_upscale, self.transcode_profile_btn,
-                       self.transcode_video_bitrate, self.transcode_audio_tracks, self.transcode_subtitle_mode,
-                       self.transcode_add_btn, self.transcode_remove_btn, self.transcode_clear_btn,
-                       self.transcode_table):
-            widget.setEnabled(False)
-        self.transcode_folder_btn.setEnabled(False)
+        self._transcode_tab_buttons[0].click()
+        self._transcode_set_locked(True)
         self.transcode_run_btn.setEnabled(False)
         self.transcode_pause_btn.setEnabled(True)
         self.transcode_pause_btn.setText(ui_text("Пауза", "Pause"))
@@ -19890,8 +21156,8 @@ class Window(QWidget):
         self.transcode_worker.pause_state_changed.connect(self.transcode_on_pause_state_changed)
         self.transcode_worker.completed.connect(self.transcode_on_completed)
         self.transcode_worker.finished.connect(self._refresh_bitrate_controls)
+        self.transcode_worker.finished.connect(self._transcode_dependent_state)
         self.transcode_worker.start()
-
 
 
     def transcode_pause_or_resume(self):
@@ -19952,14 +21218,6 @@ class Window(QWidget):
         self.transcode_status.setText(ui_text("Перекодирование…", "Transcoding…"))
 
     def transcode_on_completed(self, ok_count: int, fail_count: int, stopped: bool):
-        for widget in (self.transcode_total_bitrate, self.transcode_format, self.transcode_resolution, self.transcode_fps,
-                       self.transcode_quality, self.transcode_encoder, self.transcode_preset,
-                       self.transcode_codec, self.transcode_crf, self.transcode_no_upscale, self.transcode_profile_btn,
-                       self.transcode_video_bitrate, self.transcode_audio_tracks, self.transcode_subtitle_mode,
-                       self.transcode_add_btn, self.transcode_remove_btn, self.transcode_clear_btn,
-                       self.transcode_table):
-            widget.setEnabled(True)
-        self.transcode_folder_btn.setEnabled(True)
         self.transcode_run_btn.setEnabled(True)
         self.transcode_pause_btn.setEnabled(False)
         self.transcode_pause_btn.setText(ui_text("Пауза", "Pause"))
@@ -19972,6 +21230,7 @@ class Window(QWidget):
             self.transcode_progress.setValue(100)
         prefix = ui_text("Остановлено", "Stopped") if stopped else ui_text("Готово", "Done")
         self.transcode_status.setText(ui_text(f"{prefix}. Успешно: {ok_count}, ошибок: {fail_count}.", f"{prefix}. Successful: {ok_count}, errors: {fail_count}."))
+        self._transcode_set_locked(False)
         self.save_settings()
         self._refresh_bitrate_controls()
 
@@ -20030,6 +21289,24 @@ class Window(QWidget):
         ) + ");;Все поддерживаемые составные форматы (*.tar.gz *.tar.bz2 *.tar.xz)"
         return CnpFileDialog.choose(self, "Выбрать файлы для конвертации", str(Path.home()), filters,
                                     mode=QFileDialog.FileMode.ExistingFiles, callback=self._converter_add_paths)
+
+    def converter_dropped(self, paths):
+        if self.converter_worker is not None and self.converter_worker.isRunning():
+            return
+        known_suffixes = {str(x).casefold() for x in CONVERSION_SUFFIXES}
+        files = []
+        for raw in paths:
+            path = Path(raw)
+            try:
+                if path.is_dir():
+                    files += sorted((p for p in path.iterdir() if p.is_file() and p.suffix.casefold().lstrip('.') in known_suffixes),
+                                    key=lambda p: p.name.casefold())
+                elif path.is_file():
+                    files.append(path)
+            except OSError:
+                continue
+        if files:
+            self._converter_add_paths([str(p) for p in files[:500]])
 
     def _converter_add_paths(self, paths):
         if self.converter_worker is not None and self.converter_worker.isRunning():
@@ -20686,7 +21963,7 @@ class Window(QWidget):
                 if ids and description and not NOP_APO_GUID.fullmatch(description):
                     qt_names[ids[-1].lower()] = description
         except (RuntimeError, OSError):
-            pass
+            log.debug("подавленная ошибка", exc_info=True)
         for index, device in enumerate(self._apo_endpoints):
             if not device.get("name") or device.get("_nop_generated_name"):
                 name = qt_names.get(device["id"].lower())
@@ -20788,7 +22065,7 @@ class Window(QWidget):
             if path.is_file() and path.stat().st_size <= 262144:
                 self._apo_tool_result = json.loads(path.read_text(encoding="utf-8"))
         except (OSError, ValueError):
-            pass  # The next timer tick retries; no busy waiting in the GUI.
+            log.debug("подавленная ошибка", exc_info=True)  # The next timer tick retries; no busy waiting in the GUI.
         result = self._apo_tool_result
         terminal = result.get("state") in ("error", "exited")
         if not terminal and process.poll() is not None:
@@ -21803,7 +23080,7 @@ class Window(QWidget):
         header.sectionClicked.connect(self._track_header_clicked)
         self.track_list.reordered.connect(self._tracks_reordered)
         self.track_list.setObjectName("trackList")
-        self.track_list.setToolTip("Двойной клик или Enter — играть выбранный трек; правая кнопка — действия с файлом")
+        self.track_list.setToolTip("Двойной клик или Enter — играть выбранный трек (или выберите трек и нажмите «Воспроизвести»); правая кнопка — действия с файлом")
         self.track_list.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Expanding)
         self.track_list.setMinimumHeight(90)
         self.track_list.itemActivated.connect(self.on_track_activated)
@@ -21828,6 +23105,9 @@ class Window(QWidget):
             b_.setIconSize(QSize(14, 14))
         self.btn_src_add.clicked.connect(self.add_source)
         self.btn_src_del.clicked.connect(self.remove_source)
+        self._drop_filters = getattr(self, '_drop_filters', [])
+        self._drop_filters += install_file_drop(self.src_list, self._sources_dropped, 'folders', also=(self.src_list.viewport(), lbl_src))
+        self.src_list.setToolTip("Отметьте папки, треки из которых нужно добавить в список. Папку можно перетащить сюда из проводника")
         src_head = QHBoxLayout()
         src_head.setSpacing(4)
         src_head.addWidget(lbl_src, 1)
@@ -22260,10 +23540,9 @@ class Window(QWidget):
             # 2 * ~330 px на карточку + промежуток; порог учитывает DPI и поля.
             columns = 2 if content.width() >= 690 else 1
             while content_layout.count():
-                item = content_layout.takeAt(0)
+                content_layout.takeAt(0)
                 # takeAt удаляет элемент из сетки, но оставляет карточку дочерним
                 # виджетом контейнера, поэтому повторное размещение не теряет её видимость.
-                _widget = item.widget()
             for index, card in enumerate(section_cards):
                 row, column = divmod(index, columns)
                 content_layout.addWidget(card, row, column, Qt.AlignmentFlag.AlignTop)
@@ -22422,7 +23701,7 @@ class Window(QWidget):
                 signals.completed.emit(data)
             except RuntimeError:
                 # Окно могло быть закрыто до окончания фонового анализа.
-                pass
+                log.debug("подавленная ошибка", exc_info=True)
 
         thread = threading.Thread(target=worker, name="FilePropertiesProbe", daemon=True)
         dialog._file_properties_thread = thread
@@ -23246,7 +24525,7 @@ class Window(QWidget):
             try:
                 ctypes.windll.user32.SetForegroundWindow(int(self.winId()))
             except (OSError, AttributeError):
-                pass
+                log.debug("подавленная ошибка", exc_info=True)
         QApplication.alert(self, 1500)
 
     def open_external_file(self, path: Path):
@@ -23256,6 +24535,13 @@ class Window(QWidget):
         if getattr(self, "current", None) is not None and _media_key(self.current) == _media_key(path):
             return
         self.play_file(path)
+
+    def on_video_mode_changed(self, *_args):
+        mode = self.cmb_video_mode.currentData() or "auto"
+        self.cfg["video_mode"] = mode
+        self.player.mpv.video_mode = mode
+        self.player.mpv.apply_video_mode()
+        self.save_settings()
 
     def on_open_mode_changed(self, *_args):
         self.cfg["open_mode"] = self.cmb_open_mode.currentData() or "current"
@@ -23329,12 +24615,9 @@ class Window(QWidget):
         elif not hasattr(self, "_last_dl_source"):
             self._last_dl_source = source
         spotify = source == "spotify"
-        direct = source == "direct"
-        self.direct_help_row.setVisible(direct)
-        self.spotify_source_note.setVisible(spotify)
-        self.spotify_source_note.setText(ui_text(
-            "Spotify: только метаданные. Аудио ищется отдельно в SpotiSaver, YouTube или SoundCloud; это не прямая загрузка из Spotify и версия записи может отличаться.",
-            "Spotify provides metadata only. Audio is matched separately via SpotiSaver, YouTube or SoundCloud; this is not a direct Spotify download and the recording may differ."))
+        direct = source in self.DL_SINGLE_ONLY
+        self.direct_help_row.setVisible(source == "direct")
+        self.spotify_source_note.setVisible(False)
         # Режимы у сервисов разные: у Instagram нет плейлистов, у Spotify - одна ссылка на трек/альбом/плейлист.
         labels = self.DL_KIND_LABELS.get(source, self.DL_KIND_LABELS["youtube"])
         for key, button in self.kind_buttons.items():
@@ -24124,7 +25407,9 @@ class Window(QWidget):
             self._dl_source_urls[active_dl_source] = self.channel_edit.text().strip()
         youtube_channel = (self._dl_source_urls.get("youtube") if hasattr(self, "_dl_source_urls") else None)
         self.cfg.update({
-            "channel": normalize_channel(str(youtube_channel or DEFAULT_CHANNEL)),
+            "channel": (normalize_channel(str(youtube_channel or DEFAULT_CHANNEL))
+                        if detect_video_site(str(youtube_channel or "")) == "youtube"
+                        else self.cfg.get("channel", DEFAULT_CHANNEL)),
             "dl_source_urls": dict(self._dl_source_urls) if hasattr(self, "_dl_source_urls") else self.cfg.get("dl_source_urls", {}),
             "folder": str(self.download_dir),
             "sources": [str(p) for p in self.sources],
@@ -24209,6 +25494,13 @@ class Window(QWidget):
         self._refresh_security_note()
 
     # ---------- канал, папка, места воспроизведения ----------
+    def _cookies_dropped(self, paths):
+        """Fast-drop файла cookies.txt в поле пути."""
+        if paths:
+            self.cookies_file_edit.setText(paths[0])
+            self.save_settings()
+            self.on_dl_options_changed()
+
     def browse_cookies_file(self):
         directory = str(Path(self.cookies_file_edit.text()).parent) if self.cookies_file_edit.text().strip() else str(Path.home())
         def chosen(paths):
@@ -24220,11 +25512,11 @@ class Window(QWidget):
     def apply_channel_text(self):
         source = self.cmb_source.currentData() if hasattr(self, "cmb_source") else "youtube"
         text = self.channel_edit.text().strip()
-        if source == "youtube" and text:
+        if source == "youtube" and text and detect_video_site(text) == "youtube":
             try:
                 text = download_url(text, source, "channel")
             except ValueError:
-                pass  # Keep the invalid input visible and explain it in the requirements row.
+                log.debug("подавленная ошибка", exc_info=True)  # Keep the invalid input visible and explain it in the requirements row.
         self.channel_edit.setText(text)
         if hasattr(self, "_dl_source_urls"):
             self._dl_source_urls[source] = text
@@ -24323,6 +25615,11 @@ class Window(QWidget):
                                     mode=QFileDialog.FileMode.Directory,
                                     callback=lambda paths: self._add_source_folder(paths[0]) if paths else None)
 
+    def _sources_dropped(self, paths):
+        """Fast-drop папок в «Воспроизведение также из»: только папки, файлы игнорируются."""
+        for raw in paths:
+            self._add_source_folder(raw)
+
     def _add_source_folder(self, chosen):
         if not chosen:
             return
@@ -24397,7 +25694,7 @@ class Window(QWidget):
             try:
                 size += p.stat().st_size
             except OSError:
-                pass
+                log.debug("подавленная ошибка", exc_info=True)
         self.lbl_total.setText(f"В папке загрузки: {len(dl_files)} видео, {fmt_size(size)}")
         self.lbl_playlist.setText(f"В плейлисте: {len(self.files)}")
 
@@ -24521,6 +25818,8 @@ class Window(QWidget):
                 self.stop_equalizer_audio()
                 self.audio.setVolume(0.0)
             self.player.pause()
+        elif (selected := self._selected_track_path()) is not None and selected != self.current:
+            self.play_file(selected)  # выбран другой трек - играть его, а не продолжать прежний
         elif self.current is not None:
             self.player.play()  # продолжить видео с места паузы
             if self.equalizer_enabled and self.player.active not in ("ff", "mpv"):
@@ -24612,7 +25911,50 @@ class Window(QWidget):
             self.filter_track_list()
         self.sync_track_selection()
 
+    def _selected_track_path(self):
+        """Файл, выбранный пользователем в списке треков (или None)."""
+        table = getattr(self, "track_list", None)
+        if table is None:
+            return None
+        rows = sorted({index.row() for index in table.selectedIndexes() if not table.isRowHidden(index.row())})
+        if not rows:
+            return None
+        row = table.currentRow() if table.currentRow() in rows else rows[0]
+        item = table.item(row, 0)
+        raw = item.data(Qt.ItemDataRole.UserRole) if item is not None else None
+        path = Path(str(raw)) if raw else None
+        return path if path is not None and path.is_file() else None
+
+    def _mark_playing_track(self):
+        """Выделяет в списке трек, который сейчас загружен в плеер: жирный шрифт, цвет акцента и значок."""
+        table = getattr(self, "track_list", None)
+        if table is None:
+            return
+        target = str(self.current) if getattr(self, "current", None) is not None else None
+        accent = QBrush(QColor(ACCENT))
+        icon = make_icon("play", ACCENT)
+        table.blockSignals(True)
+        try:
+            for row in range(table.rowCount()):
+                first = table.item(row, 0)
+                if first is None:
+                    continue
+                playing = target is not None and first.data(Qt.ItemDataRole.UserRole) == target
+                for column in range(table.columnCount()):
+                    item = table.item(row, column)
+                    if item is None:
+                        continue
+                    font = item.font()
+                    if font.bold() != playing:
+                        font.setBold(playing)
+                        item.setFont(font)
+                    item.setData(Qt.ItemDataRole.ForegroundRole, accent if playing else None)
+                first.setIcon(icon if playing else QIcon())
+        finally:
+            table.blockSignals(False)
+
     def sync_track_selection(self):
+        self._mark_playing_track()
         if self.current is None:
             return
         target = str(self.current)
@@ -24686,14 +26028,14 @@ class Window(QWidget):
                 self._dl_checking = False
                 self._pending_after_probe = None
             return
-        source = self.cmb_source.currentData()
+        source = self._dl_effective_source()
         if source == "spotify":
             # Spotify используется для экспорта официальных метаданных; аудио загружается отдельно из поддерживаемых источников.
             url = self.video_edit.text().strip()
             if not self._spotify_collection_ready(url):
                 return
             self.start_job(url, source=source)
-        elif source == "direct" or self.dl_kind == "single":
+        elif source in self.DL_SINGLE_ONLY or self.dl_kind == "single":
             self.start_single()
         elif self.dl_kind == "playlist":
             self.start_job(None, source=source, target_override=normalize_playlist(self.playlist_edit.text()))
@@ -24701,7 +26043,7 @@ class Window(QWidget):
             self.start_job(None, source=source)
 
     def start_single(self):
-        source = self.cmb_source.currentData()
+        source = self._dl_effective_source(self.video_edit.text())
         url = self.video_edit.text().strip()
         if source == "youtube":
             url = normalize_video(url)
@@ -24730,8 +26072,9 @@ class Window(QWidget):
             target_url = normalize_channel(self.channel_edit.text())
         else:
             target_url = self.channel_edit.text().strip()
-            if not retry_entries and source == self.cmb_source.currentData():
-                self._dl_source_urls[source] = target_url
+            combo_source = self.cmb_source.currentData()
+            if not retry_entries and (source == combo_source or combo_source == "youtube"):
+                self._dl_source_urls[combo_source] = target_url
                 self.save_settings()
         try:
             if not retry_entries:
@@ -24748,8 +26091,8 @@ class Window(QWidget):
                         entry_url = f"https://www.youtube.com/watch?v={entry.get("id", "")}"
                     download_url(entry_url, source)
         except ValueError as exc:
-            self.lbl_session.setText(str(exc))
-            self.show_message("NOP", str(exc))
+            self.lbl_session.setText(self._dl_source_error_text(exc))
+            self.show_message("NOP", self._dl_source_error_text(exc))
             return
         self.apply_folder_text()
         self._dl_active = True
@@ -25098,6 +26441,10 @@ class Window(QWidget):
         source = str(state.get("source") or "—")
         if source.casefold() in {"direct", "generic"}:
             source = ui_text("Прямой URL", "Direct URL")
+        elif source.casefold() in {"rutube", "vk"}:
+            source = DOWNLOAD_SOURCE_NAMES[source.casefold()]
+        elif source.casefold() == "other":
+            source = ui_text("Другие ссылки", "Other links")
         source = ui_text("Источник: ", "Source: ") + source
         text = ui_text(*names.get(phase,(phase,phase)))
         if percent is not None and phase in {"downloading", "merging", "converting", "transcoding", "processing"}:
@@ -25261,6 +26608,7 @@ class Window(QWidget):
 
 
 
+
     def _transcode_probe_ready(self, generation, source, info):
         if self._closing or generation != self._transcode_probe_generation:
             return
@@ -25271,15 +26619,19 @@ class Window(QWidget):
             return
         self._transcode_current_info = info
         self._transcode_info_source = source
+        unknown = ui_text("неизвестно", "unknown")
+        container = str(self.transcode_format.currentData() or 'mp4')
         self._transcode_audio_updating = True
         try:
             self.transcode_audio_tracks.clear()
+            self.transcode_sub_tracks.clear()
             self._transcode_audio_rows = {}
+            self._transcode_sub_rows = {}
             for track in info.get("audio_tracks") or []:
                 index = int(track["audio_index"])
                 codec = track.get("codec") or "неизвестно"
                 if codec == "неизвестно":
-                    codec = ui_text("неизвестно", "unknown")
+                    codec = unknown
                 desc = ui_text(f"Дорожка {index+1}: {codec}", f"Track {index+1}: {codec}")
                 if track.get("channel_layout"):
                     desc += " · " + track["channel_layout"]
@@ -25299,9 +26651,36 @@ class Window(QWidget):
                 item = QListWidgetItem(ui_text("Аудиодорожки не найдены или FFprobe недоступен", "No audio tracks found, or FFprobe is unavailable"))
                 item.setFlags(item.flags() & ~Qt.ItemFlag.ItemIsUserCheckable)
                 self.transcode_audio_tracks.addItem(item)
+            for track in info.get("subtitle_tracks") or []:
+                item = QListWidgetItem("")
+                item.setFlags(item.flags() & ~Qt.ItemFlag.ItemIsUserCheckable)
+                self.transcode_sub_tracks.addItem(item)
+                self._transcode_sub_row(item, track, source, container)
+            if not self.transcode_sub_tracks.count():
+                item = QListWidgetItem(ui_text("В этом файле нет встроенных субтитров.", "This file has no embedded subtitles."))
+                item.setFlags(item.flags() & ~Qt.ItemFlag.ItemIsUserCheckable)
+                self.transcode_sub_tracks.addItem(item)
         finally:
             self._transcode_audio_updating = False
-        codecs = ", ".join(ui_text("неизвестно", "unknown") if c == "неизвестно" else c for c in info.get("audio_codecs") or [])
+        # subtitle summary
+        subs = info.get("subtitle_tracks") or []
+        if subs:
+            names = []
+            for t in subs:
+                flags = []
+                if t.get("forced"):
+                    flags.append(ui_text("принудительные", "forced"))
+                if t.get("default"):
+                    flags.append(ui_text("по умолчанию", "default"))
+                if t["codec"] in TRANSCODE_BITMAP_SUBS:
+                    flags.append(ui_text("графические", "bitmap"))
+                names.append(f"#{t['subtitle_index']+1} " + " · ".join(x for x in [t.get("language") or "—", TRANSCODE_SUB_NAMES.get(t["codec"], str(t["codec"]).upper()), (t.get("title") or "")[:40]] + flags if x))
+            self.transcode_sub_summary.setText(ui_text(f"Найдено дорожек субтитров: {len(subs)}. ", f"Subtitle tracks found: {len(subs)}. ") + "; ".join(names))
+        else:
+            self.transcode_sub_summary.setText(ui_text("Во встроенных дорожках субтитров нет. Можно добавить внешний файл ниже.",
+                                                       "No embedded subtitle tracks. You can add an external file below."))
+        self._transcode_ext_refresh()
+        codecs = ", ".join(unknown if c == "неизвестно" else c for c in info.get("audio_codecs") or [])
         if not codecs:
             codecs = ui_text("не удалось определить", "could not determine") if info.get("error") else ui_text("нет аудио", "no audio")
         self.transcode_original_audio_label.setText(ui_text(f"Исходный аудиокодек: {codecs}", f"Original audio codec: {codecs}"))
@@ -25313,11 +26692,15 @@ class Window(QWidget):
         self.transcode_video_bitrate.setToolTip(ui_text(
             f"В оригинале: {value}. 0 = CRF/CQ; значение больше 0 задаёт целевой видеобитрейт.",
             f"Original: {value}. 0 = CRF/CQ; a value above 0 sets the target video bitrate."))
+        self._transcode_refresh_labels()
+        self._transcode_summary_soon()
         if not (self.transcode_worker is not None and (self.transcode_worker.isRunning() or self.transcode_worker._completion_result is not None)):
             if info.get("error"):
                 self.transcode_status.setText(ui_text("Метаданные недоступны: ", "Metadata unavailable: ") + redact_diagnostic(conversion_probe_error(info)))
             else:
-                self.transcode_status.setText(ui_text("Отметьте дорожки; кодек и битрейт задаются отдельно для каждого файла.", "Select tracks; codec and bitrate are set independently for each file."))
+                self.transcode_status.setText(ui_text("Отметьте дорожки на вкладках «Звук» и «Субтитры»; настройки хранятся отдельно для каждого файла.",
+                                                      "Select tracks on the Audio and Subtitles tabs; choices are stored separately for each file."))
+
 
 
     def _transcode_audio_row(self, item, track, source):
@@ -25326,39 +26709,66 @@ class Window(QWidget):
         original = track.get('codec') or unknown
         if original == 'неизвестно': original = unknown
         rate = track.get('bitrate_kbps')
-        desc = ui_text(f'Исходный: {original} · ',f'Source: {original} · ')
-        desc += (str(rate)+ui_text(' кбит/с',' kbit/s')) if rate else unknown
+        desc = ui_text(f'Исходный: {original}',f'Source: {original}')
+        if track.get('channel_layout'): desc += ' · ' + track['channel_layout']
+        desc += ' · ' + ((str(rate)+ui_text(' кбит/с',' kbit/s')) if rate else unknown)
+        if track.get('language'): desc += ' · ' + track['language']
+        if track.get('title'): desc += ' · ' + track['title'][:80]
         row = QWidget(self.transcode_audio_tracks.viewport())
         row.setProperty('i18n_skip',True)
         row.setObjectName('clear')
         layout = QVBoxLayout(row)
         layout.setContentsMargins(2,2,2,2)
-        layout.setSpacing(2)
+        layout.setSpacing(3)
         layout.setAlignment(Qt.AlignmentFlag.AlignTop)
         label = QLabel(desc)
         label.setTextFormat(Qt.TextFormat.PlainText)
         label.setWordWrap(True)
+        label.setMinimumWidth(0)
         header = QHBoxLayout()
         enabled = QCheckBox(ui_text(f'Дорожка №{index+1}',f'Track #{index+1}'))
         enabled.setObjectName(f'transcodeAudioEnabled{index}')
         header.addWidget(enabled)
-        label.setMinimumWidth(0)
         header.addWidget(label,1)
         layout.addLayout(header)
         controls = QGridLayout()
+        controls.setHorizontalSpacing(6); controls.setVerticalSpacing(3)
         codec = WheelSafeComboBox(row)
         bitrate = WheelSafeSpinBox()
         bitrate.setRange(6,1024)
         bitrate.setSuffix(ui_text(' кбит/с',' kbit/s'))
         for key,name in TRANSCODE_AUDIO_CODECS.items():
             codec.addItem(ui_text('Оригинал / Копировать','Original / Copy') if key == 'copy' else name,key)
+        mixdown = WheelSafeComboBox(row)
+        for key,name in (('',ui_text('Как в оригинале','As in source')),('mono',ui_text('Моно','Mono')),('stereo',ui_text('Стерео','Stereo')),('5.1','5.1')):
+            mixdown.addItem(name,key)
+        samplerate = WheelSafeComboBox(row)
+        samplerate.addItem(ui_text('Как в оригинале','As in source'),0)
+        for value in (22050,32000,44100,48000,96000):
+            samplerate.addItem(f'{value} Гц' if LANG != 'en' else f'{value} Hz',value)
+        gain = WheelSafeDoubleSpinBox()
+        gain.setRange(-30,30); gain.setDecimals(1); gain.setSingleStep(0.5); gain.setSuffix(ui_text(' дБ',' dB'))
+        name_edit = QLineEdit(); name_edit.setMaxLength(120); name_edit.setPlaceholderText(ui_text('Название дорожки','Track name'))
+        default_cb = QCheckBox(ui_text('По умолчанию','Default'))
         ext = str(self.transcode_format.currentData() or 'mp4')
         default_codec = CONVERSION_FFMPEG_PROFILES['Видео'][ext][2] or 'aac'
+        if transcode_audio_compatible(ext,'copy',track.get('codec','неизвестно')):
+            default_codec = 'copy'   # по умолчанию звук не перекодируется, если контейнер принимает исходный кодек
+        language = track.get('language') or ''
         saved = self._transcode_audio_options.setdefault(source,{}).setdefault(str(index),
-            {'codec':default_codec,'bitrate':192,'enabled':True})
+            {'codec':default_codec,'bitrate':192,'enabled':self._transcode_rule_enabled('audio',language),
+             'mixdown':'','samplerate':0,'gain':0.0,'name':'','language':language})
+        saved.setdefault('language',language)
+        for key,default in (('mixdown',''),('samplerate',0),('gain',0.0),('name','')):
+            saved.setdefault(key,default)
         enabled.setChecked(bool(saved.get('enabled',True)))
-        codec.setCurrentIndex(codec.findData(saved['codec']))
+        codec.setCurrentIndex(max(0,codec.findData(saved['codec'])))
         bitrate.setValue(saved['bitrate'])
+        mixdown.setCurrentIndex(max(0,mixdown.findData(saved['mixdown'])))
+        samplerate.setCurrentIndex(max(0,samplerate.findData(saved['samplerate'])))
+        gain.setValue(float(saved['gain']))
+        name_edit.setText(str(saved['name']))
+        default_cb.setChecked(bool(saved.get('default',track.get('default',False))))
         # Include both localized copy labels, font metrics, frame and arrow.
         names = [codec.itemText(i) for i in range(codec.count())] + ['Оригинал / Копировать','Original / Copy']
         codec.ensurePolished()
@@ -25371,17 +26781,33 @@ class Window(QWidget):
         codec.setMinimumSize(minimum)
         codec.view().setMinimumWidth(minimum.width())
         codec.view().setTextElideMode(Qt.TextElideMode.ElideNone)
-        codec.setSizePolicy(QSizePolicy.Policy.Expanding,QSizePolicy.Policy.Fixed)
-        controls.addWidget(QLabel(ui_text('Выход:','Output:')),0,0)
+        for widget in (codec,mixdown,samplerate,bitrate,gain):
+            widget.setSizePolicy(QSizePolicy.Policy.Expanding,QSizePolicy.Policy.Fixed)
+        def caption(text):
+            lab = QLabel(text); lab.setObjectName('muted'); return lab
+        controls.addWidget(caption(ui_text('Выход:','Output:')),0,0)
         controls.addWidget(codec,0,1)
-        controls.addWidget(QLabel(ui_text('Битрейт:','Bitrate:')),1,0)
-        controls.addWidget(bitrate,1,1)
+        controls.addWidget(caption(ui_text('Битрейт:','Bitrate:')),0,2)
         output_rate = QLabel()
         output_rate.setMinimumWidth(0)
         output_rate.setWordWrap(True)
-        controls.addWidget(output_rate,1,1)
-        controls.setColumnStretch(1,1)
+        rate_holder = QWidget()
+        rate_holder.setObjectName('clear')
+        rate_stack = QStackedLayout(rate_holder)
+        rate_stack.setContentsMargins(0,0,0,0)
+        rate_stack.addWidget(bitrate)
+        rate_stack.addWidget(output_rate)
+        controls.addWidget(rate_holder,0,3)
+        controls.addWidget(caption(ui_text('Каналы:','Channels:')),1,0)
+        controls.addWidget(mixdown,1,1)
+        controls.addWidget(caption(ui_text('Частота:','Rate:')),1,2)
+        controls.addWidget(samplerate,1,3)
+        controls.addWidget(caption(ui_text('Усиление:','Gain:')),2,0)
+        controls.addWidget(gain,2,1)
+        controls.addWidget(name_edit,2,2,1,2)
+        controls.setColumnStretch(1,1); controls.setColumnStretch(3,1)
         layout.addLayout(controls)
+        layout.addWidget(default_cb)
         warning = QLabel()
         warning.setWordWrap(True)
         layout.addWidget(warning)
@@ -25389,12 +26815,19 @@ class Window(QWidget):
             if self._closing or self._transcode_audio_rows.get(index, (None,))[0] is not codec:
                 return  # Obsolete row widgets may await Qt deferred deletion.
             key = str(codec.currentData())
-            saved.update(codec=key,bitrate=bitrate.value(),enabled=enabled.isChecked())
-            codec.setEnabled(enabled.isChecked())
+            saved.update(codec=key,bitrate=bitrate.value(),enabled=enabled.isChecked(),mixdown=str(mixdown.currentData() or ''),
+                         samplerate=int(samplerate.currentData() or 0),gain=gain.value(),name=name_edit.text())
+            on = enabled.isChecked()
+            codec.setEnabled(on)
+            filters_ok = on and key != 'copy'
+            for widget in (mixdown,samplerate,gain):
+                widget.setEnabled(filters_ok)
+                widget.setToolTip(ui_text('Недоступно для режима «Оригинал / Копировать».','Unavailable in “Original / Copy” mode.') if key == 'copy' else '')
+            name_edit.setEnabled(on)
+            default_cb.setEnabled(on)
             manual_rate = key not in {'copy','flac','pcm_s16le'}
-            bitrate.setEnabled(manual_rate and enabled.isChecked())
-            bitrate.setVisible(manual_rate)
-            output_rate.setVisible(not manual_rate)
+            bitrate.setEnabled(manual_rate and on)
+            rate_stack.setCurrentWidget(bitrate if manual_rate else output_rate)
             output_rate.setText((str(rate)+ui_text(' кбит/с',' kbit/s') if rate else unknown) if key == 'copy' else ui_text('Определяется кодеком','Determined by codec'))
             if key == 'copy':
                 bitrate.setToolTip(ui_text('Битрейт исходника: ','Source bitrate: ')+(str(rate) if rate else unknown))
@@ -25425,16 +26858,115 @@ class Window(QWidget):
                 codec.model().item(j).setToolTip(incompatibility(candidate))
             reason = incompatibility(key)
             warning.setText(reason)
-            warning.setVisible(bool(reason) and enabled.isChecked())
+            warning.setVisible(bool(reason) and on)
             row.updateGeometry()
             self.transcode_audio_tracks.sync_metrics()
+            self._transcode_summary_soon()
+        def default_toggled(checked):
+            if self._closing or self._transcode_audio_rows.get(index, (None,))[0] is not codec:
+                return
+            for other_index, other in self._transcode_audio_options.get(source,{}).items():
+                other['default'] = bool(checked) and other_index == str(index)
+            if checked:
+                for other_index,entry in self._transcode_audio_rows.items():
+                    if other_index != index and len(entry) > 5:
+                        entry[5].blockSignals(True); entry[5].setChecked(False); entry[5].blockSignals(False)
+            saved['default'] = bool(checked)
         enabled.toggled.connect(update)
         codec.currentIndexChanged.connect(update)
         bitrate.valueChanged.connect(update)
+        mixdown.currentIndexChanged.connect(update)
+        samplerate.currentIndexChanged.connect(update)
+        gain.valueChanged.connect(update)
+        name_edit.textChanged.connect(update)
+        default_cb.toggled.connect(default_toggled)
         item.setText('')
         self.transcode_audio_tracks.setItemWidget(item,row)
-        self._transcode_audio_rows[index] = (codec,bitrate,label,warning)
+        self._transcode_audio_rows[index] = (codec,bitrate,label,warning,enabled,default_cb)
         update()
+
+    def _transcode_sub_row(self, item, track, source, container):
+        index = int(track['subtitle_index'])
+        bitmap = track['codec'] in TRANSCODE_BITMAP_SUBS
+        incompatible = bitmap and container in {'mp4','mov','webm','avi'}
+        if container == 'avi':
+            incompatible = True
+        language = track.get('language') or ''
+        flags = []
+        if track.get('forced'): flags.append(ui_text('принудительные','forced'))
+        if track.get('default'): flags.append(ui_text('по умолчанию','default'))
+        if bitmap: flags.append(ui_text('графические','bitmap'))
+        desc = ' · '.join(x for x in [language or '—', TRANSCODE_SUB_NAMES.get(track['codec'], str(track['codec']).upper()), (track.get('title') or '')[:80]] + flags if x)
+        row = QWidget(self.transcode_sub_tracks.viewport())
+        row.setProperty('i18n_skip',True)
+        row.setObjectName('clear')
+        layout = QVBoxLayout(row)
+        layout.setContentsMargins(2,2,2,2); layout.setSpacing(3)
+        layout.setAlignment(Qt.AlignmentFlag.AlignTop)
+        keep = QCheckBox(ui_text(f'Субтитры №{index+1}',f'Subtitles #{index+1}'))
+        label = QLabel(desc); label.setTextFormat(Qt.TextFormat.PlainText); label.setWordWrap(True); label.setMinimumWidth(0)
+        top = QHBoxLayout(); top.addWidget(keep); top.addWidget(label,1)
+        layout.addLayout(top)
+        default_cb = QCheckBox(ui_text('По умолчанию','Default'))
+        burn_cb = QCheckBox(ui_text('Вшить в видео','Burn into video'))
+        flags_row = QHBoxLayout(); flags_row.addWidget(default_cb); flags_row.addWidget(burn_cb); flags_row.addStretch(1)
+        layout.addLayout(flags_row)
+        warning = QLabel(); warning.setWordWrap(True)
+        layout.addWidget(warning)
+        saved = self._transcode_sub_options.setdefault(source,{}).setdefault(str(index),
+            {'enabled':self._transcode_rule_enabled('sub',language,incompatible),'default':bool(track.get('default')),'burn':False,'language':language})
+        saved['incompatible'] = incompatible
+        saved.setdefault('language',language)
+        if incompatible and saved.get('enabled') and not saved.get('burn'):
+            saved['enabled'] = False
+        keep.setChecked(bool(saved['enabled'])); default_cb.setChecked(bool(saved['default'])); burn_cb.setChecked(bool(saved['burn']))
+        def update(*_args):
+            if self._closing or self._transcode_sub_rows.get(index, (None,))[0] is not keep:
+                return
+            saved.update(enabled=keep.isChecked(),default=default_cb.isChecked(),burn=burn_cb.isChecked())
+            default_cb.setEnabled(keep.isChecked())
+            text = ''
+            if keep.isChecked() and incompatible:
+                text = ui_text(f'Формат {track["codec"]} нельзя сохранить в {container.upper()}: выберите MKV или вшейте субтитры в видео.',
+                               f'{track["codec"]} cannot be stored in {container.upper()}: choose MKV or burn the subtitles into the video.')
+            elif burn_cb.isChecked():
+                text = ui_text('Субтитры станут частью изображения; их нельзя будет отключить.','The subtitles become part of the picture and cannot be turned off.')
+            warning.setText(text)
+            warning.setVisible(bool(text))
+            row.updateGeometry()
+            self.transcode_sub_tracks.sync_metrics()
+            self._transcode_summary_soon()
+        def burn_toggled(checked):
+            if self._closing or self._transcode_sub_rows.get(index, (None,))[0] is not keep:
+                return
+            if checked:
+                for other_index,other in self._transcode_sub_options.get(source,{}).items():
+                    if other_index != str(index):
+                        other['burn'] = False
+                for other_index,entry in self._transcode_sub_rows.items():
+                    if other_index != index:
+                        entry[2].blockSignals(True); entry[2].setChecked(False); entry[2].blockSignals(False)
+                        entry[3].setVisible(False)
+            update()
+        def default_toggled(checked):
+            if self._closing or self._transcode_sub_rows.get(index, (None,))[0] is not keep:
+                return
+            if checked:
+                for other_index,other in self._transcode_sub_options.get(source,{}).items():
+                    if other_index != str(index):
+                        other['default'] = False
+                for other_index,entry in self._transcode_sub_rows.items():
+                    if other_index != index:
+                        entry[1].blockSignals(True); entry[1].setChecked(False); entry[1].blockSignals(False)
+            update()
+        keep.toggled.connect(update)
+        default_cb.toggled.connect(default_toggled)
+        burn_cb.toggled.connect(burn_toggled)
+        item.setText('')
+        self.transcode_sub_tracks.setItemWidget(item,row)
+        self._transcode_sub_rows[index] = (keep,default_cb,burn_cb,warning)
+        update()
+
 
     def _transcode_stream_progress(self, data):
         if self.sender() is not None and self.sender() is not self.transcode_worker:
@@ -25447,6 +26979,9 @@ class Window(QWidget):
             bar.setFormat(caption + (unknown if value is None else '%p%'))
         progress(self.transcode_file_progress,data['file_percent'],ui_text('Текущий файл: ','Current file: '))
         progress(self.transcode_progress,data['queue_percent'],ui_text('Очередь: ','Queue: '))
+        row_item = self.transcode_table.item(data['index'], 1)
+        if row_item is not None and data['file_percent'] is not None:
+            row_item.setText(ui_text('Обработка… ','Processing… ') + f"{data['file_percent']}%")
         eta = '~'+format_time_seconds(data['eta']) if data.get('eta') is not None else unknown
         speed = data.get('speed') or unknown
         elapsed = format_time_seconds(data['elapsed'])
@@ -25557,21 +27092,17 @@ class Window(QWidget):
         for action in self.transcode_profile_menu.actions():
             if action.menu() is not None:action.menu().deleteLater()
         self.transcode_profile_menu.clear()
-        for key,(name,resolution,width,height) in TRANSCODE_PROFILES.items():
-            menu=self.transcode_profile_menu.addMenu(f'{name} · {width}×{height}')
-            for balanced in (False,True):
-                label=name.split(' (')[0]+(ui_text(' (сбалансированный)',' (balanced)') if balanced else '')
-                action=menu.addAction(label)
-                action.setData((key,balanced))
-                action.setCheckable(True)
-                action.setChecked(getattr(self,"_transcode_profile",None) == (key,balanced))
-                action.triggered.connect(lambda checked=False,k=key,b=balanced:self.apply_transcode_profile(k,b))
-        self._transcode_profile_caption()
+        self._transcode_rebuild_profile_menu()
         self.transcode_crf.setToolTip(ui_text('Меньше — выше качество и обычно больше файл. CPU: CRF; NVENC: CQ; QSV: global_quality; AMF: QP. Ручной битрейт отключает этот параметр.',
                                              'Lower means higher quality and usually a larger file. CPU: CRF; NVENC: CQ; QSV: global_quality; AMF: QP. Manual bitrate disables this value.'))
         self.transcode_no_upscale.setToolTip(ui_text('Разрешение — верхний предел по ширине и высоте; пропорции сохраняются.',
                                                     'Resolution is a width/height ceiling; aspect ratio is preserved.'))
         self.transcode_preview.update_language()
+        self.transcode_ext_delay.setSuffix(ui_text(' мс',' ms'))
+        self._transcode_refresh_labels()
+        self._transcode_refresh_summary()
+        self._transcode_rebuild_tracks()
+        self._transcode_ext_refresh(self.transcode_ext_list.currentRow())
         for control in self.findChildren(TotalBitrateControl):
             control.refresh_text()  # «Авто», единицы и подсказка
         if hasattr(self, "color_list"):  # названия пресетов — элементы списка, а не виджеты: пересобираем
@@ -25590,10 +27121,156 @@ class Window(QWidget):
                 self.transcode_file_progress.setFormat(ui_text('Текущий файл: %p%','Current file: %p%'))
 
 
+    def _transcode_rebuild_profile_menu(self):
+        for action in self.transcode_profile_menu.actions():
+            if action.menu() is not None:action.menu().deleteLater()
+        self.transcode_profile_menu.clear()
+        for key,(name,resolution,width,height) in TRANSCODE_PROFILES.items():
+            menu=self.transcode_profile_menu.addMenu(f'{name} · {width}×{height}')
+            for balanced in (False,True):
+                label=name.split(' (')[0]+(ui_text(' (сбалансированный)',' (balanced)') if balanced else '')
+                action=menu.addAction(label)
+                action.setData((key,balanced))
+                action.setCheckable(True)
+                action.setChecked(getattr(self,"_transcode_profile",None) == (key,balanced))
+                action.triggered.connect(lambda checked=False,k=key,b=balanced:self.apply_transcode_profile(k,b))
+        presets=self.cfg.get('transcode_user_presets') or {}
+        self.transcode_profile_menu.addSeparator()
+        for name in sorted(presets,key=str.casefold):
+            action=self.transcode_profile_menu.addAction(name)
+            action.setData(('@user',name))
+            action.setCheckable(True)
+            action.setChecked(getattr(self,'_transcode_profile',None)==('@user',name))
+            action.triggered.connect(lambda checked=False,n=name:self.apply_transcode_user_preset(n))
+        save_action=self.transcode_profile_menu.addAction(ui_text('Сохранить текущие настройки как пресет…','Save current settings as preset…'))
+        save_action.triggered.connect(self.transcode_save_preset)
+        if presets:
+            delete_menu=self.transcode_profile_menu.addMenu(ui_text('Удалить свой пресет','Delete my preset'))
+            for name in sorted(presets,key=str.casefold):
+                action=delete_menu.addAction(name)
+                action.triggered.connect(lambda checked=False,n=name:self.transcode_delete_preset(n))
+        self._transcode_profile_caption()
+
+    def _transcode_collect_preset(self):
+        crop=[spin.value() for spin in self.transcode_crop]
+        return {'format':self.transcode_format.currentData(),'codec':self.transcode_codec.currentData(),
+                'encoder':self.transcode_encoder.currentIndex(),'quality':self.transcode_quality.currentIndex(),
+                'crf':self.transcode_crf.value(),'preset':self.transcode_preset.currentText(),
+                'video_bitrate':self.transcode_video_bitrate.value(),
+                'total_amount':self.transcode_total_bitrate.amount.value(),'total_unit':self.transcode_total_bitrate.units.currentData(),
+                'two_pass':self.transcode_two_pass.isChecked(),'fps':self.transcode_fps.currentText(),
+                'fps_mode':self.transcode_fps_mode.currentData(),'tune':self.transcode_tune.currentData(),
+                'profile':self.transcode_profile.currentData(),'level':self.transcode_level.currentData(),
+                'bitdepth':self.transcode_bitdepth.currentData(),'extra':self.transcode_extra.text(),
+                'hwdecode':self.transcode_hwdecode.isChecked(),'resolution':self.transcode_resolution.currentData(),
+                'width':self.transcode_width.value(),'height':self.transcode_height.value(),
+                'keep_aspect':self.transcode_keep_aspect.isChecked(),'no_upscale':self.transcode_no_upscale.isChecked(),
+                'crop':crop,'auto_crop':self.transcode_auto_crop.isChecked(),'rotate':self.transcode_rotate.currentData(),
+                'flip_h':self.transcode_flip_h.isChecked(),'flip_v':self.transcode_flip_v.isChecked(),
+                'deint':self.transcode_deint.currentData(),'deint_only':self.transcode_deint_only.isChecked(),
+                'detelecine':self.transcode_detelecine.isChecked(),'denoise':self.transcode_denoise.currentData(),
+                'sharpen':self.transcode_sharpen.currentData(),'deblock':self.transcode_deblock.currentData(),
+                'gray':self.transcode_gray.isChecked(),'keep_chapters':self.transcode_keep_chapters.isChecked(),
+                'keep_meta':self.transcode_keep_meta.isChecked(),'faststart':self.transcode_faststart.isChecked()}
+
+    def apply_transcode_user_preset(self,name):
+        presets=self.cfg.get('transcode_user_presets') or {}
+        data=presets.get(name)
+        if not isinstance(data,dict) or self._transcode_busy():return
+        def combo(box,value):
+            index=box.findData(value)
+            if index>=0:box.setCurrentIndex(index)
+        def check(box,key):
+            if key in data:box.setChecked(bool(data[key]))
+        def number(box,key):
+            try:
+                if key in data:box.setValue(int(data[key]))
+            except (TypeError,ValueError):pass
+        self._applying_transcode_profile=True
+        try:
+            combo(self.transcode_format,data.get('format'))
+            self._transcode_codec_choices()
+            if isinstance(data.get('encoder'),int) and 0<=data['encoder']<self.transcode_encoder.count():
+                self.transcode_encoder.setCurrentIndex(data['encoder'])
+            combo(self.transcode_codec,data.get('codec'))
+            if isinstance(data.get('quality'),int) and 0<=data['quality']<self.transcode_quality.count():
+                self.transcode_quality.setCurrentIndex(data['quality'])
+            number(self.transcode_crf,'crf')
+            if data.get('preset'):self.transcode_preset.setCurrentText(str(data['preset']))
+            number(self.transcode_video_bitrate,'video_bitrate')
+            combo(self.transcode_total_bitrate.units,data.get('total_unit'))
+            try:self.transcode_total_bitrate.amount.setValue(float(data.get('total_amount',0)))
+            except (TypeError,ValueError):pass
+            check(self.transcode_two_pass,'two_pass')
+            if data.get('fps'):
+                index=self.transcode_fps.findText(str(data['fps']))
+                if index>=0:self.transcode_fps.setCurrentIndex(index)
+            for box,key in ((self.transcode_fps_mode,'fps_mode'),(self.transcode_tune,'tune'),(self.transcode_profile,'profile'),
+                            (self.transcode_level,'level'),(self.transcode_bitdepth,'bitdepth'),(self.transcode_resolution,'resolution'),
+                            (self.transcode_rotate,'rotate'),(self.transcode_deint,'deint'),(self.transcode_denoise,'denoise'),
+                            (self.transcode_sharpen,'sharpen'),(self.transcode_deblock,'deblock')):
+                combo(box,data.get(key))
+            self.transcode_extra.setText(str(data.get('extra',''))[:400])
+            for box,key in ((self.transcode_hwdecode,'hwdecode'),(self.transcode_keep_aspect,'keep_aspect'),(self.transcode_no_upscale,'no_upscale'),
+                            (self.transcode_auto_crop,'auto_crop'),(self.transcode_flip_h,'flip_h'),(self.transcode_flip_v,'flip_v'),
+                            (self.transcode_deint_only,'deint_only'),(self.transcode_detelecine,'detelecine'),(self.transcode_gray,'gray'),
+                            (self.transcode_keep_chapters,'keep_chapters'),(self.transcode_keep_meta,'keep_meta'),(self.transcode_faststart,'faststart')):
+                check(box,key)
+            number(self.transcode_width,'width');number(self.transcode_height,'height')
+            crop=data.get('crop')
+            if isinstance(crop,list) and len(crop)==4:
+                for spin,value in zip(self.transcode_crop,crop):
+                    try:spin.setValue(int(value))
+                    except (TypeError,ValueError):pass
+            number(self.transcode_crf,'crf')
+            self._transcode_profile=('@user',name)
+            self._transcode_profile_modified=False
+        finally:self._applying_transcode_profile=False
+        self._refresh_bitrate_controls()
+        self._transcode_dependent_state()
+        self._transcode_profile_caption()
+        self._transcode_refresh_summary()
+        self.transcode_status.setText(ui_text(f'Применён пресет «{name}». Настройки можно изменить вручную.',f'Preset “{name}” applied. Settings remain editable.'))
+
+    def transcode_save_preset(self):
+        suggested=''
+        profile=getattr(self,'_transcode_profile',None)
+        if profile and profile[0]=='@user':suggested=profile[1]
+        name,ok=QInputDialog.getText(self,ui_text('Сохранить пресет','Save preset'),
+                                     ui_text('Название пресета (видео, размер, фильтры и прочие общие настройки; дорожки не сохраняются):',
+                                             'Preset name (video, size, filters and other shared settings; tracks are not saved):'),text=suggested)
+        name=re.sub(r'[\x00-\x1f]','',str(name)).strip()[:40]
+        if not ok or not name:return
+        presets=dict(self.cfg.get('transcode_user_presets') or {})
+        if name not in presets and len(presets)>=50:
+            self.show_message('Пресеты',ui_text('Можно сохранить не более 50 своих пресетов.','You can keep at most 50 custom presets.'))
+            return
+        presets[name]=self._transcode_collect_preset()
+        self.cfg['transcode_user_presets']=presets
+        self._transcode_profile=('@user',name)
+        self._transcode_profile_modified=False
+        self.save_settings()
+        self._transcode_rebuild_profile_menu()
+        self.transcode_status.setText(ui_text(f'Пресет «{name}» сохранён.',f'Preset “{name}” saved.'))
+
+    def transcode_delete_preset(self,name):
+        presets=dict(self.cfg.get('transcode_user_presets') or {})
+        if name not in presets:return
+        del presets[name]
+        self.cfg['transcode_user_presets']=presets
+        if getattr(self,'_transcode_profile',None)==('@user',name):
+            self._transcode_profile=None
+            self._transcode_profile_modified=False
+        self.save_settings()
+        self._transcode_rebuild_profile_menu()
+        self.transcode_status.setText(ui_text(f'Пресет «{name}» удалён.',f'Preset “{name}” deleted.'))
+
     def _transcode_profile_caption(self):
         profile=getattr(self,'_transcode_profile',None)
         if not profile:
             text=ui_text('Ручные настройки','Manual settings')
+        elif profile[0]=='@user':
+            text=ui_text('Пресет: ','Preset: ')+str(profile[1])+(ui_text(' · изменён',' · modified') if self._transcode_profile_modified else '')
         else:
             key,balanced=profile
             name,resolution,width,height=TRANSCODE_PROFILES[key]
@@ -25605,6 +27282,9 @@ class Window(QWidget):
             if menu is not None:
                 for action in menu.actions():
                     action.setChecked(action.data() == profile)
+        for action in self.transcode_profile_menu.actions():
+            if action.menu() is None and action.isCheckable():
+                action.setChecked(action.data() == profile)
 
 
     def _mark_transcode_profile_manual(self,*_args):
@@ -25669,9 +27349,52 @@ class Window(QWidget):
             item.setEnabled(not reason)
             item.setToolTip(reason or ui_text('Наличие кодировщика в FFmpeg не подтверждает наличие GPU/драйвера.',
                                              'An FFmpeg encoder does not prove GPU/driver availability.'))
-        self.transcode_crf.setRange(1 if encoder in ('NVIDIA NVENC','Intel Quick Sync') else 0,63 if family=='vp9' else 51)
+        self.transcode_crf.setRange(1 if encoder in ('NVIDIA NVENC','Intel Quick Sync') else 0,63 if family in ('vp9','av1') else 51)
         self._refresh_bitrate_controls()
+        self._transcode_dependent_state()
 
+
+    def _transcode_dependent_state(self,*_args):
+        if not hasattr(self,'transcode_tune') or self._transcode_busy():return
+        container=str(self.transcode_format.currentData() or 'mp4')
+        encoder=choice_text(self.transcode_encoder)
+        family=str(self.transcode_codec.currentData() or 'h264')
+        try:vcodec=transcode_codec(container,encoder,family)
+        except ValueError:vcodec=''
+        tunable=vcodec in ('libx264','libx265')
+        for box,table in ((self.transcode_tune,TRANSCODE_TUNES.get(vcodec,())),(self.transcode_profile,TRANSCODE_PROFILES_BY_CODEC.get(vcodec,()))):
+            for index in range(box.count()):
+                value=box.itemData(index)
+                box.model().item(index).setEnabled(not value or value in table)
+            if not box.model().item(box.currentIndex()).isEnabled():box.setCurrentIndex(0)
+            box.setEnabled(tunable)
+            box.setToolTip('' if tunable else ui_text('Доступно для x264 и x265 на CPU.','Available for x264 and x265 on CPU.'))
+        self.transcode_level.setEnabled(tunable)
+        self.transcode_extra.setEnabled(vcodec in TRANSCODE_PARAM_KEYS)
+        self.transcode_extra.setToolTip(ui_text('Параметры x264/x265/SVT-AV1 в виде ключ=значение:ключ=значение. Разрешены буквы, цифры и символы _ = : . , -',
+                                                'x264/x265/SVT-AV1 parameters as key=value:key=value. Letters, digits and _ = : . , - are allowed.'))
+        rate=self.transcode_video_bitrate.value()>0 or self.transcode_total_bitrate.kbps()>0
+        two=rate and vcodec in ('libx264','libx265','libvpx-vp9')
+        self.transcode_two_pass.setEnabled(bool(two))
+        self.transcode_two_pass.setToolTip(ui_text('Нужен целевой битрейт (видео или общий) и CPU-кодировщик x264, x265 или VP9.',
+                                                   'Needs a target bitrate (video or total) and a CPU x264, x265 or VP9 encoder.') if not two else '')
+        custom=self.transcode_resolution.currentData()=='custom'
+        self.transcode_custom_block.setEnabled(custom)
+        self._transcode_custom_fade.setOpacity(1.0 if custom else 0.35)
+        self.transcode_custom_block.setToolTip('' if custom else ui_text('Выберите «Свой размер…» в списке «Разрешение», чтобы задать ширину и высоту.',
+                                                                         'Choose “Custom size…” in the Resolution list to set width and height.'))
+        resized=self.transcode_resolution.currentData()!='Как в оригинале'
+        self.transcode_no_upscale.setEnabled(resized)
+        self._transcode_upscale_fade.setOpacity(1.0 if resized else 0.35)
+        self.transcode_no_upscale.setToolTip('' if resized else ui_text('Нужно при выборе разрешения или своего размера.','Applies when a resolution or custom size is chosen.'))
+        for spin in self.transcode_crop:spin.setEnabled(not self.transcode_auto_crop.isChecked())
+        self.transcode_deint_only.setEnabled(bool(self.transcode_deint.currentData()))
+        self.transcode_faststart.setEnabled(container=='mp4')
+        self._transcode_faststart_fade.setOpacity(1.0 if container=='mp4' else 0.35)
+        self.transcode_faststart.setToolTip('' if container=='mp4' else ui_text('Работает только для MP4.','Works for MP4 only.'))
+        selected=self.transcode_ext_list.currentRow()>=0
+        for widget in (self.transcode_ext_remove_btn,self.transcode_ext_delay,self.transcode_ext_enc,self.transcode_ext_lang,self.transcode_ext_default):
+            widget.setEnabled(selected)
 
     def _transcode_codec_changed(self,*_args):
         self._transcode_codec_choices()
@@ -25681,9 +27404,213 @@ class Window(QWidget):
     def _transcode_quality_changed(self,*_args):
         if not hasattr(self,'transcode_crf') or self._applying_transcode_profile:return
         family=str(self.transcode_codec.currentData())
-        values={'h264':(18,22,26,30),'hevc':(20,24,28,32),'vp9':(26,28,32,36)}[family]
+        values={'h264':(18,22,26,30),'hevc':(20,24,28,32),'vp9':(26,28,32,36),'av1':(24,28,32,36)}[family]
         self.transcode_crf.setValue(values[max(0,self.transcode_quality.currentIndex())])
 
+
+    def _transcode_summary_soon(self,*_args):
+        timer = getattr(self,'_transcode_summary_timer',None)
+        if timer is not None:
+            timer.start()
+
+    def _transcode_refresh_summary(self):
+        if not hasattr(self,'transcode_summary'):
+            return
+        esc = html_lib.escape
+        rows = []
+        def add(title, value):
+            rows.append(f'<p style="margin:2px 0"><b>{esc(title)}:</b> {esc(value)}</p>')
+        ext = str(self.transcode_format.currentData() or 'mp4').upper()
+        video = [self.transcode_codec.currentText(), self.transcode_encoder.currentText()]
+        if self.transcode_video_bitrate.value() > 0:
+            video.append(ui_text(f'{self.transcode_video_bitrate.value()} кбит/с', f'{self.transcode_video_bitrate.value()} kbit/s'))
+        elif self.transcode_total_bitrate.kbps() > 0:
+            video.append(ui_text(f'общий {self.transcode_total_bitrate.kbps()} кбит/с', f'total {self.transcode_total_bitrate.kbps()} kbit/s'))
+        else:
+            video.append(f'{self.transcode_quality.currentText()} (CRF {self.transcode_crf.value()})')
+        if self.transcode_two_pass.isEnabled() and self.transcode_two_pass.isChecked():
+            video.append(ui_text('2 прохода','2-pass'))
+        if self.transcode_encoder.currentIndex() == 0:
+            video.append(self.transcode_preset.currentText())
+        if self.transcode_fps.currentIndex() > 0:
+            video.append(self.transcode_fps.currentText() + ' FPS')
+        if self.transcode_fps_mode.currentData():
+            video.append(self.transcode_fps_mode.currentText())
+        if self.transcode_bitdepth.currentData():
+            video.append(self.transcode_bitdepth.currentText())
+        for combo, enabled in ((self.transcode_tune, self.transcode_tune.isEnabled()), (self.transcode_profile, self.transcode_profile.isEnabled()), (self.transcode_level, self.transcode_level.isEnabled())):
+            if enabled and combo.currentData():
+                video.append(combo.currentText())
+        add(ui_text('Видео','Video'), ' · '.join(video))
+        size = []
+        if self.transcode_resolution.currentData() == 'custom':
+            size.append(f'{self.transcode_width.value()}×{self.transcode_height.value()}' + (ui_text(' с сохранением пропорций',' keeping aspect') if self.transcode_keep_aspect.isChecked() else ''))
+        elif self.transcode_resolution.currentData() != 'Как в оригинале':
+            size.append(self.transcode_resolution.currentText())
+        else:
+            size.append(ui_text('как в оригинале','as in source'))
+        if self.transcode_resolution.currentData() != 'Как в оригинале' and self.transcode_no_upscale.isChecked():
+            size.append(ui_text('без увеличения','no upscaling'))
+        if self.transcode_auto_crop.isChecked():
+            size.append(ui_text('автообрезка полей','auto crop'))
+        elif any(spin.value() for spin in self.transcode_crop):
+            size.append(ui_text('обрезка ','crop ') + '/'.join(str(spin.value()) for spin in self.transcode_crop))
+        if self.transcode_rotate.currentData():
+            size.append(self.transcode_rotate.currentText())
+        if self.transcode_flip_h.isChecked(): size.append(self.transcode_flip_h.text())
+        if self.transcode_flip_v.isChecked(): size.append(self.transcode_flip_v.text())
+        add(ui_text('Размер','Size'), ' · '.join(size))
+        filters = []
+        if self.transcode_deint.currentData(): filters.append(ui_text('деинтерлейс ','deinterlace ') + self.transcode_deint.currentText())
+        if self.transcode_detelecine.isChecked(): filters.append(ui_text('детелесин','detelecine'))
+        for label, combo in ((ui_text('шумоподавление ','denoise '), self.transcode_denoise), (ui_text('резкость ','sharpen '), self.transcode_sharpen), (ui_text('деблокинг ','deblock '), self.transcode_deblock)):
+            if combo.currentData(): filters.append(label + combo.currentText().lower())
+        if self.transcode_gray.isChecked(): filters.append(ui_text('чёрно-белое','grayscale'))
+        if filters:
+            add(ui_text('Фильтры','Filters'), ' · '.join(filters))
+        source = self._transcode_current_source()
+        info = getattr(self,'_transcode_current_info',None)
+        if source and info is not None and getattr(self,'_transcode_info_source',None) == source:
+            name = Path(source).name
+            audio = []
+            for index, saved in sorted(self._transcode_audio_options.get(source, {}).items(), key=lambda kv: int(kv[0])):
+                if not saved.get('enabled', True):
+                    continue
+                key = saved.get('codec', 'aac')
+                text = ui_text('№','#') + str(int(index) + 1) + ' ' + (ui_text('копия','copy') if key == 'copy' else TRANSCODE_AUDIO_CODECS.get(key, key))
+                if key not in ('copy', 'flac', 'pcm_s16le'):
+                    text += f" {saved.get('bitrate', 0)}k"
+                if saved.get('language'): text += f" {saved['language']}"
+                extra = [x for x in (saved.get('mixdown'), str(saved.get('samplerate') or '') , (f"{saved['gain']:+g} dB" if saved.get('gain') else '')) if x]
+                if key != 'copy' and extra: text += ' (' + ', '.join(extra) + ')'
+                audio.append(text)
+            if info.get('audio_tracks'):
+                add(ui_text(f'Звук · {name}', f'Audio · {name}'), '; '.join(audio) if audio else ui_text('без звука','no audio'))
+            subs = []
+            burn = None
+            for index, saved in sorted(self._transcode_sub_options.get(source, {}).items(), key=lambda kv: int(kv[0])):
+                label = ui_text('№','#') + str(int(index) + 1) + (f" {saved['language']}" if saved.get('language') else '')
+                if saved.get('burn'):
+                    burn = label
+                if saved.get('enabled'):
+                    subs.append(label + (ui_text(' (по умолчанию)',' (default)') if saved.get('default') else ''))
+            for item in self._transcode_ext_subs.get(source, []):
+                subs.append(Path(item['path']).name + (f" {item['delay_ms']:+d} ms" if item.get('delay_ms') else ''))
+            if burn:
+                subs.append(ui_text('вшить в видео: ','burn in: ') + burn)
+            if info.get('subtitle_tracks') or subs:
+                add(ui_text(f'Субтитры · {name}', f'Subtitles · {name}'), '; '.join(subs) if subs else ui_text('не сохраняются','not kept'))
+        other = []
+        start, end = self.transcode_range_start.text().strip(), self.transcode_range_end.text().strip()
+        if start or end: other.append(ui_text('фрагмент ','range ') + (start or '0') + ' – ' + (end or ui_text('конец','end')))
+        if not self.transcode_keep_chapters.isChecked(): other.append(ui_text('без глав','no chapters'))
+        if not self.transcode_keep_meta.isChecked(): other.append(ui_text('без метаданных','no metadata'))
+        if self.transcode_title.text().strip(): other.append(ui_text('название «','title “') + self.transcode_title.text().strip() + ui_text('»','”'))
+        if self.transcode_hwdecode.isChecked(): other.append(ui_text('аппаратное декодирование','hardware decoding'))
+        if other:
+            add(ui_text('Дополнительно','More'), ' · '.join(other))
+        add(ui_text('Очередь','Queue'), ui_text(f'{len(self.transcode_jobs)} файл(ов)', f'{len(self.transcode_jobs)} file(s)'))
+        self.transcode_summary.setText(''.join(rows))
+
+    def _transcode_current_source(self):
+        row=self.transcode_table.currentRow()
+        if row<0 and self.transcode_jobs:row=0
+        return str(self.transcode_jobs[row]) if 0<=row<len(self.transcode_jobs) else None
+
+    def _transcode_rule_enabled(self,kind,language,incompatible=False):
+        rule=self._transcode_rules.get(kind)
+        if incompatible:return False
+        if rule is None:return True
+        mode,lang=rule
+        return True if mode=='all' else False if mode=='none' else language==lang
+
+    def _transcode_apply_rule(self,kind,mode,lang=''):
+        store=self._transcode_audio_options if kind=='audio' else self._transcode_sub_options
+        current=self._transcode_current_source()
+        if self.transcode_rule_all.isChecked() or current is None:
+            self._transcode_rules[kind]=(mode,lang)
+            sources=list(store)
+        else:
+            sources=[current]
+        for source in sources:
+            for saved in store.get(source,{}).values():
+                incompatible=bool(saved.get('incompatible'))
+                saved['enabled']=(not incompatible) and (True if mode=='all' else False if mode=='none' else saved.get('language','')==lang)
+        self._transcode_rebuild_tracks()
+
+    def _transcode_rebuild_tracks(self):
+        source=getattr(self,'_transcode_info_source',None)
+        info=getattr(self,'_transcode_current_info',None)
+        if source and info is not None:
+            self._transcode_probe_ready(self._transcode_probe_generation,source,info)
+
+    def transcode_ext_add(self):
+        source=self._transcode_current_source()
+        if source is None or self._transcode_busy():return
+        def chosen(paths):
+            items=self._transcode_ext_subs.setdefault(source,[])
+            for raw in paths:
+                if Path(raw).suffix.casefold() in {'.srt','.ass','.ssa','.vtt'} and not any(i['path']==raw for i in items):
+                    items.append({'path':raw,'delay_ms':0,'charenc':'','language':'','default':False})
+            self._transcode_ext_refresh(len(items)-1 if items else -1)
+        return CnpFileDialog.choose(self,'Выбрать внешние субтитры',str(Path(source).parent),'Субтитры (*.srt *.ass *.ssa *.vtt);;Все файлы (*.*)',
+                                    mode=QFileDialog.FileMode.ExistingFiles,callback=chosen)
+
+    def transcode_ext_remove(self):
+        source=self._transcode_current_source()
+        row=self.transcode_ext_list.currentRow()
+        items=self._transcode_ext_subs.get(source or '',[])
+        if 0<=row<len(items):
+            del items[row]
+            self._transcode_ext_refresh(min(row,len(items)-1))
+
+    def _transcode_ext_refresh(self,select=-1):
+        self.transcode_ext_list.blockSignals(True)
+        self.transcode_ext_list.clear()
+        for item in self._transcode_ext_subs.get(self._transcode_current_source() or '',[]):
+            extra=[]
+            if item.get('delay_ms'):extra.append(f"{item['delay_ms']:+d} мс" if LANG!='en' else f"{item['delay_ms']:+d} ms")
+            if item.get('language'):extra.append(item['language'])
+            if item.get('default'):extra.append(ui_text('по умолчанию','default'))
+            self.transcode_ext_list.addItem(Path(item['path']).name+(' · '+' · '.join(extra) if extra else ''))
+        self.transcode_ext_list.blockSignals(False)
+        if select>=0:self.transcode_ext_list.setCurrentRow(select)
+        self._transcode_ext_selected(self.transcode_ext_list.currentRow())
+        self._transcode_summary_soon()
+
+    def _transcode_ext_selected(self,row):
+        items=self._transcode_ext_subs.get(self._transcode_current_source() or '',[])
+        widgets=(self.transcode_ext_delay,self.transcode_ext_enc,self.transcode_ext_lang,self.transcode_ext_default)
+        for widget in widgets:widget.blockSignals(True)
+        if 0<=row<len(items):
+            item=items[row]
+            self.transcode_ext_delay.setValue(int(item.get('delay_ms') or 0))
+            self.transcode_ext_enc.setCurrentIndex(max(0,self.transcode_ext_enc.findData(item.get('charenc') or '')))
+            self.transcode_ext_lang.setText(str(item.get('language') or ''))
+            self.transcode_ext_default.setChecked(bool(item.get('default')))
+        else:
+            self.transcode_ext_delay.setValue(0);self.transcode_ext_enc.setCurrentIndex(0)
+            self.transcode_ext_lang.clear();self.transcode_ext_default.setChecked(False)
+        for widget in widgets:widget.blockSignals(False)
+        self._transcode_dependent_state()
+
+    def _transcode_ext_edited(self,*_args):
+        items=self._transcode_ext_subs.get(self._transcode_current_source() or '',[])
+        row=self.transcode_ext_list.currentRow()
+        if not 0<=row<len(items):return
+        item=items[row]
+        item.update(delay_ms=self.transcode_ext_delay.value(),charenc=str(self.transcode_ext_enc.currentData() or ''),
+                    language=re.sub(r'[^A-Za-z]','',self.transcode_ext_lang.text())[:3].lower(),default=self.transcode_ext_default.isChecked())
+        if item['default']:
+            for other in items:
+                if other is not item:other['default']=False
+        label=self.transcode_ext_list.item(row)
+        extra=[]
+        if item['delay_ms']:extra.append(f"{item['delay_ms']:+d} ms")
+        if item['language']:extra.append(item['language'])
+        if item['default']:extra.append(ui_text('по умолчанию','default'))
+        label.setText(Path(item['path']).name+(' · '+' · '.join(extra) if extra else ''))
+        self._transcode_summary_soon()
 
     def _transcode_preview_selection(self):
         if not hasattr(self,'transcode_preview'):return
@@ -25711,11 +27638,12 @@ def _install_crash_guard():
         pass
 
     def write(kind, text):
+        log.critical("%s\n%s", kind, text)
         try:
             with path.open("a", encoding="utf-8", errors="replace") as handle:
                 handle.write(f"\n[{time.strftime('%Y-%m-%d %H:%M:%S')}] {kind}\n{text}\n")
         except OSError:
-            pass
+            log.debug("подавленная ошибка", exc_info=True)
 
     def on_exception(kind, value, trace):
         if issubclass(kind, KeyboardInterrupt):
@@ -25731,6 +27659,15 @@ def _install_crash_guard():
         faulthandler.enable(file=_CRASH_LOG_HANDLE, all_threads=True)
     except (OSError, RuntimeError, ValueError):
         pass
+
+
+def _crash_log_mark():
+    """Строка-разделитель в crash.log: видно, где начинается каждый запуск NOP."""
+    try:
+        with (DATA_DIR / "crash.log").open("a", encoding="utf-8", errors="replace") as handle:
+            handle.write(f"\n===== [{time.strftime('%Y-%m-%d %H:%M:%S')}] запуск NOP {APP_VERSION}, pid {os.getpid()} =====\n")
+    except OSError:
+        log.debug("не удалось записать разделитель в crash.log", exc_info=True)
 
 
 if __name__ == "__main__":
@@ -25751,6 +27688,8 @@ if __name__ == "__main__":
             _private_write(Path(sys.argv[2]) / "failure.txt", redact_diagnostic(exc).encode("utf-8"))
             sys.exit(1)
         sys.exit(0)
+    setup_logging()
+    _crash_log_mark()
     # Своя группа на панели задач Windows вместо общей группы Python.
     if sys.platform == "win32":
         try:
@@ -25759,8 +27698,14 @@ if __name__ == "__main__":
             _set_app_id.restype = ctypes.c_long
             _set_app_id("CheNik.NikOmniPlayer")
         except (AttributeError, OSError):
-            pass
+            log.debug("подавленная ошибка", exc_info=True)
     app = QApplication(sys.argv)
+    try:
+        from PyQt6.QtCore import QT_VERSION_STR, PYQT_VERSION_STR
+        log.info("Qt %s | PyQt %s | yt-dlp %s", QT_VERSION_STR, PYQT_VERSION_STR,
+                 getattr(getattr(yt_dlp, "version", None), "__version__", "?"))
+    except Exception:  # noqa: BLE001
+        log.debug("версии библиотек недоступны", exc_info=True)
     if len(sys.argv) == 4 and sys.argv[1] == "--nop-youtube-check":
         from youtube_stage_test import run_frozen_smoke
         sys.exit(run_frozen_smoke(globals(), sys.argv[2], sys.argv[3]))

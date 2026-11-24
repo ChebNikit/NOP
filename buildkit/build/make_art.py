@@ -13,7 +13,7 @@ from pathlib import Path
 
 from PIL import Image, ImageDraw, ImageFont
 
-# Colours taken from the player's first theme ("classic", STYLE table in NOP_1_1.py).
+# Colours taken from the player's first theme ("classic", STYLE table in NOP_1_2.py).
 BACKGROUND = (13, 15, 20)      # #0d0f14  window
 CARD = (17, 21, 30)            # #11151e  inputs / cards
 CARD_EDGE = (42, 50, 66)       # #2a3242  borders
@@ -125,4 +125,4 @@ def build_all(source: Path, output: Path, version: str) -> dict:
 
 
 if __name__ == "__main__":
-    print(build_all(Path(sys.argv[1]), Path(sys.argv[2]), sys.argv[3] if len(sys.argv) > 3 else "1.1"))
+    print(build_all(Path(sys.argv[1]), Path(sys.argv[2]), sys.argv[3] if len(sys.argv) > 3 else "1.2"))

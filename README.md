@@ -62,7 +62,7 @@ For the best video playback NOP uses **libmpv** (the mpv library); if it is not 
 Then start it:
 
 ```bash
-python buildkit/source/NOP_1_1.py
+python buildkit/source/NOP_1_2.py
 ```
 
 ## Build the Windows installer
@@ -76,7 +76,7 @@ BUILD_NOP_SETUP.bat
 
 The installer is written to `buildkit\dist\NOP_Setup.exe`, next to a `.sha256` file and `BUILD_REPORT.json`. The built application is self-tested before the installer is created; if the self-test fails, no installer is produced. Useful options: `--no-engines` (a lighter installer without the document, vector, e-book and 3D converters), `--offline`, `--clean`, `--from-step N`, `--verify-install` (on a test PC only). See [`buildkit/README.md`](buildkit/README.md) for details and troubleshooting, and [`buildkit/docs/VERIFICATION.md`](buildkit/docs/VERIFICATION.md) for what has and has not been tested.
 
-The application source is `buildkit/source/NOP_1_1.py`. To build from your own modified copy: `BUILD_NOP_SETUP.bat --source "C:\path\to\NOP.py"`. The installer also includes [Equalizer APO](https://sourceforge.net/projects/equalizerapo/) 1.4.2 for the *Whole device* equalizer mode: the build downloads it, checks a pinned SHA-256 and embeds it, and `NOP_Setup.exe` runs it when APO is not already installed (Windows asks for administrator permission and the APO wizard asks you to choose your audio device). Publish the finished installer in **Releases**, not in the repository.
+The application source is `buildkit/source/NOP_1_2.py`. To build from your own modified copy: `BUILD_NOP_SETUP.bat --source "C:\path\to\NOP.py"`. The installer also includes [Equalizer APO](https://sourceforge.net/projects/equalizerapo/) 1.4.2 for the *Whole device* equalizer mode: the build downloads it, checks a pinned SHA-256 and embeds it, and `NOP_Setup.exe` runs it when APO is not already installed (Windows asks for administrator permission and the APO wizard asks you to choose your audio device). Publish the finished installer in **Releases**, not in the repository.
 
 ## Hotkeys
 

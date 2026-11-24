@@ -1,3 +1,3 @@
-NOP BuildKit 1.1  (builds NOP 1.1 -> NOP_Setup.exe)
+NOP BuildKit 1.2  (builds NOP 1.2 -> NOP_Setup.exe)
 Target: Windows 10 1809 (build 17763, LTSC 2019) and newer, Windows 11, x64 only.
 Kit created from scratch; the reference kit R12 was used for the visual design only.

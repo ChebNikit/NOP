@@ -1,0 +1,43 @@
+# Downloaded by the build kit from pinned hashes (too large for GitHub;
+# they are NOT in the "files" list of kit-manifest.json)
+.build-tools/media-downloads/
+.build-tools/converter-downloads/
+.build-tools/python.*.nupkg
+.build-tools/innosetup-*.exe
+runtime_deps/
+NOP_R12_CACHE_*
+
+# Build output
+.build-python/
+/build/
+dist/
+release/
+logs/
+Output/
+*.spec
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Secrets and personal data - NEVER commit these
+cookies.txt
+spotify_credentials.dat
+
+# Editors
+.idea/
+.vscode/
+
+# Big archives sitting directly in .build-tools (downloaded by the kit)
+/.build-tools/*.msi
+/.build-tools/*.zip
+/.build-tools/*.7z
+/.build-tools/*.exe
+/.build-tools/*.nupkg
+
+# NOP BuildKit 1.2 work folders (created by buildkit\BUILD_NOP_SETUP.bat; huge, never commit)
+/buildkit/.build/
+/buildkit/cache/
+/buildkit/dist/
