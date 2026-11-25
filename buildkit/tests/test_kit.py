@@ -192,7 +192,7 @@ class LockTests(unittest.TestCase):
         self.assertEqual(len(pins), len(entries), "every requirement must carry a hash")
 
     def test_application_third_party_imports_are_locked(self):
-        tree = ast.parse((KIT / "source" / "NOP_1_2.py").read_text(encoding="utf-8"))
+        tree = ast.parse((KIT / "source" / "NOP_1_3.py").read_text(encoding="utf-8"))
         used = set()
         for node in ast.walk(tree):
             if isinstance(node, ast.Import):
@@ -247,15 +247,15 @@ class GeneratedFilesTests(unittest.TestCase):
         self.assertEqual(document.getElementsByTagName("requestedExecutionLevel")[0].getAttribute("level"), "asInvoker")
 
     def test_version_info_and_spec_compile(self):
-        text = build_kit.version_info_text("1.2")
-        self.assertIn("filevers=(1, 2, 0, 0)", text)
-        spec = build_kit.spec_text(Path("C:/kit/source/NOP_1_2.py"), Path("C:/a/nop.ico"), Path("C:/a/v.txt"), Path("C:/a/m.xml"), None)
+        text = build_kit.version_info_text("1.3")
+        self.assertIn("filevers=(1, 3, 0, 0)", text)
+        spec = build_kit.spec_text(Path("C:/kit/source/NOP_1_3.py"), Path("C:/a/nop.ico"), Path("C:/a/v.txt"), Path("C:/a/m.xml"), None)
         compile(spec, "NOP.spec", "exec")                           # must be valid Python
         self.assertIn('name="NOP"', spec)
         self.assertIn("console=False", spec)
 
     def test_associations(self):
-        exts = build_kit.media_extensions(KIT / "source" / "NOP_1_2.py")
+        exts = build_kit.media_extensions(KIT / "source" / "NOP_1_3.py")
         self.assertIn(".mp3", exts)
         self.assertIn(".mkv", exts)
         include = build_kit.associations_inc(exts)
@@ -274,7 +274,7 @@ class GeneratedFilesTests(unittest.TestCase):
         self.assertNotIn("WizardDarkStyle=dark", text)
         # every {cm:...} message used must exist in both languages
         used = set(re.findall(r"\{cm:(\w+)\}", text)) | set(re.findall(r"CustomMessage\('(\w+)'\)", text))
-        builtin = {"CreateDesktopIcon", "AdditionalIcons"}
+        builtin = {"CreateDesktopIcon", "AdditionalIcons", "UninstallProgram"}
         for name in used - builtin:
             self.assertIn(f"russian.{name}=", text, name)
             self.assertIn(f"english.{name}=", text, name)
@@ -315,7 +315,8 @@ class GeneratedFilesTests(unittest.TestCase):
         self.assertIn("def build_all(source: Path, output: Path, version: str)", art)
         self.assertIn("return art.build_all(SOURCE, ART, APP_VERSION)", (KIT / "build" / "build_kit.py").read_text(encoding="utf-8"))
         self.assertIn("CreateCustomPage(wpSelectTasks", text)
-        self.assertNotIn("CreateCustomPage(wpSelectComponents", text)
+        self.assertIn("PackageInfoPage := CreateCustomPage(wpSelectTasks", text)  # contents page never overlays the type page
+        self.assertEqual(text.count("CreateCustomPage(wpSelectComponents"), 1)  # only the converters page follows the type page
         self.assertIn("PackageInfoMemo.Parent := PackageInfoPage.Surface", text)
         self.assertIn("if CurPageID = PackageInfoPage.ID then", text)
         self.assertIn('#include "package_manifest.iss.inc"', text)
@@ -340,8 +341,8 @@ class GeneratedFilesTests(unittest.TestCase):
         self.assertNotIn("TypesCombo.ItemIndex :=", text)
 
     def test_application_has_installer_hooks(self):
-        source = (KIT / "source" / "NOP_1_2.py").read_text(encoding="utf-8")
-        self.assertIn('APP_VERSION = "1.2"', source)
+        source = (KIT / "source" / "NOP_1_3.py").read_text(encoding="utf-8")
+        self.assertIn('APP_VERSION = "1.3"', source)
         for flag in ("--nop-warm-capabilities", "--nop-selftest"):
             self.assertIn(flag, source)
 
@@ -350,7 +351,7 @@ class GeneratedFilesTests(unittest.TestCase):
         art_source = (KIT / "build" / "make_art.py").read_text(encoding="utf-8")
         self.assertIn('f"{version}  /  Windows x64"', art_source)
         with tempfile.TemporaryDirectory() as folder:
-            result = make_art.build_all(KIT / "source" / "NOP_1_2.py", Path(folder), "1.2")
+            result = make_art.build_all(KIT / "source" / "NOP_1_3.py", Path(folder), "1.3")
             from PIL import Image
             with Image.open(Path(folder) / "wizard_preview.png") as preview:
                 self.assertEqual(preview.size, (656, 1256))
@@ -456,7 +457,7 @@ class ZstdGuardTests(unittest.TestCase):
     def test_broken_backports_zstd_is_hidden(self):
         """Regression: 'module backports.zstd has no attribute ZstdError' aborted start-up of the frozen app."""
         import subprocess
-        tree = ast.parse((KIT / "source" / "NOP_1_2.py").read_text(encoding="utf-8"))
+        tree = ast.parse((KIT / "source" / "NOP_1_3.py").read_text(encoding="utf-8"))
         guard = next(n for n in tree.body if isinstance(n, ast.FunctionDef) and n.name == "_guard_optional_zstd")
         with tempfile.TemporaryDirectory() as folder:
             (Path(folder) / "backports" / "zstd").mkdir(parents=True)
@@ -479,7 +480,7 @@ class EngineTests(unittest.TestCase):
 
     def test_layout_matches_what_nop_looks_for(self):
         """NOP searches converters/<libreoffice/program | inkscape/bin | calibre | blender>/ - keep the kit in sync."""
-        source = (KIT / "source" / "NOP_1_2.py").read_text(encoding="utf-8")
+        source = (KIT / "source" / "NOP_1_3.py").read_text(encoding="utf-8")
         for fragment in ('"libreoffice/program"', '"inkscape/bin"', '"calibre"', '"blender"'):
             self.assertIn(fragment, source)
 
@@ -501,6 +502,72 @@ class EngineTests(unittest.TestCase):
             self.assertFalse((blender / "4.5" / "datafiles" / "locale").exists())
             self.assertIsNone(build_kit.engine_root(base, "bin/inkscape.exe"))
 
+    def test_installer_offers_each_converter_separately(self):
+        text = (KIT / "installer" / "NOP_Setup.iss.template").read_text(encoding="utf-8-sig")
+        engines = json.loads((KIT / "config" / "engines.lock.json").read_text(encoding="utf-8"))["engines"]
+        for item in engines.values():
+            dest = item["dest"]
+            self.assertIn(f'converters\\{dest}\\*"; DestDir: "{{app}}\\converters\\{dest}"', text, dest)
+            self.assertIn(f"Check: EngineSelected('{dest}')", text, dest)
+            self.assertIn(f"#define EngineMB_{dest} 0", text, dest)
+            self.assertIn(f"return '{dest}'".replace("return ", "Result := "), text, dest)
+        self.assertEqual(len(engines), 4)
+        self.assertIn("EngineTotal = 4", text)
+        # the whole converters folder is no longer copied as one block
+        self.assertNotIn('converters\\*"; DestDir: "{app}\\converters"', text)
+        # expandable section header + silent-install switch
+        for needle in ("EngineHeader.OnClick := @EngineHeaderClick", "EngineList.Visible := EngineExpanded",
+                       "{param:engines|all}", "function ShouldSkipPage", "RegisterPreviousData",
+                       "russian.EnginesHeader=", "english.EnginesHeader="):
+            self.assertIn(needle, text, needle)
+        for name in ("EngLibreOffice", "EngInkscape", "EngCalibre", "EngBlender"):
+            for lang in ("russian", "english"):
+                self.assertIn(f"{lang}.{name}=", text)
+
+    def test_every_step_decorator_sits_directly_on_its_function(self):
+        lines = (KIT / "build" / "build_kit.py").read_text(encoding="utf-8").splitlines()
+        for number, line in enumerate(lines):
+            if line.startswith("@step"):
+                self.assertTrue(lines[number + 1].startswith("def "), f"line {number + 1}: {lines[number + 1]}")
+        self.assertEqual(len(build_kit.STEPS), 12) if hasattr(build_kit, "STEPS") else None
+
+    def test_engine_size_defines(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            for name, size in (("libreoffice", 3 * 1024 * 1024), ("inkscape", 1), ("calibre", 5 * 1024 * 1024), ("blender", 2 * 1024 * 1024)):
+                (root / name).mkdir()
+                (root / name / "x.bin").write_bytes(b"0" * size)
+            defines = build_kit.engine_size_defines(root)
+            self.assertEqual(defines, ["/DEngineMB_libreoffice=3", "/DEngineMB_inkscape=1", "/DEngineMB_calibre=5", "/DEngineMB_blender=2"])
+            kitlib.rmtree(root / "blender")
+            with self.assertRaises(build_kit.KitError):
+                build_kit.engine_size_defines(root)
+
+    def test_update_cleans_library_folders_but_not_user_data(self):
+        text = (KIT / "installer" / "NOP_Setup.iss.template").read_text(encoding="utf-8-sig")
+        section = text.split("[InstallDelete]")[1].split("\n[")[0]
+        for folder in ("_internal", "mpv", "licenses"):
+            self.assertIn(f'Type: filesandordirs; Name: "{{app}}\\{folder}"', section)
+        for protected in ("converters", "YamiFM", "appdata"):
+            self.assertNotIn(f'Name: "{{app}}\\{protected}', section)
+            self.assertNotIn(f"Name: \"{{userappdata}}", section)
+        spec = build_kit.spec_text(Path("C:/k/s.py"), Path("C:/a/i.ico"), Path("C:/a/v.txt"), Path("C:/a/m.xml"), None)
+        self.assertIn('contents_directory="_internal"', spec)
+
+    def test_start_menu_folder_with_uninstaller(self):
+        text = (KIT / "installer" / "NOP_Setup.iss.template").read_text(encoding="utf-8-sig")
+        self.assertIn("DisableProgramGroupPage=no", text)
+        self.assertIn("AllowNoIcons=yes", text)  # "Don't create a Start Menu folder" checkbox
+        self.assertIn("DefaultGroupName=NOP", text)
+        self.assertIn('Name: "{group}\\NOP"', text)
+        self.assertIn('Name: "{group}\\{cm:UninstallProgram,NOP}"; Filename: "{uninstallexe}"', text)
+        self.assertIn('Name: "{group}\\{cm:IconCheck}"; Filename: "{app}\\Check_NOP.bat"', text)
+        self.assertNotIn('Name: "{autoprograms}\\NOP"', text)  # no loose shortcut any more
+        self.assertIn('Type: files; Name: "{autoprograms}\\NOP.lnk"', text)  # removed on upgrade from older installers
+        for name in ("IconCheck", "IconSite"):
+            self.assertIn(f"russian.{name}=", text)
+            self.assertIn(f"english.{name}=", text)
+
     def test_installer_has_engine_component(self):
         text = (KIT / "installer" / "NOP_Setup.iss.template").read_text(encoding="utf-8")
         self.assertIn('Name: "engines"', text)
@@ -508,7 +575,7 @@ class EngineTests(unittest.TestCase):
         self.assertNotIn("winget", text)
 
     def test_selftest_checks_engines(self):
-        source = (KIT / "source" / "NOP_1_2.py").read_text(encoding="utf-8")
+        source = (KIT / "source" / "NOP_1_3.py").read_text(encoding="utf-8")
         for needle in ("NOP_SELFTEST_REQUIRE_ENGINES", "LibreOffice", "Inkscape", "Calibre", "Blender"):
             self.assertIn(needle, source)
 
@@ -535,7 +602,7 @@ class BlenderProbeTests(unittest.TestCase):
         """Blender 5.x can raise KeyError for a missing exporter; the probe must still print the format list."""
         import subprocess
         import tempfile as tf
-        source = (KIT / "source" / "NOP_1_2.py").read_text(encoding="utf-8")
+        source = (KIT / "source" / "NOP_1_3.py").read_text(encoding="utf-8")
         start = source.index('code = "import bpy,json')
         line = source[start:source.index("\n", start)]
         namespace = {}
@@ -576,7 +643,7 @@ class RmtreeTests(unittest.TestCase):
 
 class CustomSourceTests(unittest.TestCase):
     def test_kit_source_is_valid_and_version_read(self):
-        self.assertEqual(build_kit.validate_source(KIT / "source" / "NOP_1_2.py"), "1.2")
+        self.assertEqual(build_kit.validate_source(KIT / "source" / "NOP_1_3.py"), "1.3")
 
     def test_modified_source_without_hooks_is_rejected_with_explanation(self):
         with tempfile.TemporaryDirectory() as folder:
@@ -593,5 +660,5 @@ class CustomSourceTests(unittest.TestCase):
     def test_modified_copy_with_new_version_is_accepted(self):
         with tempfile.TemporaryDirectory() as folder:
             mine = Path(folder) / "NOP_mine.py"
-            mine.write_text((KIT / "source" / "NOP_1_2.py").read_text(encoding="utf-8").replace('APP_VERSION = "1.2"', 'APP_VERSION = "1.3"'), encoding="utf-8")
-            self.assertEqual(build_kit.validate_source(mine), "1.3")
+            mine.write_text((KIT / "source" / "NOP_1_3.py").read_text(encoding="utf-8").replace('APP_VERSION = "1.3"', 'APP_VERSION = "1.4"'), encoding="utf-8")
+            self.assertEqual(build_kit.validate_source(mine), "1.4")

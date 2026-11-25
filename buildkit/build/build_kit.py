@@ -1,4 +1,4 @@
-"""NOP 1.2 build orchestrator: pinned downloads -> frozen app -> Inno Setup installer -> verification.
+"""NOP 1.3 build orchestrator: pinned downloads -> frozen app -> Inno Setup installer -> verification.
 
 Run through BUILD_NOP_SETUP.bat (it first provisions a private Python 3.13 under .build\\python), or directly:
     .build\\python\\python.exe build\\build_kit.py [--offline] [--skip-verify] [--verify-install] [--clean]
@@ -25,8 +25,8 @@ sys.path.insert(0, str(HERE))
 import kitlib  # noqa: E402
 from kitlib import KitError, log  # noqa: E402
 
-APP_VERSION = "1.2"
-SOURCE = KIT / "source" / "NOP_1_2.py"
+APP_VERSION = "1.3"
+SOURCE = KIT / "source" / "NOP_1_3.py"
 CONFIG = KIT / "config"
 WORK = KIT / ".build"
 CACHE = KIT / "cache"            # pinned downloads; copy files here to build without internet
@@ -70,7 +70,7 @@ def validate_source(path: Path) -> str:
         raise KitError(f"{Path(path).name} has a syntax error at line {exc.lineno}: {exc.msg}") from None
     missing = [f"  {name}  ({why})" for name, why in REQUIRED_HOOKS.items() if name not in text]
     if missing:
-        raise KitError(f"{Path(path).name} lacks parts the installer needs. Base your changes on source\\NOP_1_2.py and keep:\n"
+        raise KitError(f"{Path(path).name} lacks parts the installer needs. Base your changes on source\\NOP_1_3.py and keep:\n"
                        + "\n".join(missing))
     match = re.search(r'^APP_VERSION\s*=\s*"([^"]+)"', text, re.M)
     if not match:
@@ -100,7 +100,7 @@ def associations_inc(extensions: list[str]) -> str:
 def manifest_xml() -> str:
     return """<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <assembly xmlns="urn:schemas-microsoft-com:asm.v1" manifestVersion="1.0">
-  <assemblyIdentity type="win32" name="CheNik.NikOmniPlayer" version="1.2.0.0" processorArchitecture="amd64"/>
+  <assemblyIdentity type="win32" name="CheNik.NikOmniPlayer" version="1.3.0.0" processorArchitecture="amd64"/>
   <description>NOP - NikOmniPlayer</description>
   <dependency>
     <dependentAssembly>
@@ -163,13 +163,14 @@ analysis = Analysis([r"{entry}"], pathex=[r"{entry.parent}"], binaries=[], datas
                     noarchive=False)
 pyz = PYZ(analysis.pure)
 exe = EXE(pyz, analysis.scripts, [], exclude_binaries=True, name="NOP", console=False, debug=False, strip=False,
-          upx=False, icon=r"{icon}", version=r"{version_file}", manifest=r"{manifest}", uac_admin=False)
+          upx=False, icon=r"{icon}", version=r"{version_file}", manifest=r"{manifest}", uac_admin=False,
+          contents_directory="_internal")
 coll = COLLECT(exe, analysis.binaries, analysis.datas, strip=False, upx=False, name="NOP")
 '''
 
 
 def third_party_notices(lock: dict) -> str:
-    lines = ["NOP 1.2 - third-party components bundled with the installer", "=" * 60, ""]
+    lines = ["NOP 1.3 - third-party components bundled with the installer", "=" * 60, ""]
     for name, item in lock["components"].items():
         lines += [f"{name} {item['version']}", f"  license: {item['license']}", f"  source:  {item.get('source', item['url'])}",
                   f"  sha256 of the downloaded archive: {item['sha256']}", ""]
@@ -177,8 +178,8 @@ def third_party_notices(lock: dict) -> str:
     if apo:
         lines += [f"Equalizer APO {apo['version']} (installer embedded in NOP_Setup.exe, installed as a separate program)",
                   f"  license: {apo['license']}", f"  source:  {apo['source']}", f"  sha256 of the installer: {apo['sha256']}", ""]
-    lines += ["FFmpeg and mpv are distributed under the GNU GPL. Their corresponding source code is available at the",
-              "source links above; the unmodified binaries are placed next to NOP.exe as separate programs.",
+    lines += ["FFmpeg is distributed under the GNU GPL and libmpv under the GNU LGPL. Their corresponding source code is",
+              "available at the source links above; the unmodified binaries are placed next to NOP.exe as separate programs.",
               "Python packages (PyQt6 under GPL-3.0/commercial, numpy, Pillow, PyMuPDF under AGPL-3.0/commercial, mutagen,",
               "yt-dlp under Unlicense, ...) are listed with exact versions in config/requirements.lock.", ""]
     return "\n".join(lines)
@@ -283,14 +284,14 @@ def installer_package_manifest() -> str:
 
     python_version = ".".join(str(part) for part in sys.version_info[:3])
     media_lines_ru = [
-        "NOP — NikOmniPlayer 1.2",
+        "NOP — NikOmniPlayer 1.3",
         f"Python {python_version} — встроенная среда выполнения",
         f"libmpv — {components['libmpv']['version']}",
         f"FFmpeg / ffprobe — {components['ffmpeg']['version']}",
         f"Deno — {components['deno']['version']} (JavaScript-среда для yt-dlp EJS)",
     ]
     media_lines_en = [
-        "NOP — NikOmniPlayer 1.2",
+        "NOP — NikOmniPlayer 1.3",
         f"Python {python_version} — embedded runtime",
         f"libmpv — {components['libmpv']['version']}",
         f"FFmpeg / ffprobe — {components['ffmpeg']['version']}",
@@ -397,7 +398,10 @@ def fetch_components(args):
         kitlib.rmtree(COMPONENTS)
     apo_installer(args)  # fail early if the Equalizer APO installer cannot be obtained
     seven = paths["7zr"]
-    kitlib.extract_7z(seven, paths["libmpv"], COMPONENTS / "libmpv")
+    if str(paths["libmpv"]).lower().endswith(".zip"):
+        kitlib.safe_extract_zip(paths["libmpv"], COMPONENTS / "libmpv")
+    else:
+        kitlib.extract_7z(seven, paths["libmpv"], COMPONENTS / "libmpv")
     kitlib.safe_extract_zip(paths["ffmpeg"], COMPONENTS / "ffmpeg")
     kitlib.safe_extract_zip(paths["deno"], COMPONENTS / "deno")
     found = {
@@ -959,6 +963,24 @@ def _vc_redist(args) -> Path | None:
         return None
 
 
+def engine_size_defines(converters: Path) -> list[str]:
+    """Per-converter /DEngineMB_<name>=<MB> for the installer's \"File converters\" page.
+
+    The installer lets the user tick each converter separately, so every engine folder from
+    engines.lock.json must be present, and the sizes shown come from the real payload folders.
+    """
+    names = [item["dest"] for item in kitlib.load_json(CONFIG / "engines.lock.json")["engines"].values()]
+    missing = [name for name in names if not (converters / name).is_dir()]
+    if missing:
+        raise KitError("The payload's converters folder lacks: " + ", ".join(missing)
+                       + ". The installer offers every converter separately, so build all of them or use --no-engines.")
+    defines = []
+    for name in names:
+        size = sum(f.stat().st_size for f in (converters / name).rglob("*") if f.is_file())
+        defines.append(f"/DEngineMB_{name}={max(1, round(size / (1024 * 1024)))}")
+    return defines
+
+
 @step("Compile NOP_Setup.exe")
 def compile_installer(args):
     iscc = _find_iscc()
@@ -974,6 +996,7 @@ def compile_installer(args):
     defines = [f"/DAppVersion={APP_VERSION}", f"/DPayloadDir={PAYLOAD}", f"/DArtDir={ART}", f"/DOutDir={DIST}"]
     if (PAYLOAD / "converters").is_dir():
         defines.append("/DHasEngines=1")
+        defines += engine_size_defines(PAYLOAD / "converters")
     redist = _vc_redist(args)
     if redist:
         defines.append(f"/DVcRedist={redist}")
@@ -1065,7 +1088,7 @@ def main(argv=None) -> int:
     parser.add_argument("--verify-install", action="store_true", help="also install, test and uninstall silently (test machines only)")
     parser.add_argument("--no-engines", action="store_true", help="do not bundle LibreOffice/Inkscape/Calibre/Blender (smaller installer, no document/vector/e-book/3D conversion)")
     parser.add_argument("--clean", action="store_true", help="rebuild everything, ignoring markers")
-    parser.add_argument("--source", help="path to your own (modified) NOP .py file; default: source\\NOP_1_2.py")
+    parser.add_argument("--source", help="path to your own (modified) NOP .py file; default: source\\NOP_1_3.py")
     parser.add_argument("--only", help="run a single step by number (see --list)")
     parser.add_argument("--from-step", type=int, help="resume: run this step and all following ones (earlier results in .build are reused)")
     parser.add_argument("--list", action="store_true", help="list the steps and exit")

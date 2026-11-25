@@ -19,7 +19,7 @@ import zipfile
 from pathlib import Path
 
 CHUNK = 1024 * 1024
-USER_AGENT = "NOP-BuildKit/1.2 (+https://github.com/ChebNikit/NOP)"
+USER_AGENT = "NOP-BuildKit/1.3 (+https://github.com/ChebNikit/NOP)"
 
 
 class KitError(RuntimeError):

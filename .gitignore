@@ -37,7 +37,7 @@ spotify_credentials.dat
 /.build-tools/*.exe
 /.build-tools/*.nupkg
 
-# NOP BuildKit 1.1 work folders (created by buildkit\BUILD_NOP_SETUP.bat; huge, never commit)
+# NOP BuildKit 1.2 work folders (created by buildkit\BUILD_NOP_SETUP.bat; huge, never commit)
 /buildkit/.build/
 /buildkit/cache/
 /buildkit/dist/

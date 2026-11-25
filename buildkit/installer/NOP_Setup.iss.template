@@ -1,9 +1,9 @@
 ﻿; ============================================================================
-;  NOP 1.2 installer (Inno Setup 6.5+).  Compiled by build\build_kit.py.
+;  NOP 1.3 installer (Inno Setup 6.5+).  Compiled by build\build_kit.py.
 ;  Defines passed by the build:  AppVersion, PayloadDir, ArtDir, OutDir, [VcRedist], [ApoInstaller, ApoFile, ApoVersion]
 ; ============================================================================
 #ifndef AppVersion
-  #define AppVersion "1.2"
+  #define AppVersion "1.3"
 #endif
 #ifndef PayloadDir
   #error PayloadDir is not defined - run BUILD_NOP_SETUP.bat instead of compiling this file by hand.
@@ -20,6 +20,7 @@
 #define AppShort "NOP"
 #define AppLong  "NOP - NikOmniPlayer"
 #define AppExe   "NOP.exe"
+#define AppUrl   "https://github.com/ChebNikit/NOP"
 
 [Setup]
 AppId={{6F3D4E1A-8C52-4B7B-A1E0-4D2F9B8C7A31}
@@ -27,14 +28,14 @@ AppName={#AppLong}
 AppVersion={#AppVersion}
 AppVerName={#AppLong} {#AppVersion}
 AppPublisher=CheNik
-AppPublisherURL=https://github.com/ChebNikit/NOP
+AppPublisherURL={#AppUrl}
 AppSupportURL=https://github.com/ChebNikit/NOP/issues
 VersionInfoVersion={#AppVersion}.0.0
 VersionInfoProductName={#AppLong}
 VersionInfoDescription={#AppLong} setup
 DefaultDirName={autopf}\NOP
 DefaultGroupName=NOP
-DisableProgramGroupPage=yes
+DisableProgramGroupPage=no
 DisableWelcomePage=no
 UninstallDisplayIcon={app}\{#AppExe}
 UninstallDisplayName={#AppLong}
@@ -77,7 +78,7 @@ russian.TypeFull=Полная установка (рекомендуется)
 russian.TypeCompact=Компактная (без конвертации документов, векторов, книг и 3D)
 russian.TypeCustom=Выборочная установка
 russian.CompCore=NOP: плеер, загрузка, видео и аудио, перекодирование, эквалайзер
-russian.CompEngines=Конвертация документов, таблиц, презентаций, векторной графики, электронных книг и 3D-моделей (LibreOffice, Inkscape, Calibre, Blender; около 2 ГБ)
+russian.CompEngines=Конвертация файлов — программы выбираются на следующем шаге
 russian.TaskOpenWith=Добавить NOP в меню «Открыть с помощью» для аудио и видео
 russian.GroupIntegration=Интеграция с Windows:
 russian.StatusRuntime=Установка компонентов среды выполнения Microsoft…
@@ -107,12 +108,24 @@ russian.ApoOk=Equalizer APO установлен. Если его мастер �
 russian.ApoFail=NOP установлен, но установка Equalizer APO не завершена. Запустите установщик NOP снова и завершите мастер APO. Эквалайзер внутри NOP при этом работает.
 russian.ApoSilent=Equalizer APO не устанавливался: тихая установка не может выбрать устройство звука. Запустите установщик в обычном режиме, если нужен режим «Всё устройство».
 russian.ApoAlready=Equalizer APO уже установлен. Его настройки сохранены.
+russian.EnginesTitle=Конвертеры файлов
+russian.EnginesDescription=Отметьте программы, которые нужно установить. Нажмите на заголовок раздела, чтобы свернуть или развернуть список.
+russian.EnginesHeader=Конвертация файлов
+russian.EnginesCount=выбрано %1 из %2
+russian.EnginesNote=Программы ставятся внутрь папки NOP (converters) и не затрагивают такие же программы в Windows. Недостающие можно добавить позже, запустив установщик ещё раз.
+russian.EngLibreOffice=LibreOffice — для документов, таблиц и презентаций
+russian.EngInkscape=Inkscape — для векторной графики
+russian.EngCalibre=Calibre — для электронных книг
+russian.EngBlender=Blender — для 3D-моделей
+russian.UnitMB=МБ
+russian.IconCheck=NOP - проверка установки
+russian.IconSite=NOP на GitHub
 russian.PackagesBuildToolsNote=Inno Setup, PyInstaller, 7-Zip и служебные пакеты сборки используются только при создании установщика и на компьютер пользователя не устанавливаются.
 english.TypeFull=Full installation (recommended)
 english.TypeCompact=Compact (no document, vector, e-book and 3D conversion)
 english.TypeCustom=Custom installation
 english.CompCore=NOP: player, downloads, video and audio, transcoding, equalizer
-english.CompEngines=Document, spreadsheet, presentation, vector, e-book and 3D conversion (LibreOffice, Inkscape, Calibre, Blender; about 2 GB)
+english.CompEngines=File conversion — programs are chosen on the next step
 english.TaskOpenWith=Add NOP to the "Open with" menu for audio and video files
 english.GroupIntegration=Windows integration:
 english.StatusRuntime=Installing Microsoft runtime components...
@@ -142,6 +155,18 @@ english.ApoOk=Equalizer APO is installed. If its wizard asked for a restart, res
 english.ApoFail=NOP is installed, but the Equalizer APO setup did not finish. Run the NOP installer again and complete the APO wizard. NOP's built-in equalizer works meanwhile.
 english.ApoSilent=Equalizer APO was not installed: a silent installation cannot pick the audio device. Run the installer normally if you want the Whole device mode.
 english.ApoAlready=Equalizer APO is already installed. Its settings are kept.
+english.EnginesTitle=File converters
+english.EnginesDescription=Tick the programs you want to install. Click the section title to collapse or expand the list.
+english.EnginesHeader=File conversion
+english.EnginesCount=%1 of %2 selected
+english.EnginesNote=The programs are installed inside the NOP folder (converters) and do not touch the same programs in Windows. You can add missing ones later by running the installer again.
+english.EngLibreOffice=LibreOffice — for documents, spreadsheets and presentations
+english.EngInkscape=Inkscape — for vector graphics
+english.EngCalibre=Calibre — for e-books
+english.EngBlender=Blender — for 3D models
+english.UnitMB=MB
+english.IconCheck=NOP - installation check
+english.IconSite=NOP on GitHub
 english.PackagesBuildToolsNote=Inno Setup, PyInstaller, 7-Zip and build-only Python packages are used to create the installer and are not installed on the user's PC.
 
 [Types]
@@ -162,7 +187,11 @@ Name: "openwith"; Description: "{cm:TaskOpenWith}"; GroupDescription: "{cm:Group
 [Files]
 Source: "{#PayloadDir}\*"; DestDir: "{app}"; Excludes: "converters\*"; Flags: ignoreversion recursesubdirs createallsubdirs; Components: core
 #ifdef HasEngines
-Source: "{#PayloadDir}\converters\*"; DestDir: "{app}\converters"; Flags: ignoreversion recursesubdirs createallsubdirs; Components: engines
+; Each converter is its own folder, installed only if ticked on the "File converters" page (or /ENGINES=name,name for a silent install).
+Source: "{#PayloadDir}\converters\libreoffice\*"; DestDir: "{app}\converters\libreoffice"; Flags: ignoreversion recursesubdirs createallsubdirs; Components: engines; Check: EngineSelected('libreoffice')
+Source: "{#PayloadDir}\converters\inkscape\*"; DestDir: "{app}\converters\inkscape"; Flags: ignoreversion recursesubdirs createallsubdirs; Components: engines; Check: EngineSelected('inkscape')
+Source: "{#PayloadDir}\converters\calibre\*"; DestDir: "{app}\converters\calibre"; Flags: ignoreversion recursesubdirs createallsubdirs; Components: engines; Check: EngineSelected('calibre')
+Source: "{#PayloadDir}\converters\blender\*"; DestDir: "{app}\converters\blender"; Flags: ignoreversion recursesubdirs createallsubdirs; Components: engines; Check: EngineSelected('blender')
 #endif
 #ifdef VcRedist
 Source: "{#VcRedist}"; DestDir: "{tmp}"; Flags: deleteafterinstall; Check: NeedsVCRedist
@@ -172,9 +201,26 @@ Source: "{#VcRedist}"; DestDir: "{tmp}"; Flags: deleteafterinstall; Check: Needs
 Source: "{#ApoInstaller}"; Flags: dontcopy
 #endif
 
+[INI]
+Filename: "{app}\NOP.url"; Section: "InternetShortcut"; Key: "URL"; String: "{#AppUrl}"
+
 [Icons]
-Name: "{autoprograms}\NOP"; Filename: "{app}\{#AppExe}"; WorkingDir: "{app}"; Comment: "{#AppLong}"
+; Start Menu folder (Start - All programs - NOP). The wizard page "Select Start Menu Folder" lets the user rename it
+; or tick "Don't create a Start Menu folder"; Inno then skips every icon whose name starts with {group}\.
+Name: "{group}\NOP"; Filename: "{app}\{#AppExe}"; WorkingDir: "{app}"; Comment: "{#AppLong}"
+Name: "{group}\{cm:IconCheck}"; Filename: "{app}\Check_NOP.bat"; WorkingDir: "{app}"
+Name: "{group}\{cm:IconSite}"; Filename: "{app}\NOP.url"
+Name: "{group}\{cm:UninstallProgram,NOP}"; Filename: "{uninstallexe}"
 Name: "{autodesktop}\NOP"; Filename: "{app}\{#AppExe}"; WorkingDir: "{app}"; Tasks: desktopicon
+
+[InstallDelete]
+; Older NOP installers put one loose shortcut straight into All programs; the Start Menu folder replaces it.
+Type: files; Name: "{autoprograms}\NOP.lnk"
+; Clean update: the program's own library folders are replaced as a whole, so no file of the previous version can be
+; picked up by the new one. Never touched here: converters\ (the user's choice), anything outside {app}, and %APPDATA%\YamiFM.
+Type: filesandordirs; Name: "{app}\_internal"
+Type: filesandordirs; Name: "{app}\mpv"
+Type: filesandordirs; Name: "{app}\licenses"
 
 [Registry]
 Root: HKA; Subkey: "Software\Classes\Applications\{#AppExe}"; ValueType: string; ValueName: "FriendlyAppName"; ValueData: "{#AppLong}"; Flags: uninsdeletekey; Tasks: openwith
@@ -191,6 +237,7 @@ Filename: "{app}\{#AppExe}"; Description: "{cm:LaunchNOP}"; Flags: nowait postin
 
 [UninstallDelete]
 Type: files; Name: "{app}\*.log"
+Type: files; Name: "{app}\NOP.url"
 
 [Code]
 #include "package_manifest.iss.inc"
@@ -316,7 +363,238 @@ begin
     Result := FileExists(ExpandConstant('{commonpf64}\EqualizerAPO\EqualizerAPO.dll'));
 end;
 
+#ifdef HasEngines
+#ifndef EngineMB_libreoffice
+  #define EngineMB_libreoffice 0
+#endif
+#ifndef EngineMB_inkscape
+  #define EngineMB_inkscape 0
+#endif
+#ifndef EngineMB_calibre
+  #define EngineMB_calibre 0
+#endif
+#ifndef EngineMB_blender
+  #define EngineMB_blender 0
+#endif
+
+const
+  EngineTotal = 4;
+
+var
+  EnginePage: TWizardPage;
+  EngineHeader: TNewStaticText;
+  EngineNote: TNewStaticText;
+  EngineList: TNewCheckListBox;
+  EngineExpanded: Boolean;
+
+function EngineName(Index: Integer): String;
+begin
+  case Index of
+    0: Result := 'libreoffice';
+    1: Result := 'inkscape';
+    2: Result := 'calibre';
+  else
+    Result := 'blender';
+  end;
+end;
+
+function EngineIndex(const Name: String): Integer;
+var
+  I: Integer;
+begin
+  Result := -1;
+  for I := 0 to EngineTotal - 1 do
+    if EngineName(I) = Name then
+      Result := I;
+end;
+
+function EngineSizeMB(Index: Integer): Integer;
+begin
+  case Index of
+    0: Result := {#EngineMB_libreoffice};
+    1: Result := {#EngineMB_inkscape};
+    2: Result := {#EngineMB_calibre};
+  else
+    Result := {#EngineMB_blender};
+  end;
+end;
+
+function EngineDescription(Index: Integer): String;
+begin
+  case Index of
+    0: Result := CustomMessage('EngLibreOffice');
+    1: Result := CustomMessage('EngInkscape');
+    2: Result := CustomMessage('EngCalibre');
+  else
+    Result := CustomMessage('EngBlender');
+  end;
+end;
+
+function EngineLabel(Index: Integer): String;
+begin
+  Result := EngineDescription(Index);
+  if EngineSizeMB(Index) > 0 then
+    Result := Result + '  (~' + IntToStr(EngineSizeMB(Index)) + ' ' + CustomMessage('UnitMB') + ')';
+end;
+
+{ Used by [Files] (Check:). Silent installs cannot show the page, so they read /ENGINES=libreoffice,blender (default: all). }
+function EngineSelected(const Name: String): Boolean;
+var
+  Param: String;
+  Index: Integer;
+begin
+  Result := False;
+  Index := EngineIndex(Name);
+  if Index < 0 then
+    Exit;
+  if WizardSilent then
+  begin
+    Param := ',' + Lowercase(ExpandConstant('{param:engines|all}')) + ',';
+    Result := (Pos(',all,', Param) > 0) or (Pos(',' + Name + ',', Param) > 0);
+  end
+  else if Assigned(EngineList) then
+    Result := EngineList.Checked[Index];
+end;
+
+function EngineSelectedCount: Integer;
+var
+  I: Integer;
+begin
+  Result := 0;
+  for I := 0 to EngineTotal - 1 do
+    if EngineSelected(EngineName(I)) then
+      Result := Result + 1;
+end;
+
+function EngineSelectionText: String;
+var
+  I: Integer;
+begin
+  Result := '';
+  for I := 0 to EngineTotal - 1 do
+    if EngineSelected(EngineName(I)) then
+    begin
+      if Result <> '' then
+        Result := Result + ',';
+      Result := Result + EngineName(I);
+    end;
+  if Result = '' then
+    Result := 'none';
+end;
+
+{ Remember the choice, so a later update of NOP offers the same set of converters. }
+procedure RegisterPreviousData(PreviousDataKey: Integer);
+begin
+  if WizardIsComponentSelected('engines') then
+    SetPreviousData(PreviousDataKey, 'Engines', EngineSelectionText);
+end;
+
+procedure UpdateEngineHeader;
+var
+  Mark: String;
+begin
+  if EngineExpanded then
+    Mark := '▼'
+  else
+    Mark := '►';
+  EngineHeader.Caption := Mark + '  ' + CustomMessage('EnginesHeader') + '   (' +
+    FmtMessage(CustomMessage('EnginesCount'), [IntToStr(EngineSelectedCount), IntToStr(EngineTotal)]) + ')';
+end;
+
+procedure EngineHeaderClick(Sender: TObject);
+begin
+  EngineExpanded := not EngineExpanded;
+  EngineList.Visible := EngineExpanded;
+  UpdateEngineHeader;
+end;
+
+{ Same as the installation-type page: a click toggles the box but leaves no highlighted row. }
+procedure EngineListClick(Sender: TObject);
+begin
+  EngineList.ItemIndex := -1;
+  UpdateEngineHeader;
+end;
+
+procedure EngineListKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
+begin
+  UpdateEngineHeader;
+end;
+
+procedure RestoreEngineSelection;
+var
+  Saved: String;
+  I: Integer;
+begin
+  Saved := ',' + Lowercase(GetPreviousData('Engines', 'all')) + ',';
+  if Pos(',all,', Saved) > 0 then
+    Exit;
+  for I := 0 to EngineTotal - 1 do
+    EngineList.Checked[I] := Pos(',' + EngineName(I) + ',', Saved) > 0;
+end;
+
+procedure CreateEnginePage;
+var
+  I: Integer;
+begin
+  EnginePage := CreateCustomPage(wpSelectComponents, CustomMessage('EnginesTitle'), CustomMessage('EnginesDescription'));
+  EnginePage.Surface.Color := $140F0D;
+  EngineExpanded := True;
+
+  EngineHeader := TNewStaticText.Create(EnginePage);
+  EngineHeader.Parent := EnginePage.Surface;
+  EngineHeader.Left := 0;
+  EngineHeader.Top := 0;
+  EngineHeader.Font.Style := [fsBold];
+  EngineHeader.Font.Color := $FAF3F0;
+  EngineHeader.Cursor := crHand;
+  EngineHeader.OnClick := @EngineHeaderClick;
+
+  EngineList := TNewCheckListBox.Create(EnginePage);
+  EngineList.Parent := EnginePage.Surface;
+  EngineList.Left := 0;
+  EngineList.Top := EngineHeader.Top + ScaleY(26);
+  EngineList.Width := EnginePage.SurfaceWidth;
+  EngineList.Height := ScaleY(100);
+  EngineList.Anchors := [akLeft, akTop, akRight];
+  EngineList.Flat := True;
+  for I := 0 to EngineTotal - 1 do
+    EngineList.AddCheckBox(EngineLabel(I), '', 0, True, True, False, True, nil);
+  EngineList.OnClick := @EngineListClick;
+  EngineList.OnClickCheck := @EngineListClick;
+  EngineList.OnKeyUp := @EngineListKeyUp;
+#if Ver < 0x06060000
+  EngineList.Color := ThemeField;
+  EngineList.Font.Color := ThemeText;
+  EngineHeader.Font.Color := ThemeTitle;
+#endif
+
+  EngineNote := TNewStaticText.Create(EnginePage);
+  EngineNote.Parent := EnginePage.Surface;
+  EngineNote.Left := 0;
+  EngineNote.Width := EnginePage.SurfaceWidth;
+  EngineNote.AutoSize := False;
+  EngineNote.WordWrap := True;
+  EngineNote.Height := ScaleY(48);
+  EngineNote.Top := EnginePage.SurfaceHeight - EngineNote.Height;
+  EngineNote.Anchors := [akLeft, akRight, akBottom];
+  EngineNote.Font.Color := $AB988E;
+  EngineNote.Caption := CustomMessage('EnginesNote');
+
+  RestoreEngineSelection;
+  UpdateEngineHeader;
+end;
+
+function ShouldSkipPage(PageID: Integer): Boolean;
+begin
+  Result := False;
+  if Assigned(EnginePage) and (PageID = EnginePage.ID) then
+    Result := not WizardIsComponentSelected('engines');
+end;
+#endif
+
 function BuildPackageInfo: String;
+var
+  I: Integer;
 begin
   if ExpandConstant('{language}') = 'russian' then
     Result := CustomMessage('PackagesAlwaysTitle') + #13#10 + PackageMediaListRu + #13#10#13#10
@@ -325,12 +603,13 @@ begin
   Result := Result + CustomMessage('PackagesPythonTitle') + #13#10 +
     PackagePythonList + #13#10#13#10;
 #ifdef HasEngines
-  if WizardIsComponentSelected('engines') then
+  if WizardIsComponentSelected('engines') and (EngineSelectedCount > 0) then
   begin
-    if ExpandConstant('{language}') = 'russian' then
-      Result := Result + CustomMessage('PackagesEnginesTitle') + #13#10 + PackageEngineListRu + #13#10#13#10
-    else
-      Result := Result + CustomMessage('PackagesEnginesTitle') + #13#10 + PackageEngineListEn + #13#10#13#10;
+    Result := Result + CustomMessage('PackagesEnginesTitle') + #13#10;
+    for I := 0 to EngineTotal - 1 do
+      if EngineSelected(EngineName(I)) then
+        Result := Result + '• ' + EngineDescription(I) + #13#10;
+    Result := Result + #13#10;
   end
   else
     Result := Result + CustomMessage('PackagesEnginesSkipped') + #13#10#13#10;
@@ -390,6 +669,10 @@ begin
   WizardForm.TypesCombo.OnClick := @DropControlFocus;
   WizardForm.PreparingYesRadio.OnClick := @DropControlFocus;
   WizardForm.PreparingNoRadio.OnClick := @DropControlFocus;
+
+#ifdef HasEngines
+  CreateEnginePage;
+#endif
 
   { Standalone wizard step after type, folder and task selection; never overlays the selection page. }
   PackageInfoPage := CreateCustomPage(wpSelectTasks,
@@ -485,6 +768,15 @@ begin
     if Assigned(WizardForm.PreparingMemo) then
       HideFocusCues(WizardForm.PreparingMemo.Parent.Handle);
   end;
+
+#ifdef HasEngines
+  if CurPageID = EnginePage.ID then
+  begin
+    HideFocusCues(EngineList.Handle);
+    EngineList.ItemIndex := -1;
+    UpdateEngineHeader;
+  end;
+#endif
 
   if CurPageID = PackageInfoPage.ID then
     UpdatePackageInfo;

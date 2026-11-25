@@ -12,13 +12,14 @@
       "file": "7zr.exe"
     },
     "libmpv": {
-      "version": "20261111-git-bcde6b93cc",
-      "license": "GPL-2.0+ (mpv-winbuild-cmake by shinchiro; generic x86-64 build, no AVX2 requirement)",
-      "source": "https://github.com/shinchiro/mpv-winbuild-cmake/releases/tag/20261111",
-      "url": "https://github.com/shinchiro/mpv-winbuild-cmake/releases/download/20261111/mpv-dev-x86_64-20261111-git-bcde6b93cc.7z",
-      "sha256": "273c079b11ea5575822f972756f4c9a71149a5c10130353abeb8586738938452",
-      "size": 31776374,
-      "file": "mpv-dev-x86_64-20261111-git-bcde6b93cc.7z"
+      "version": "v0.42.0-dev-g35efcf53d-45211341722",
+      "license": "LGPL-2.1+ (official mpv-player build, x86_64-w64-mingw32 lgpl; Vulkan is loaded at run time, so it also starts on PCs with old GPU drivers)",
+      "source": "https://github.com/mpv-player/mpv/releases/tag/git-release",
+      "url": "https://github.com/mpv-player/mpv/releases/download/git-release/libmpv-v0.42.0-dev-g35efcf53d-45211341722-x86_64-w64-mingw32-lgpl.zip",
+      "sha256": "a1551b6653af341aa9087fd5f30e77351d72c84f037b1952f012f4798d578fec",
+      "size": 59788653,
+      "file": "libmpv-v0.42.0-dev-g35efcf53d-45211341722-x86_64-w64-mingw32-lgpl.zip",
+      "note": "git-release is a rolling tag: mpv-player deletes older assets when a new build appears. Keep this file in cache\\ (it is verified by SHA-256) or update url, version, sha256, size and file here."
     },
     "ffmpeg": {
       "version": "n9.0.2-57-gd838f9f9ae",
