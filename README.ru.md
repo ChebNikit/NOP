@@ -62,7 +62,7 @@ winget install DenoLand.Deno
 Запуск:
 
 ```bash
-python buildkit/source/NOP_1_2.py
+python buildkit/source/NOP_1_3.py
 ```
 
 ## Сборка установщика для Windows
@@ -76,7 +76,7 @@ BUILD_NOP_SETUP.bat
 
 Установщик появится в `buildkit\dist\NOP_Setup.exe`, рядом — файл `.sha256` и `BUILD_REPORT.json`. Перед созданием установщика собранная программа проходит самопроверку; если она не пройдена, установщик не создаётся. Полезные параметры: `--no-engines` (облегчённый установщик без конвертеров документов, векторной графики, книг и 3D), `--offline`, `--clean`, `--from-step N`, `--verify-install` (только на тестовом ПК). Подробности и решение проблем — в [`buildkit/README.md`](buildkit/README.md), что проверено и что нет — в [`buildkit/docs/VERIFICATION.md`](buildkit/docs/VERIFICATION.md).
 
-Исходник программы — `buildkit/source/NOP_1_2.py`. Чтобы собрать из собственной изменённой копии: `BUILD_NOP_SETUP.bat --source "C:\путь\к\NOP.py"`. В установщик также входит [Equalizer APO](https://sourceforge.net/projects/equalizerapo/) 1.4.2 для режима эквалайзера *«Всё устройство»*: сборка скачивает его, проверяет закреплённый SHA-256 и встраивает, а `NOP_Setup.exe` запускает его, если APO ещё не установлен (Windows запросит права администратора, а мастер APO попросит выбрать устройство звука). Готовый установщик публикуйте в разделе **Releases**, а не в самом репозитории.
+Исходник программы — `buildkit/source/NOP_1_3.py`. Чтобы собрать из собственной изменённой копии: `BUILD_NOP_SETUP.bat --source "C:\путь\к\NOP.py"`. В установщик также входит [Equalizer APO](https://sourceforge.net/projects/equalizerapo/) 1.4.2 для режима эквалайзера *«Всё устройство»*: сборка скачивает его, проверяет закреплённый SHA-256 и встраивает, а `NOP_Setup.exe` запускает его, если APO ещё не установлен (Windows запросит права администратора, а мастер APO попросит выбрать устройство звука). Готовый установщик публикуйте в разделе **Releases**, а не в самом репозитории.
 
 ## Горячие клавиши
 
